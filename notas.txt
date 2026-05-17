@@ -1,0 +1,13 @@
+Ejectuar server: npm start
+
+Dashboard principal: http://localhost:3000
+
+Cada planta por separado:
+http://localhost:3000/caldero/
+http://localhost:3000/solar/
+http://localhost:3000/alarmas/
+
+App mobile: http://localhost:3000/mobile.html
+
+Probar desde el celular: debe estar en la misma WiFi que la computadora y usa la IP en lugar de localhost:
+http://192.168.18.15:3000
