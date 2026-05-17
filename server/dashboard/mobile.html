@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>MAINTRONIC</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-lt: #eff6ff;
+        --green: #059669;
+        --green-lt: #ecfdf5;
+        --amber: #d97706;
+        --amber-lt: #fffbeb;
+        --red: #dc2626;
+        --red-lt: #fef2f2;
+        --slate: #475569;
+        --slate-lt: #f8fafc;
+        --border: #e2e8f0;
+        --white: #ffffff;
+        --text: #0f172a;
+        --text-2: #64748b;
+        --radius: 18px;
+        --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.13);
+        --font: "Nunito", sans-serif;
+        --font2: "Space Grotesk", sans-serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        font-family: var(--font);
+        background: #f1f5f9;
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* ── SCREENS ── */
+      .screen {
+        display: none;
+        min-height: 100vh;
+        flex-direction: column;
+      }
+      .screen.active {
+        display: flex;
+      }
+
+      /* ── TOP BAR ── */
+      .topbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px 12px;
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .topbar-back {
+        width: 38px;
+        height: 38px;
+        background: var(--slate-lt);
+        border: none;
+        border-radius: 12px;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+      }
+      .topbar-back:active {
+        background: var(--border);
+      }
+      .topbar-title {
+        font-family: var(--font2);
+        font-size: 17px;
+        font-weight: 600;
+      }
+      .topbar-sub {
+        font-size: 12px;
+        color: var(--text-2);
+        margin-top: 1px;
+      }
+
+      /* ── SCROLL CONTENT ── */
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 16px 32px;
+      }
+
+      /* ══════════════════════════════════════
+   SCREEN: INICIO
+══════════════════════════════════════ */
+      #screen-inicio {
+        background: linear-gradient(
+          160deg,
+          #eff6ff 0%,
+          #f1f5f9 50%,
+          #ecfdf5 100%
+        );
+      }
+
+      .hero {
+        padding: 36px 20px 28px;
+        text-align: center;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--primary-lt);
+        color: var(--primary);
+        border-radius: 20px;
+        padding: 5px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+      .hero-icon {
+        font-size: 56px;
+        margin-bottom: 12px;
+        display: block;
+        animation: float 3s ease-in-out infinite;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+      }
+      .hero h1 {
+        font-family: var(--font2);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        margin-bottom: 6px;
+      }
+      .hero h1 span {
+        color: var(--primary);
+      }
+      .hero p {
+        color: var(--text-2);
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .menu-grid {
+        padding: 0 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .menu-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s,
+          border-color 0.15s;
+        text-decoration: none;
+        color: var(--text);
+      }
+      .menu-card:active {
+        transform: scale(0.97);
+        box-shadow: var(--shadow);
+      }
+
+      .menu-card-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        flex-shrink: 0;
+      }
+      .menu-card.blue .menu-card-icon {
+        background: var(--primary-lt);
+      }
+      .menu-card.green .menu-card-icon {
+        background: var(--green-lt);
+      }
+      .menu-card.amber .menu-card-icon {
+        background: var(--amber-lt);
+      }
+      .menu-card.red .menu-card-icon {
+        background: var(--red-lt);
+      }
+
+      .menu-card-text {
+        flex: 1;
+      }
+      .menu-card-text h3 {
+        font-size: 16px;
+        font-weight: 800;
+        margin-bottom: 3px;
+      }
+      .menu-card-text p {
+        font-size: 12px;
+        color: var(--text-2);
+        font-weight: 500;
+      }
+      .menu-card-arrow {
+        color: var(--text-2);
+        font-size: 18px;
+      }
+
+      .menu-card.blue {
+        border-color: #bfdbfe;
+      }
+      .menu-card.green {
+        border-color: #a7f3d0;
+      }
+      .menu-card.amber {
+        border-color: #fde68a;
+      }
+      .menu-card.red {
+        border-color: #fecaca;
+      }
+
+      .footer-tag {
+        text-align: center;
+        padding: 24px 0 8px;
+        font-size: 11px;
+        color: #cbd5e1;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+
+      /* ══════════════════════════════════════
+   SCREEN: CONFIGURAR RED
+══════════════════════════════════════ */
+      #screen-red {
+        background: #f8fafc;
+      }
+
+      .section-title {
+        font-family: var(--font2);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-2);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 20px 0 10px;
+      }
+
+      .bt-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        padding: 16px 20px;
+        font-size: 16px;
+        font-weight: 800;
+        font-family: var(--font);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+        margin-bottom: 20px;
+      }
+      .bt-btn:active {
+        transform: scale(0.97);
+        box-shadow: none;
+      }
+
+      .form-group {
+        margin-bottom: 12px;
+      }
+      .form-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--slate);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .form-input {
+        width: 100%;
+        background: var(--white);
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-size: 15px;
+        font-family: var(--font);
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .form-input:focus {
+        border-color: var(--primary);
+      }
+
+      .send-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #059669, #047857);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        padding: 17px;
+        font-size: 17px;
+        font-weight: 800;
+        font-family: var(--font);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 4px 16px rgba(5, 150, 105, 0.35);
+        margin-top: 8px;
+        transition: transform 0.15s;
+      }
+      .send-btn:active {
+        transform: scale(0.97);
+      }
+
+      /* ══════════════════════════════════════
+   SCREEN: PLANTAS
+══════════════════════════════════════ */
+      #screen-plantas {
+        background: #f8fafc;
+      }
+
+      .plantas-hero {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        border-radius: 0 0 28px 28px;
+        padding: 28px 20px 32px;
+        color: white;
+        margin-bottom: 24px;
+      }
+      .plantas-hero h2 {
+        font-size: 22px;
+        font-weight: 900;
+        margin-bottom: 4px;
+      }
+      .plantas-hero p {
+        font-size: 13px;
+        opacity: 0.8;
+        font-weight: 500;
+      }
+
+      .planta-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+        margin-bottom: 14px;
+      }
+      .planta-card:active {
+        transform: scale(0.97);
+      }
+      .planta-card-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        flex-shrink: 0;
+      }
+      .planta-card h3 {
+        font-size: 17px;
+        font-weight: 800;
+        margin-bottom: 3px;
+      }
+      .planta-card p {
+        font-size: 12px;
+        color: var(--text-2);
+        font-weight: 500;
+      }
+      .planta-card-badge {
+        margin-left: auto;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      /* ══════════════════════════════════════
+   WEBVIEW SCREENS (caldero, solar, alarmas)
+══════════════════════════════════════ */
+      .webview-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .webview-frame {
+        flex: 1;
+        border: none;
+        width: 100%;
+        background: #f8fafc;
+      }
+      .webview-bar {
+        background: var(--white);
+        border-top: 1px solid var(--border);
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .webview-url {
+        flex: 1;
+        background: #f1f5f9;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-size: 12px;
+        color: var(--text-2);
+        font-family: monospace;
+        outline: none;
+      }
+      .webview-reload {
+        width: 36px;
+        height: 36px;
+        background: #f1f5f9;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ══════════════════════════════════════
+   TOAST NOTIFICATION
+══════════════════════════════════════ */
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: #0f172a;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 14px;
+        font-size: 14px;
+        font-weight: 600;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        z-index: 999;
+        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        white-space: nowrap;
+      }
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* ══════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════ */
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .menu-card {
+        animation: slideUp 0.4s ease both;
+      }
+      .menu-card:nth-child(1) {
+        animation-delay: 0.05s;
+      }
+      .menu-card:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .menu-card:nth-child(3) {
+        animation-delay: 0.15s;
+      }
+      .menu-card:nth-child(4) {
+        animation-delay: 0.2s;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ══════════════════════════════════════
+     SCREEN: INICIO
+══════════════════════════════════════ -->
+    <div id="screen-inicio" class="screen active">
+      <div class="hero">
+        <div class="hero-badge">⚙️ Sistema IoT</div>
+        <span class="hero-icon">🏭</span>
+        <h1>MAIN<span>TRONIC</span></h1>
+        <p>Sistema de Monitoreo Industrial</p>
+      </div>
+
+      <div class="menu-grid">
+        <div class="menu-card blue" onclick="goTo('screen-plantas')">
+          <div class="menu-card-icon">📊</div>
+          <div class="menu-card-text">
+            <h3>Monitoreo de Plantas</h3>
+            <p>Caldero · Solar · Industrial</p>
+          </div>
+          <span class="menu-card-arrow">›</span>
+        </div>
+
+        <div class="menu-card green" onclick="goTo('screen-red')">
+          <div class="menu-card-icon">🔧</div>
+          <div class="menu-card-text">
+            <h3>Configurar Red</h3>
+            <p>Conexión WiFi vía Bluetooth</p>
+          </div>
+          <span class="menu-card-arrow">›</span>
+        </div>
+
+        <div
+          class="menu-card red"
+          onclick="
+            openWebview(
+              'screen-alarmas',
+              'http://${window.location.hostname}:3000/alarmas/',
+              '⚠️ Alarmas',
+            )
+          "
+        >
+          <div class="menu-card-icon">🚨</div>
+          <div class="menu-card-text">
+            <h3>Alarmas Activas</h3>
+            <p>Bitácora de eventos del sistema</p>
+          </div>
+          <span class="menu-card-arrow">›</span>
+        </div>
+
+        <div
+          class="menu-card amber"
+          onclick="
+            openWebview(
+              'screen-webview',
+              'http://${window.location.hostname}:3000/',
+              '🌐 Dashboard',
+            )
+          "
+        >
+          <div class="menu-card-icon">🖥️</div>
+          <div class="menu-card-text">
+            <h3>Dashboard Web</h3>
+            <p>Vista general del sistema</p>
+          </div>
+          <span class="menu-card-arrow">›</span>
+        </div>
+      </div>
+
+      <div class="footer-tag">MAINTRONIC © 2025 · v1.0</div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+     SCREEN: CONFIGURAR RED
+══════════════════════════════════════ -->
+    <div id="screen-red" class="screen">
+      <div class="topbar">
+        <button class="topbar-back" onclick="goBack()">←</button>
+        <div>
+          <div class="topbar-title">🔧 Configurar Red</div>
+          <div class="topbar-sub">Conexión WiFi vía Bluetooth</div>
+        </div>
+      </div>
+      <div class="content">
+        <button class="bt-btn" id="bt-connect-btn" onclick="connectBluetooth()">
+          🔵 Conectar Bluetooth
+        </button>
+
+        <div class="section-title">📶 Parámetros de Red</div>
+
+        <div class="form-group">
+          <label class="form-label">SSID WiFi</label>
+          <input
+            class="form-input"
+            id="inp-ssid"
+            type="text"
+            placeholder="Nombre de la red"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">🔑 Contraseña WiFi</label>
+          <input
+            class="form-input"
+            id="inp-pass"
+            type="password"
+            placeholder="Contraseña"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">🌐 Dirección IP</label>
+          <input
+            class="form-input"
+            id="inp-ip"
+            type="text"
+            placeholder="192.168.1.100"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">🔒 Máscara de Red</label>
+          <input
+            class="form-input"
+            id="inp-mask"
+            type="text"
+            placeholder="255.255.255.0"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">🚪 Puerta de Enlace</label>
+          <input
+            class="form-input"
+            id="inp-gw"
+            type="text"
+            placeholder="192.168.1.1"
+          />
+        </div>
+
+        <button class="send-btn" onclick="sendConfig()">
+          ✅ Enviar Configuración
+        </button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+     SCREEN: PLANTAS
+══════════════════════════════════════ -->
+    <div id="screen-plantas" class="screen">
+      <div class="topbar">
+        <button class="topbar-back" onclick="goBack()">←</button>
+        <div>
+          <div class="topbar-title">📊 Monitoreo de Plantas</div>
+          <div class="topbar-sub">Seleccione una planta</div>
+        </div>
+      </div>
+
+      <div class="plantas-hero">
+        <h2>🏭 Sistema Activo</h2>
+        <p>3 plantas configuradas y listas</p>
+      </div>
+
+      <div class="content" style="padding-top: 0">
+        <div
+          class="planta-card"
+          onclick="
+            openWebview(
+              'screen-webview',
+              `http://${window.location.hostname}:3000/caldero/`,
+              '🔥 Planta Caldero',
+            )
+          "
+        >
+          <div class="planta-card-icon" style="background: #fff7ed">🔥</div>
+          <div>
+            <h3>Planta Caldero</h3>
+            <p>Temperatura · Nivel de agua</p>
+          </div>
+          <span
+            class="planta-card-badge"
+            style="background: #fff7ed; color: #c2410c"
+            >ACTIVA</span
+          >
+        </div>
+
+        <div
+          class="planta-card"
+          onclick="
+            openWebview(
+              'screen-webview',
+              'http://${window.location.hostname}:3000/solar/',
+              '☀️ Planta Solar',
+            )
+          "
+        >
+          <div class="planta-card-icon" style="background: #fefce8">☀️</div>
+          <div>
+            <h3>Planta Solar</h3>
+            <p>Voltaje · Corriente · Potencia · kWh</p>
+          </div>
+          <span
+            class="planta-card-badge"
+            style="background: #fefce8; color: #a16207"
+            >ACTIVA</span
+          >
+        </div>
+
+        <div
+          class="planta-card"
+          onclick="
+            openWebview(
+              'screen-webview',
+              'http://${window.location.hostname}:3000/',
+              '🏭 Planta Industrial',
+            )
+          "
+        >
+          <div class="planta-card-icon" style="background: #f1f5f9">🏭</div>
+          <div>
+            <h3>Planta Industrial</h3>
+            <p>Monitoreo industrial general</p>
+          </div>
+          <span
+            class="planta-card-badge"
+            style="background: #f1f5f9; color: #64748b"
+            >PRÓXIMO</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+     SCREEN: WEBVIEW GENÉRICO
+══════════════════════════════════════ -->
+    <div id="screen-webview" class="screen">
+      <div class="topbar" id="webview-topbar">
+        <button class="topbar-back" onclick="goBack()">←</button>
+        <div>
+          <div class="topbar-title" id="webview-title">Cargando...</div>
+          <div class="topbar-sub" id="webview-subtitle">
+            Sistema de Monitoreo
+          </div>
+        </div>
+        <button
+          class="webview-reload"
+          onclick="reloadWebview()"
+          style="margin-left: auto"
+        >
+          🔄
+        </button>
+      </div>
+      <div class="webview-container">
+        <iframe
+          id="main-webview"
+          class="webview-frame"
+          src="about:blank"
+        ></iframe>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+     SCREEN: ALARMAS (WebView dedicado)
+══════════════════════════════════════ -->
+    <div id="screen-alarmas" class="screen">
+      <div class="topbar">
+        <button class="topbar-back" onclick="goBack()">←</button>
+        <div>
+          <div class="topbar-title">⚠️ Alarmas Activas</div>
+          <div class="topbar-sub">Bitácora del sistema</div>
+        </div>
+        <button
+          class="webview-reload"
+          onclick="
+            document.getElementById('alarmas-frame').src =
+              document.getElementById('alarmas-frame').src
+          "
+          style="margin-left: auto"
+        >
+          🔄
+        </button>
+      </div>
+      <div class="webview-container">
+        <iframe
+          id="alarmas-frame"
+          class="webview-frame"
+          src="about:blank"
+        ></iframe>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+      const API = `http://${window.location.hostname}:3000`;
+      let history = [];
+      let btConnected = false;
+
+      // ── NAVEGACIÓN ──────────────────────────────
+      function goTo(screenId) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(screenId).classList.add("active");
+        history.push(screenId);
+        window.scrollTo(0, 0);
+      }
+
+      function goBack() {
+        history.pop();
+        const prev = history.length
+          ? history[history.length - 1]
+          : "screen-inicio";
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(prev).classList.add("active");
+        window.scrollTo(0, 0);
+      }
+
+      function openWebview(screenId, url, title) {
+        if (screenId === "screen-alarmas") {
+          document.getElementById("alarmas-frame").src = url;
+        } else {
+          document.getElementById("main-webview").src = url;
+          document.getElementById("webview-title").textContent = title;
+          document.getElementById("webview-subtitle").textContent = url.replace(
+            `http://${window.location.hostname}:3000`,
+            "",
+          );
+        }
+        goTo(screenId);
+      }
+
+      function reloadWebview() {
+        const f = document.getElementById("main-webview");
+        f.src = f.src;
+        showToast("🔄 Recargando...");
+      }
+
+      // ── TOAST ────────────────────────────────────
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2500);
+      }
+
+      // ── BLUETOOTH (MIT App Inventor bridge) ──────
+      // En App Inventor el WebViewer puede llamar funciones JS via AppInventor.setWebViewString
+      // y la app lee AppInventor.getWebViewString()
+      function connectBluetooth() {
+        // Intenta comunicarse con App Inventor
+        try {
+          AppInventor.setWebViewString("BT_CONNECT");
+          showToast("🔵 Solicitando Bluetooth...");
+        } catch (e) {
+          showToast("🔵 Abre la app en App Inventor para Bluetooth");
+        }
+      }
+
+      function sendConfig() {
+        const ssid = document.getElementById("inp-ssid").value.trim();
+        const pass = document.getElementById("inp-pass").value.trim();
+        const ip = document.getElementById("inp-ip").value.trim();
+        const mask = document.getElementById("inp-mask").value.trim();
+        const gw = document.getElementById("inp-gw").value.trim();
+
+        if (!ssid || !pass || !ip) {
+          showToast("⚠️ Completa SSID, contraseña e IP");
+          return;
+        }
+
+        const config = `${ssid}|${pass}|${ip}|${mask}|${gw}`;
+
+        try {
+          AppInventor.setWebViewString("CONFIG:" + config);
+          showToast("✅ Configuración enviada");
+        } catch (e) {
+          showToast("✅ Config lista: " + ssid);
+        }
+      }
+
+      // ── INIT ─────────────────────────────────────
+      history.push("screen-inicio");
+
+      // Verificar estado del servidor
+      fetch(API + "/api/status")
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.ok) showToast("🟢 Servidor conectado");
+        })
+        .catch(() => {
+          // silencioso si no hay red
+        });
+    </script>
+  </body>
+</html>

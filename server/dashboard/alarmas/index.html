@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MAINTRONIC — Alarmas</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-lt: #eff6ff;
+        --red: #dc2626;
+        --red-lt: #fef2f2;
+        --amber: #d97706;
+        --amber-lt: #fffbeb;
+        --green: #059669;
+        --green-lt: #ecfdf5;
+        --slate: #475569;
+        --border: #e2e8f0;
+        --bg: #f1f5f9;
+        --white: #ffffff;
+        --text: #0f172a;
+        --text-2: #64748b;
+        --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+        --radius: 16px;
+        --font: "Nunito", sans-serif;
+        --font2: "Space Grotesk", sans-serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font);
+        min-height: 100vh;
+      }
+
+      /* ── HEADER ── */
+      header {
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        padding: 0 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 68px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--red-lt);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+
+      .logo-name {
+        font-family: var(--font2);
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .logo-name span {
+        color: var(--red);
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .status-pill {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--green-lt);
+        border: 1px solid #a7f3d0;
+        border-radius: 20px;
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--green);
+      }
+
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        background: var(--green);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      #clock {
+        font-family: var(--font2);
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--slate);
+        background: var(--bg);
+        padding: 6px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+      }
+
+      /* ── MAIN ── */
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 24px;
+      }
+
+      /* ── PAGE HEADER ── */
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .page-title {
+        font-family: var(--font2);
+        font-size: 26px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .page-title-icon {
+        width: 44px;
+        height: 44px;
+        background: var(--red-lt);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+      }
+
+      .page-sub {
+        font-size: 14px;
+        color: var(--text-2);
+        margin-top: 4px;
+        font-weight: 500;
+      }
+
+      /* ── STATS CARDS ── */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+
+      .stat-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        padding: 20px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+      }
+
+      .stat-val {
+        font-family: var(--font2);
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 2px;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: var(--text-2);
+        font-weight: 600;
+      }
+
+      /* ── TABLE CARD ── */
+      .table-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        overflow: hidden;
+      }
+
+      .table-card-header {
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .table-card-title {
+        font-family: var(--font2);
+        font-size: 15px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .refresh-btn {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        font-family: var(--font);
+        cursor: pointer;
+        color: var(--slate);
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .refresh-btn:hover {
+        background: var(--border);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead th {
+        background: #f8fafc;
+        padding: 14px 20px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--text-2);
+        border-bottom: 1px solid var(--border);
+      }
+
+      tbody td {
+        padding: 15px 20px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 14px;
+        font-weight: 500;
+        vertical-align: middle;
+      }
+
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      tbody tr:hover {
+        background: #fafbfc;
+      }
+
+      .planta-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      .tag-SOBRECARGA {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+      .tag-FLUJO {
+        background: #fff7ed;
+        color: #c2410c;
+      }
+      .tag-EMERGENCIA {
+        background: #fef2f2;
+        color: #991b1b;
+      }
+      .tag-ENCENDIDO_SP {
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+      .tag-MODO_CONEXION {
+        background: #f5f3ff;
+        color: #6d28d9;
+      }
+      .tag-NIVEL_CRITICO {
+        background: #ecfdf5;
+        color: #065f46;
+      }
+      .tag-TEMP_CRITICA {
+        background: #fffbeb;
+        color: #92400e;
+      }
+      .tag-default {
+        background: #f1f5f9;
+        color: #475569;
+      }
+
+      .fecha-cell {
+        font-family: var(--font2);
+        font-size: 13px;
+        color: var(--slate);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-2);
+      }
+      .empty-state .empty-icon {
+        font-size: 48px;
+        margin-bottom: 12px;
+      }
+      .empty-state p {
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .empty-state span {
+        font-size: 13px;
+        font-weight: 400;
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 768px) {
+        header {
+          padding: 0 16px;
+        }
+        main {
+          padding: 20px 12px;
+        }
+        .page-title {
+          font-size: 20px;
+        }
+        thead th:nth-child(4),
+        tbody td:nth-child(4) {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <div class="logo-icon">⚠️</div>
+        <div>
+          <div class="logo-name">MAIN<span>TRONIC</span></div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="status-pill">
+          <div class="status-dot"></div>
+          Sistema Activo
+        </div>
+        <div id="clock">00:00:00</div>
+      </div>
+    </header>
+
+    <main>
+      <div class="page-header">
+        <div>
+          <div class="page-title">
+            <div class="page-title-icon">🚨</div>
+            Bitácora de Alarmas
+          </div>
+          <div class="page-sub">Historial de eventos y alertas del sistema</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #fef2f2">🔴</div>
+          <div>
+            <div class="stat-val" id="stat-total" style="color: var(--red)">
+              —
+            </div>
+            <div class="stat-label">Total Eventos</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #fff7ed">🔥</div>
+          <div>
+            <div class="stat-val" id="stat-caldero" style="color: var(--amber)">
+              —
+            </div>
+            <div class="stat-label">Caldero</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #fefce8">☀️</div>
+          <div>
+            <div class="stat-val" id="stat-solar" style="color: #a16207">—</div>
+            <div class="stat-label">Solar</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: var(--green-lt)">✅</div>
+          <div>
+            <div class="stat-val" id="stat-activas" style="color: var(--green)">
+              —
+            </div>
+            <div class="stat-label">Activas ahora</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-title">📋 Registro de Eventos</div>
+          <button class="refresh-btn" onclick="fetchLogs()">
+            🔄 Actualizar
+          </button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha / Hora</th>
+              <th>Planta</th>
+              <th>Tipo de Evento</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody id="logBody">
+            <tr>
+              <td colspan="4">
+                <div class="empty-state">
+                  <div class="empty-icon">⏳</div>
+                  <p>Cargando registros...</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <script>
+      function updateClock() {
+        document.getElementById("clock").innerText =
+          new Date().toLocaleTimeString("es-EC", { hour12: false });
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      const PLANTAS = {
+        1: { name: "Caldero", emoji: "🔥", bg: "#FFF7ED", color: "#C2410C" },
+        2: { name: "Solar", emoji: "☀️", bg: "#FEFCE8", color: "#A16207" },
+        3: { name: "Industrial", emoji: "🏭", bg: "#F1F5F9", color: "#475569" },
+      };
+
+      function tagClass(tipo) {
+        const map = {
+          SOBRECARGA: "tag-SOBRECARGA",
+          FLUJO: "tag-FLUJO",
+          EMERGENCIA: "tag-EMERGENCIA",
+          ENCENDIDO_SP: "tag-ENCENDIDO_SP",
+          MODO_CONEXION: "tag-MODO_CONEXION",
+          NIVEL_CRITICO: "tag-NIVEL_CRITICO",
+          TEMP_CRITICA: "tag-TEMP_CRITICA",
+        };
+        return map[tipo] || "tag-default";
+      }
+
+      async function fetchLogs() {
+        try {
+          const res = await fetch("/api/alarmas/historico");
+          const logs = await res.json();
+
+          // Stats
+          document.getElementById("stat-total").textContent = logs.length;
+          document.getElementById("stat-caldero").textContent = logs.filter(
+            (l) => l.dispositivo_id == 1,
+          ).length;
+          document.getElementById("stat-solar").textContent = logs.filter(
+            (l) => l.dispositivo_id == 2,
+          ).length;
+          document.getElementById("stat-activas").textContent = logs.filter(
+            (l) => l.activa,
+          ).length;
+
+          if (!logs.length) {
+            document.getElementById("logBody").innerHTML = `
+        <tr><td colspan="4">
+          <div class="empty-state">
+            <div class="empty-icon">✅</div>
+            <p>Sin eventos registrados</p>
+            <span>El sistema opera con normalidad</span>
+          </div>
+        </td></tr>`;
+            return;
+          }
+
+          document.getElementById("logBody").innerHTML = logs
+            .map((l) => {
+              const p = PLANTAS[l.dispositivo_id] || {
+                name: "Desconocido",
+                emoji: "❓",
+                bg: "#F1F5F9",
+                color: "#475569",
+              };
+              const fecha = new Date(l.registrado_en).toLocaleString("es-EC", {
+                hour12: false,
+              });
+              return `
+        <tr>
+          <td class="fecha-cell">${fecha}</td>
+          <td>
+            <span class="planta-badge" style="background:${p.bg};color:${p.color}">
+              ${p.emoji} ${p.name}
+            </span>
+          </td>
+          <td><span class="tag ${tagClass(l.tipo)}">${l.tipo.replace(/_/g, " ")}</span></td>
+          <td style="color:var(--text-2)">${l.descripcion || "—"}</td>
+        </tr>`;
+            })
+            .join("");
+        } catch (e) {
+          document.getElementById("logBody").innerHTML = `
+      <tr><td colspan="4">
+        <div class="empty-state">
+          <div class="empty-icon">⚠️</div>
+          <p>Error al conectar con el servidor</p>
+          <span>Verifica que el servidor esté activo</span>
+        </div>
+      </td></tr>`;
+        }
+      }
+
+      setInterval(fetchLogs, 5000);
+      fetchLogs();
+    </script>
+  </body>
+</html>
