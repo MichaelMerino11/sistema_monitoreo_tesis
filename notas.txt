@@ -1,3 +1,6 @@
+Maiki IP: 192.168.100.190
+Michelle IP: 192.168.18.15
+
 Ejectuar server: npm start
 
 Dashboard principal: http://localhost:3000
@@ -7,7 +10,11 @@ http://localhost:3000/caldero/
 http://localhost:3000/solar/
 http://localhost:3000/alarmas/
 
-App mobile: http://localhost:3000/mobile.html
+App mobile: http://localhost:3000/mobile.html o http://192.168.100.190:3000/mobile.html
 
 Probar desde el celular: debe estar en la misma WiFi que la computadora y usa la IP en lugar de localhost:
+http://192.168.100.190:3000
 http://192.168.18.15:3000
+
+
+POR SI SE NECESITA CAMBIAR: sed -i 's/192.168.18.15/192.168.100.190/g' ./dashboard/mobile.html
