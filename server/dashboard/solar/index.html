@@ -3,37 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MAINTRONIC — Planta Solar</title>
+    <title>MAINTRONIC — SOLR-001</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <style>
+      /*
+  ANSI/ISA-101.01-2015 — LEVEL 2 DISPLAY
+  TAG: SOLR-001 · PLANTA FOTOVOLTAICA
+*/
+
       :root {
-        --primary: #2563eb;
-        --primary-lt: #eff6ff;
-        --yellow: #eab308;
-        --yellow-lt: #fefce8;
-        --green: #059669;
-        --green-lt: #ecfdf5;
-        --blue: #0ea5e9;
-        --blue-lt: #f0f9ff;
-        --orange: #ea580c;
-        --orange-lt: #fff7ed;
-        --purple: #7c3aed;
-        --purple-lt: #f5f3ff;
-        --red: #dc2626;
-        --red-lt: #fef2f2;
-        --slate: #475569;
-        --border: #e2e8f0;
-        --bg: #f1f5f9;
-        --white: #ffffff;
-        --text: #0f172a;
-        --text-2: #64748b;
-        --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
-        --radius: 16px;
-        --font: "Nunito", sans-serif;
-        --font2: "Space Grotesk", sans-serif;
+        --isa-bg: #b4b4b4;
+        --isa-bg-widget: #c8c8c8;
+        --isa-border: #787878;
+        --isa-text: #1a1a1a;
+        --isa-text-2: #3a3a3a;
+        --isa-text-dim: #606060;
+
+        --p1: #cc0000;
+        --p1-bg: #ff4444;
+        --p2: #cc6600;
+        --p2-bg: #ff8c00;
+        --p3: #7a7a00;
+        --p3-bg: #dddd00;
+        --ok: #2a5c2a;
+        --ok-bg: #44aa44;
+        --normal: #d8d8d8;
+
+        --font-mono: "IBM Plex Mono", monospace;
+        --font-sans: "IBM Plex Sans", sans-serif;
       }
 
       * {
@@ -43,845 +43,983 @@
       }
 
       body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: var(--font);
+        background: var(--isa-bg);
+        color: var(--isa-text);
+        font-family: var(--font-sans);
+        font-size: 13px;
         min-height: 100vh;
       }
 
-      /* ── HEADER ── */
-      header {
-        background: var(--white);
-        border-bottom: 1px solid var(--border);
-        padding: 0 32px;
+      /* ── TITLE BAR ── */
+      .titlebar {
+        background: #2a2a2a;
+        color: #e0e0e0;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: 68px;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
-      }
-
-      .logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .logo-icon {
-        width: 40px;
-        height: 40px;
-        background: var(--yellow-lt);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-      }
-      .logo-name {
-        font-family: var(--font2);
-        font-size: 18px;
-        font-weight: 700;
-      }
-      .logo-name span {
-        color: var(--yellow);
-      }
-      .logo-sub {
-        font-size: 11px;
-        color: var(--text-2);
-        margin-top: 1px;
-      }
-
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .status-pill {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        padding: 6px 14px;
-        border-radius: 20px;
+        padding: 0 16px;
+        height: 36px;
+        border-bottom: 2px solid #000;
+        font-family: var(--font-mono);
         font-size: 12px;
-        font-weight: 700;
-        border: 1px solid;
       }
-      .status-pill.server {
-        background: var(--green-lt);
-        border-color: #a7f3d0;
-        color: var(--green);
+      .titlebar-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
       }
-      .status-pill.device {
-        background: var(--red-lt);
-        border-color: #fecaca;
-        color: var(--red);
+      .titlebar-id {
+        font-weight: 600;
+        letter-spacing: 1px;
+        color: #f0f0f0;
       }
-      .status-pill.device.online {
-        background: var(--green-lt);
-        border-color: #a7f3d0;
-        color: var(--green);
+      .titlebar-desc {
+        color: #a0a0a0;
+        font-size: 11px;
       }
-
-      .status-dot {
-        width: 7px;
-        height: 7px;
+      .titlebar-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .node-pill {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: #a0a0a0;
+      }
+      .node-dot {
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
-        background: currentColor;
+        background: #2a2a2a;
+        border: 1px solid #555;
       }
-      .status-pill.server .status-dot {
-        animation: pulse 2s infinite;
+      .node-dot.ok {
+        background: #44aa44;
+        border-color: #22aa22;
       }
-      .status-pill.device.online .status-dot {
-        animation: pulse 2s infinite;
+      .node-dot.fault {
+        background: #cc0000;
+        border-color: #aa0000;
+        animation: blink-dot 1s step-end infinite;
       }
-
-      @keyframes pulse {
+      @keyframes blink-dot {
         0%,
         100% {
           opacity: 1;
         }
         50% {
-          opacity: 0.4;
+          opacity: 0.2;
+        }
+      }
+      .sys-clock {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: #d0d0d0;
+        letter-spacing: 1px;
+      }
+
+      /* ── ALARM BANNER ── */
+      .alarm-banner {
+        display: none;
+        background: var(--p1);
+        color: #fff;
+        padding: 4px 16px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 2px solid #880000;
+        animation: blink-banner 1s step-end infinite;
+      }
+      .alarm-banner.active {
+        display: flex;
+      }
+      @keyframes blink-banner {
+        0%,
+        100% {
+          background: var(--p1);
+        }
+        50% {
+          background: #880000;
         }
       }
 
-      #clock {
-        font-family: var(--font2);
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--slate);
-        background: var(--bg);
-        padding: 6px 14px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
+      /* ── LAYOUT ── */
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 260px;
+        grid-template-rows: auto auto auto;
+        gap: 6px;
+        padding: 6px 6px 28px;
+        max-width: 1600px;
+        margin: 0 auto;
       }
 
-      /* ── HERO BANNER ── */
-      .hero-banner {
-        background: linear-gradient(
-          135deg,
-          #f59e0b 0%,
-          #d97706 50%,
-          #b45309 100%
-        );
-        padding: 24px 32px;
+      /* ── PANEL ── */
+      .panel {
+        background: var(--isa-bg-widget);
+        border: 1px solid var(--isa-border);
+        border-top: 3px solid var(--isa-border);
+      }
+      .panel-header {
+        background: #787878;
+        color: #f0f0f0;
+        padding: 4px 10px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 16px;
-      }
-      .hero-left h2 {
-        font-family: var(--font2);
-        font-size: 22px;
-        font-weight: 700;
-        color: #fff;
-        margin-bottom: 4px;
-      }
-      .hero-left p {
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 13px;
-        font-weight: 500;
-      }
-
-      .hero-kwh {
-        text-align: center;
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 14px;
-        padding: 14px 24px;
-        backdrop-filter: blur(10px);
-      }
-      .hero-kwh-val {
-        font-family: var(--font2);
-        font-size: 36px;
-        font-weight: 700;
-        color: #fff;
-        line-height: 1;
-      }
-      .hero-kwh-label {
+        font-family: var(--font-mono);
         font-size: 11px;
-        color: rgba(255, 255, 255, 0.8);
-        font-weight: 700;
-        margin-top: 4px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #606060;
+      }
+      .panel-id {
+        color: #d0d0d0;
+      }
+      .panel-desc {
+        color: #b0b0b0;
+        font-weight: 400;
+      }
+      .panel-body {
+        padding: 10px;
       }
 
-      /* ── MAIN ── */
-      main {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 24px;
-        display: grid;
-        grid-template-columns: 1fr 280px;
-        gap: 20px;
+      /* ── FACEPLATE COMPACTO ── */
+      .faceplate {
+        background: #1e1e1e;
+        border: 2px solid #505050;
+        padding: 10px 12px;
       }
-
-      /* ── SECTION LABEL ── */
-      .section-label {
-        font-size: 11px;
-        font-weight: 800;
-        text-transform: uppercase;
+      .fp-tag {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: #707070;
         letter-spacing: 1px;
-        color: var(--text-2);
-        margin-bottom: 12px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 6px;
+      }
+      .fp-val {
+        font-family: var(--font-mono);
+        font-size: 38px;
+        font-weight: 600;
+        color: var(--normal);
+        line-height: 1;
+        text-align: center;
+        transition: color 0.3s;
+      }
+      .fp-val.p1 {
+        color: var(--p1-bg);
+        animation: blink-val 0.8s step-end infinite;
+      }
+      .fp-val.p2 {
+        color: var(--p2-bg);
+        animation: blink-val 1.2s step-end infinite;
+      }
+      @keyframes blink-val {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.25;
+        }
+      }
+      .fp-unit {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: #606060;
+        text-align: center;
+        margin-top: 2px;
+      }
+      .fp-state {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        text-align: center;
+        margin-top: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
 
-      /* ── METRIC CARDS GRID ── */
-      .metrics-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 14px;
-        margin-bottom: 20px;
+      /* ── PROCESS BAR ── */
+      .pbar-wrap {
+        margin-top: 8px;
       }
-
-      .metric-card {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        padding: 18px;
+      .pbar-lbl {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 8px;
+        color: #707070;
+        margin-bottom: 2px;
+        text-transform: uppercase;
+      }
+      .pbar-outer {
+        height: 10px;
+        background: #1e1e1e;
+        border: 1px solid #505050;
         position: relative;
         overflow: hidden;
-        transition:
-          transform 0.2s,
-          box-shadow 0.2s;
       }
-      .metric-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      .pbar-zones {
+        position: absolute;
+        inset: 0;
+        display: flex;
+      }
+      .z-lo {
+        background: rgba(204, 0, 0, 0.45);
+      }
+      .z-norm {
+        background: rgba(42, 92, 42, 0.35);
+      }
+      .z-hi {
+        background: rgba(204, 0, 0, 0.45);
+      }
+      .pbar-ind {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: #f0f0f0;
+        transform: translateX(-50%);
+        transition: left 0.5s ease;
+        box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+      }
+      .pbar-ticks {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 7px;
+        color: #606060;
+        margin-top: 1px;
       }
 
-      .metric-card::after {
-        content: "";
-        position: absolute;
+      /* ── MINI CHART ── */
+      .mini-chart {
+        height: 55px;
+        background: #1e1e1e;
+        border: 1px solid #444;
+        margin-top: 8px;
+      }
+
+      /* ── ENERGY SECTION ── */
+      .energy-panel {
+        grid-column: 1/4;
+      }
+
+      .energy-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        padding: 10px;
+      }
+
+      .energy-block {
+        background: #1e1e1e;
+        border: 1px solid #505050;
+        padding: 12px;
+      }
+      .eb-tag {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: #707070;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .eb-val {
+        font-family: var(--font-mono);
+        font-size: 30px;
+        font-weight: 600;
+        color: var(--normal);
+        line-height: 1;
+      }
+      .eb-unit {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: #606060;
+        margin-top: 2px;
+      }
+      .eb-bar-bg {
+        height: 8px;
+        background: #2a2a2a;
+        border: 1px solid #505050;
+        margin-top: 8px;
+      }
+      .eb-bar-fill {
+        height: 100%;
+        background: #505050;
+        transition: width 1s ease;
+      }
+      .eb-bar-fill.good {
+        background: var(--ok);
+      }
+      .eb-bar-lbl {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 8px;
+        color: #606060;
+        margin-top: 2px;
+      }
+
+      /* ── TREND PANEL ── */
+      .trend-panel {
+        grid-column: 1/4;
+      }
+
+      .charts-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding: 10px;
+      }
+      .charts-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 10px;
+      }
+      .chart-block {
+      }
+      .chart-tag {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: #707070;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-bottom: 4px;
+      }
+      .chart-box {
+        height: 100px;
+        background: #1e1e1e;
+        border: 1px solid #444;
+      }
+
+      /* ── ALARM PANEL ── */
+      .alarm-panel {
+        grid-column: 4;
+        grid-row: 1/5;
+      }
+
+      .alarm-list {
+        max-height: 620px;
+        overflow-y: auto;
+      }
+      .alarm-list::-webkit-scrollbar {
+        width: 6px;
+      }
+      .alarm-list::-webkit-scrollbar-track {
+        background: #909090;
+      }
+      .alarm-list::-webkit-scrollbar-thumb {
+        background: #505050;
+      }
+
+      .alarm-row {
+        border-bottom: 1px solid #a0a0a0;
+        padding: 7px 8px;
+        display: grid;
+        grid-template-columns: 24px 1fr auto;
+        gap: 5px;
+        align-items: start;
+      }
+      .alarm-row.p1 {
+        background: #ffd0d0;
+        animation: blink-alm 1s step-end infinite;
+      }
+      .alarm-row.p2 {
+        background: #ffe0b0;
+      }
+      .alarm-row.p3 {
+        background: #f8f800;
+      }
+      .alarm-row.ack {
+        background: #c0c0c0;
+        opacity: 0.65;
+      }
+      @keyframes blink-alm {
+        0%,
+        100% {
+          background: #ffd0d0;
+        }
+        50% {
+          background: #ffaaaa;
+        }
+      }
+
+      .alm-pri {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 700;
+        text-align: center;
+        margin-top: 1px;
+      }
+      .alm-pri.p1 {
+        color: var(--p1);
+      }
+      .alm-pri.p2 {
+        color: var(--p2);
+      }
+      .alm-pri.p3 {
+        color: #5a5a00;
+      }
+      .alm-type {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--isa-text);
+        text-transform: uppercase;
+      }
+      .alm-desc {
+        font-size: 10px;
+        color: var(--isa-text-2);
+        margin-top: 1px;
+      }
+      .alm-time {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: var(--isa-text-dim);
+        margin-top: 2px;
+      }
+      .alm-ack {
+        background: #3a3a3a;
+        border: 1px solid #555;
+        color: #d0d0d0;
+        padding: 2px 5px;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .alm-ack:hover {
+        background: #555;
+      }
+      .no-alarms {
+        padding: 28px 12px;
+        text-align: center;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--isa-text-dim);
+      }
+
+      /* ── STATUS BAR ── */
+      .statusbar {
+        position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
-        height: 3px;
-        border-radius: 0 0 3px 3px;
-      }
-
-      .metric-card.volt-p::after {
-        background: var(--green);
-      }
-      .metric-card.volt-b::after {
-        background: var(--yellow);
-      }
-      .metric-card.volt-i::after {
-        background: var(--blue);
-      }
-      .metric-card.curr-p::after {
-        background: var(--green);
-      }
-      .metric-card.curr-b::after {
-        background: var(--yellow);
-      }
-      .metric-card.curr-i::after {
-        background: var(--blue);
-      }
-
-      .metric-card-top {
+        background: #1a1a1a;
+        color: #909090;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        margin-bottom: 12px;
-      }
-      .metric-card-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-      }
-      .metric-card-badge {
+        padding: 0 16px;
+        height: 22px;
+        font-family: var(--font-mono);
         font-size: 10px;
-        font-weight: 800;
-        padding: 3px 8px;
-        border-radius: 6px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        gap: 24px;
+        border-top: 1px solid #333;
+        z-index: 50;
       }
-
-      .metric-card-val {
-        font-family: var(--font2);
-        font-size: 32px;
-        font-weight: 700;
-        line-height: 1;
-        margin-bottom: 2px;
+      .sb-ok {
+        color: #44aa44;
       }
-      .metric-card-unit {
-        font-size: 13px;
-        color: var(--text-2);
-        font-weight: 600;
-      }
-      .metric-card-name {
-        font-size: 11px;
-        color: var(--text-2);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-top: 6px;
-      }
-      .metric-card-chart {
-        height: 60px;
-        margin-top: 12px;
-      }
-
-      /* ── POWER CARDS ── */
-      .power-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-        margin-bottom: 20px;
-      }
-
-      .power-card {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-
-      .power-icon {
-        width: 52px;
-        height: 52px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        flex-shrink: 0;
-      }
-
-      .power-val {
-        font-family: var(--font2);
-        font-size: 30px;
-        font-weight: 700;
-        line-height: 1;
-      }
-      .power-unit {
-        font-size: 12px;
-        color: var(--text-2);
-        font-weight: 600;
-      }
-      .power-name {
-        font-size: 11px;
-        color: var(--text-2);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-top: 4px;
-      }
-      .power-chart {
-        height: 50px;
-        margin-top: 10px;
-      }
-
-      /* ── ENERGY BAR ── */
-      .energy-card {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        padding: 20px;
-        margin-bottom: 20px;
-      }
-      .energy-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-      }
-      .energy-title {
-        font-family: var(--font2);
-        font-size: 14px;
-        font-weight: 600;
-      }
-      .energy-pct {
-        font-family: var(--font2);
-        font-size: 22px;
-        font-weight: 700;
-        color: var(--yellow);
-      }
-
-      .energy-bar-bg {
-        height: 10px;
-        background: #f1f5f9;
-        border-radius: 5px;
-        overflow: hidden;
-        margin-bottom: 8px;
-      }
-      .energy-bar-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #eab308, #f59e0b);
-        border-radius: 5px;
-        transition: width 1s ease;
-        box-shadow: 0 0 8px rgba(234, 179, 8, 0.4);
-      }
-      .energy-stats {
-        display: flex;
-        justify-content: space-between;
-        font-size: 12px;
-        color: var(--text-2);
-        font-weight: 600;
-      }
-
-      /* ── SIDEBAR ── */
-      .sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
-
-      .alarmas-card {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        overflow: hidden;
-      }
-      .alarmas-header {
-        padding: 16px 20px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .alarmas-title {
-        font-family: var(--font2);
-        font-size: 14px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .alarmas-count {
-        background: var(--red-lt);
-        color: var(--red);
-        border-radius: 20px;
-        padding: 2px 8px;
-        font-size: 11px;
-        font-weight: 800;
-      }
-      .alarmas-body {
-        padding: 16px;
-      }
-      .alarma-item {
-        background: var(--red-lt);
-        border-left: 3px solid var(--red);
-        border-radius: 8px;
-        padding: 12px 14px;
-        margin-bottom: 10px;
-      }
-      .alarma-tipo {
-        font-size: 12px;
-        font-weight: 800;
-        color: var(--red);
-        margin-bottom: 3px;
-      }
-      .alarma-desc {
-        font-size: 12px;
-        color: var(--text-2);
-      }
-      .estable {
-        text-align: center;
-        padding: 32px 16px;
-        color: var(--text-2);
-      }
-      .estable .icon {
-        font-size: 36px;
-        margin-bottom: 8px;
-      }
-      .estable p {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--green);
-      }
-
-      .info-card {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        padding: 18px;
-      }
-      .info-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 0;
-        border-bottom: 1px solid #f8fafc;
-        font-size: 13px;
-      }
-      .info-row:last-child {
-        border-bottom: none;
-      }
-      .info-key {
-        color: var(--text-2);
-        font-weight: 600;
-      }
-      .info-val {
-        font-weight: 800;
-        font-family: var(--font2);
-        font-size: 12px;
+      .sb-err {
+        color: #cc0000;
       }
 
       /* ── RESPONSIVE ── */
-      @media (max-width: 1100px) {
-        main {
-          grid-template-columns: 1fr;
+      @media (max-width: 1300px) {
+        .layout {
+          grid-template-columns: 1fr 1fr 260px;
         }
-        .metrics-grid {
-          grid-template-columns: repeat(2, 1fr);
+        .energy-panel,
+        .trend-panel {
+          grid-column: 1/3;
+        }
+        .alarm-panel {
+          grid-column: 3;
+          grid-row: 1/5;
+        }
+      }
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr 1fr;
+        }
+        .energy-panel,
+        .trend-panel,
+        .alarm-panel {
+          grid-column: 1/3;
+        }
+        .alarm-panel {
+          grid-row: auto;
+        }
+        .charts-grid-3 {
+          grid-template-columns: 1fr 1fr;
         }
       }
       @media (max-width: 600px) {
-        header {
-          padding: 0 16px;
+        .layout {
+          grid-template-columns: 1fr;
         }
-        .hero-banner {
-          padding: 20px 16px;
+        .energy-panel,
+        .trend-panel,
+        .alarm-panel {
+          grid-column: 1;
         }
-        main {
-          padding: 16px 12px;
-        }
-        .metrics-grid {
-          grid-template-columns: 1fr 1fr;
-        }
-        .power-grid {
+        .energy-grid,
+        .charts-grid-3,
+        .charts-grid-2 {
           grid-template-columns: 1fr;
         }
       }
     </style>
   </head>
   <body>
-    <header>
-      <div class="logo">
-        <div class="logo-icon">☀️</div>
-        <div>
-          <div class="logo-name">MAIN<span>TRONIC</span></div>
-          <div class="logo-sub">Planta Fotovoltaica</div>
-        </div>
+    <!-- ── TITLE BAR ── -->
+    <div class="titlebar">
+      <div class="titlebar-left">
+        <span class="titlebar-id">MAINTRONIC / SOLR-001</span>
+        <span class="titlebar-desc">PLANTA FOTOVOLTAICA — MONITOREO L2</span>
       </div>
-      <div class="header-right">
-        <div class="status-pill server">
-          <div class="status-dot"></div>
-          <span id="serverStatus">Servidor</span>
+      <div class="titlebar-right">
+        <div class="node-pill">
+          <div class="node-dot" id="serverDot"></div>
+          <span id="serverStatus">SRV: --</span>
         </div>
-        <div class="status-pill device" id="devicePill">
-          <div class="status-dot"></div>
-          <span id="deviceStatus">Nodo Offline</span>
+        <div class="node-pill">
+          <div class="node-dot" id="nodoDot"></div>
+          <span id="nodoStatus">NODO: OFFLINE</span>
         </div>
-        <div id="clock">00:00:00</div>
-      </div>
-    </header>
-
-    <!-- Hero banner con kWh destacado -->
-    <div class="hero-banner">
-      <div class="hero-left">
-        <h2>☀️ Planta Solar — Energía en Tiempo Real</h2>
-        <p>Monitoreo fotovoltaico · Voltaje · Corriente · Potencia</p>
-      </div>
-      <div class="hero-kwh">
-        <div class="hero-kwh-val" id="heroKwh">--.-</div>
-        <div class="hero-kwh-label">kWh HOY</div>
+        <span class="sys-clock" id="clock">00:00:00</span>
       </div>
     </div>
 
-    <main>
-      <div>
-        <!-- VOLTAJES -->
-        <div class="section-label">⚡ Voltajes del Sistema</div>
-        <div class="metrics-grid" style="margin-bottom: 20px">
-          <div class="metric-card volt-p">
-            <div class="metric-card-top">
-              <div class="metric-card-icon" style="background: var(--green-lt)">
-                🔋
-              </div>
-              <span
-                class="metric-card-badge"
-                style="background: var(--green-lt); color: var(--green)"
-                >Panel</span
-              >
-            </div>
-            <div class="metric-card-val" style="color: var(--green)" id="v1">
-              --.-
-            </div>
-            <div class="metric-card-unit">V</div>
-            <div class="metric-card-name">Voltaje Panel</div>
-            <div class="metric-card-chart"><canvas id="c1"></canvas></div>
-          </div>
+    <!-- ── ALARM BANNER ── -->
+    <div class="alarm-banner" id="alarmBanner">
+      <span>⚠ ALARMA ACTIVA EN SOLR-001 — REQUIERE ATENCIÓN DEL OPERADOR</span>
+      <span id="bannerTxt"></span>
+    </div>
 
-          <div class="metric-card volt-b">
-            <div class="metric-card-top">
-              <div
-                class="metric-card-icon"
-                style="background: var(--yellow-lt)"
-              >
-                🔌
-              </div>
-              <span
-                class="metric-card-badge"
-                style="background: var(--yellow-lt); color: #a16207"
-                >Batería</span
-              >
-            </div>
-            <div class="metric-card-val" style="color: var(--yellow)" id="v2">
-              --.-
-            </div>
-            <div class="metric-card-unit">V</div>
-            <div class="metric-card-name">Voltaje Batería</div>
-            <div class="metric-card-chart"><canvas id="c2"></canvas></div>
-          </div>
-
-          <div class="metric-card volt-i">
-            <div class="metric-card-top">
-              <div class="metric-card-icon" style="background: var(--blue-lt)">
-                ⚙️
-              </div>
-              <span
-                class="metric-card-badge"
-                style="background: var(--blue-lt); color: #0369a1"
-                >Inversor</span
-              >
-            </div>
-            <div class="metric-card-val" style="color: var(--blue)" id="v3">
-              --.-
-            </div>
-            <div class="metric-card-unit">V</div>
-            <div class="metric-card-name">Voltaje Inversor</div>
-            <div class="metric-card-chart"><canvas id="c3"></canvas></div>
+    <div class="layout">
+      <!-- ── VOLTAJES ── -->
+      <div class="panel" style="grid-column: 1; grid-row: 1">
+        <div class="panel-header">
+          <div>
+            <span class="panel-id">VT-GROUP</span
+            ><span class="panel-desc"> · VOLTAJES DEL SISTEMA</span>
           </div>
         </div>
-
-        <!-- CORRIENTES -->
-        <div class="section-label">〰️ Corrientes del Sistema</div>
-        <div class="metrics-grid" style="margin-bottom: 20px">
-          <div class="metric-card curr-p">
-            <div class="metric-card-top">
-              <div class="metric-card-icon" style="background: var(--green-lt)">
-                🔋
-              </div>
-              <span
-                class="metric-card-badge"
-                style="background: var(--green-lt); color: var(--green)"
-                >Panel</span
-              >
-            </div>
-            <div class="metric-card-val" style="color: var(--green)" id="i1">
-              --.-
-            </div>
-            <div class="metric-card-unit">A</div>
-            <div class="metric-card-name">Corriente Panel</div>
-            <div class="metric-card-chart"><canvas id="c4"></canvas></div>
-          </div>
-
-          <div class="metric-card curr-b">
-            <div class="metric-card-top">
-              <div
-                class="metric-card-icon"
-                style="background: var(--yellow-lt)"
-              >
-                🔌
-              </div>
-              <span
-                class="metric-card-badge"
-                style="background: var(--yellow-lt); color: #a16207"
-                >Batería</span
-              >
-            </div>
-            <div class="metric-card-val" style="color: var(--yellow)" id="i2">
-              --.-
-            </div>
-            <div class="metric-card-unit">A</div>
-            <div class="metric-card-name">Corriente Batería</div>
-            <div class="metric-card-chart"><canvas id="c5"></canvas></div>
-          </div>
-
-          <div class="metric-card curr-i">
-            <div class="metric-card-top">
-              <div class="metric-card-icon" style="background: var(--blue-lt)">
-                ⚙️
-              </div>
-              <span
-                class="metric-card-badge"
-                style="background: var(--blue-lt); color: #0369a1"
-                >Inversor</span
-              >
-            </div>
-            <div class="metric-card-val" style="color: var(--blue)" id="i3">
-              --.-
-            </div>
-            <div class="metric-card-unit">A</div>
-            <div class="metric-card-name">Corriente Inversor</div>
-            <div class="metric-card-chart"><canvas id="c6"></canvas></div>
-          </div>
-        </div>
-
-        <!-- POTENCIAS -->
-        <div class="section-label">💡 Potencia</div>
-        <div class="power-grid">
-          <div class="power-card">
-            <div class="power-icon" style="background: var(--green-lt)">⬇️</div>
-            <div style="flex: 1">
-              <div class="power-val" style="color: var(--green)" id="p1">
-                --.-
-              </div>
-              <div class="power-unit">W</div>
-              <div class="power-name">Potencia Entrada</div>
-              <div class="power-chart"><canvas id="c7"></canvas></div>
-            </div>
-          </div>
-          <div class="power-card">
-            <div class="power-icon" style="background: var(--orange-lt)">
-              ⬆️
-            </div>
-            <div style="flex: 1">
-              <div class="power-val" style="color: var(--orange)" id="p2">
-                --.-
-              </div>
-              <div class="power-unit">W</div>
-              <div class="power-name">Potencia Salida</div>
-              <div class="power-chart"><canvas id="c8"></canvas></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- BARRA ENERGÍA -->
-        <div class="energy-card">
-          <div class="energy-header">
-            <div class="energy-title">☀️ Consumo Energético Diario</div>
-            <div class="energy-pct" id="energyPct">0%</div>
-          </div>
-          <div class="energy-bar-bg">
-            <div class="energy-bar-fill" id="energyBar" style="width: 0%"></div>
-          </div>
-          <div class="energy-stats">
-            <span id="energyKwh">0.0000 kWh acumulados hoy</span>
-            <span>Máx. 10 kWh</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- SIDEBAR -->
-      <div class="sidebar">
-        <div class="alarmas-card">
-          <div class="alarmas-header">
-            <div class="alarmas-title">
-              ⚠️ Alarmas <span class="alarmas-count" id="alarmaCount">0</span>
-            </div>
-          </div>
-          <div class="alarmas-body" id="alarmasList">
-            <div class="estable">
-              <div class="icon">✅</div>
-              <p>Sistema Estable</p>
-              <span style="font-size: 12px">Sin alertas activas</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="info-card">
+        <div class="panel-body">
           <div
             style="
-              font-size: 11px;
-              font-weight: 800;
+              font-family: var(--font-mono);
+              font-size: 9px;
+              color: var(--isa-text-dim);
+              margin-bottom: 6px;
               text-transform: uppercase;
-              letter-spacing: 1px;
-              color: var(--text-2);
-              margin-bottom: 12px;
+              letter-spacing: 0.5px;
             "
           >
-            📡 Dispositivo
+            VT-P · PANEL
           </div>
-          <div class="info-row">
-            <span class="info-key">ID</span>
-            <span class="info-val">ESP32_SOLAR</span>
+          <div class="faceplate">
+            <div class="fp-tag">
+              <span>VT-P · VOLTAJE PANEL</span><span>V DC</span>
+            </div>
+            <div class="fp-val" id="vpVal">--.-</div>
+            <div class="fp-unit">VOLTIOS — PANEL SOLAR</div>
+            <div class="fp-state" id="vpState" style="color: #707070">
+              SIN DATOS
+            </div>
           </div>
-          <div class="info-row">
-            <span class="info-key">Planta</span>
-            <span class="info-val">Fotovoltaica</span>
+          <div class="pbar-wrap">
+            <div class="pbar-lbl">
+              <span>0V</span><span>RANGO</span><span>100V</span>
+            </div>
+            <div class="pbar-outer">
+              <div class="pbar-zones">
+                <div class="z-lo" style="width: 15%"></div>
+                <div class="z-norm" style="width: 70%"></div>
+                <div class="z-hi" style="width: 15%"></div>
+              </div>
+              <div class="pbar-ind" id="vpInd" style="left: 0%"></div>
+            </div>
           </div>
-          <div class="info-row">
-            <span class="info-key">Refresco</span>
-            <span class="info-val">3 seg</span>
+          <div class="mini-chart"><canvas id="cVP"></canvas></div>
+
+          <div
+            style="
+              font-family: var(--font-mono);
+              font-size: 9px;
+              color: var(--isa-text-dim);
+              margin: 10px 0 6px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            "
+          >
+            VT-B · BATERÍA
           </div>
-          <div class="info-row">
-            <span class="info-key">Estado</span>
-            <span class="info-val" id="infoEstado" style="color: var(--red)"
-              >Offline</span
-            >
+          <div class="faceplate">
+            <div class="fp-tag">
+              <span>VT-B · VOLTAJE BATERÍA</span><span>V DC</span>
+            </div>
+            <div class="fp-val" id="vbVal">--.-</div>
+            <div class="fp-unit">VOLTIOS — BATERÍA</div>
+            <div class="fp-state" id="vbState" style="color: #707070">
+              SIN DATOS
+            </div>
           </div>
-          <div class="info-row">
-            <span class="info-key">Última lectura</span>
-            <span class="info-val" id="infoTime" style="color: var(--text-2)"
-              >—</span
-            >
+          <div class="mini-chart"><canvas id="cVB"></canvas></div>
+
+          <div
+            style="
+              font-family: var(--font-mono);
+              font-size: 9px;
+              color: var(--isa-text-dim);
+              margin: 10px 0 6px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            "
+          >
+            VT-I · INVERSOR
+          </div>
+          <div class="faceplate">
+            <div class="fp-tag">
+              <span>VT-I · VOLTAJE INVERSOR</span><span>V AC</span>
+            </div>
+            <div class="fp-val" id="viVal">--.-</div>
+            <div class="fp-unit">VOLTIOS — INVERSOR</div>
+            <div class="fp-state" id="viState" style="color: #707070">
+              SIN DATOS
+            </div>
+          </div>
+          <div class="mini-chart"><canvas id="cVI"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ── CORRIENTES ── -->
+      <div class="panel" style="grid-column: 2; grid-row: 1">
+        <div class="panel-header">
+          <div>
+            <span class="panel-id">IT-GROUP</span
+            ><span class="panel-desc"> · CORRIENTES DEL SISTEMA</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div
+            style="
+              font-family: var(--font-mono);
+              font-size: 9px;
+              color: var(--isa-text-dim);
+              margin-bottom: 6px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            "
+          >
+            IT-P · PANEL
+          </div>
+          <div class="faceplate">
+            <div class="fp-tag">
+              <span>IT-P · CORRIENTE PANEL</span><span>A DC</span>
+            </div>
+            <div class="fp-val" id="ipVal">--.-</div>
+            <div class="fp-unit">AMPERIOS — PANEL SOLAR</div>
+            <div class="fp-state" id="ipState" style="color: #707070">
+              SIN DATOS
+            </div>
+          </div>
+          <div class="pbar-wrap">
+            <div class="pbar-lbl">
+              <span>0A</span><span>RANGO</span><span>20A</span>
+            </div>
+            <div class="pbar-outer">
+              <div class="pbar-zones">
+                <div class="z-lo" style="width: 10%"></div>
+                <div class="z-norm" style="width: 80%"></div>
+                <div class="z-hi" style="width: 10%"></div>
+              </div>
+              <div class="pbar-ind" id="ipInd" style="left: 0%"></div>
+            </div>
+          </div>
+          <div class="mini-chart"><canvas id="cIP"></canvas></div>
+
+          <div
+            style="
+              font-family: var(--font-mono);
+              font-size: 9px;
+              color: var(--isa-text-dim);
+              margin: 10px 0 6px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            "
+          >
+            IT-B · BATERÍA
+          </div>
+          <div class="faceplate">
+            <div class="fp-tag">
+              <span>IT-B · CORRIENTE BATERÍA</span><span>A DC</span>
+            </div>
+            <div class="fp-val" id="ibVal">--.-</div>
+            <div class="fp-unit">AMPERIOS — BATERÍA</div>
+            <div class="fp-state" id="ibState" style="color: #707070">
+              SIN DATOS
+            </div>
+          </div>
+          <div class="mini-chart"><canvas id="cIB"></canvas></div>
+
+          <div
+            style="
+              font-family: var(--font-mono);
+              font-size: 9px;
+              color: var(--isa-text-dim);
+              margin: 10px 0 6px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            "
+          >
+            IT-I · INVERSOR
+          </div>
+          <div class="faceplate">
+            <div class="fp-tag">
+              <span>IT-I · CORRIENTE INVERSOR</span><span>A AC</span>
+            </div>
+            <div class="fp-val" id="iiVal">--.-</div>
+            <div class="fp-unit">AMPERIOS — INVERSOR</div>
+            <div class="fp-state" id="iiState" style="color: #707070">
+              SIN DATOS
+            </div>
+          </div>
+          <div class="mini-chart"><canvas id="cII"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ── POTENCIAS ── -->
+      <div class="panel" style="grid-column: 3; grid-row: 1">
+        <div class="panel-header">
+          <div>
+            <span class="panel-id">PT-GROUP</span
+            ><span class="panel-desc"> · POTENCIAS Y ENERGÍA</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div
+            style="
+              font-family: var(--font-mono);
+              font-size: 9px;
+              color: var(--isa-text-dim);
+              margin-bottom: 6px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            "
+          >
+            PT-ENT · POTENCIA ENTRADA
+          </div>
+          <div class="faceplate">
+            <div class="fp-tag">
+              <span>PT-ENT · POT. ENTRADA</span><span>W</span>
+            </div>
+            <div class="fp-val" id="peVal">--.-</div>
+            <div class="fp-unit">VATIOS — ENTRADA</div>
+            <div class="fp-state" id="peState" style="color: #707070">
+              SIN DATOS
+            </div>
+          </div>
+          <div class="mini-chart"><canvas id="cPE"></canvas></div>
+
+          <div
+            style="
+              font-family: var(--font-mono);
+              font-size: 9px;
+              color: var(--isa-text-dim);
+              margin: 10px 0 6px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            "
+          >
+            PT-SAL · POTENCIA SALIDA
+          </div>
+          <div class="faceplate">
+            <div class="fp-tag">
+              <span>PT-SAL · POT. SALIDA</span><span>W</span>
+            </div>
+            <div class="fp-val" id="psVal">--.-</div>
+            <div class="fp-unit">VATIOS — SALIDA</div>
+            <div class="fp-state" id="psState" style="color: #707070">
+              SIN DATOS
+            </div>
+          </div>
+          <div class="mini-chart"><canvas id="cPS"></canvas></div>
+
+          <div
+            style="
+              font-family: var(--font-mono);
+              font-size: 9px;
+              color: var(--isa-text-dim);
+              margin: 10px 0 6px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            "
+          >
+            ET-DIA · ENERGÍA DIARIA
+          </div>
+          <div class="faceplate">
+            <div class="fp-tag">
+              <span>ET-DIA · ENERGÍA HOY</span><span>kWh</span>
+            </div>
+            <div class="fp-val" id="kwhVal" style="font-size: 30px">--.-</div>
+            <div class="fp-unit">KILOWATTS-HORA ACUMULADOS</div>
+          </div>
+          <div class="pbar-wrap" style="margin-top: 8px">
+            <div class="pbar-lbl">
+              <span>0 kWh</span><span id="kwhPct">0.0%</span><span>10 kWh</span>
+            </div>
+            <div class="pbar-outer" style="height: 12px">
+              <div class="pbar-zones">
+                <div class="z-lo" style="width: 5%"></div>
+                <div class="z-norm" style="width: 90%"></div>
+                <div class="z-hi" style="width: 5%"></div>
+              </div>
+              <div class="pbar-ind" id="kwhInd" style="left: 0%"></div>
+            </div>
           </div>
         </div>
       </div>
-    </main>
+
+      <!-- ── ALARM PANEL ── -->
+      <div class="panel alarm-panel">
+        <div class="panel-header">
+          <div>
+            <span class="panel-id">ALM-SOLR</span
+            ><span class="panel-desc"> · ALARMAS</span>
+          </div>
+          <span id="almCount" style="font-size: 10px; color: #d0d0d0"></span>
+        </div>
+        <div class="alarm-list" id="almList">
+          <div class="no-alarms">■ SIN ALARMAS ACTIVAS</div>
+        </div>
+      </div>
+
+      <!-- ── ENERGY SUMMARY ── -->
+      <div class="panel energy-panel">
+        <div class="panel-header">
+          <div>
+            <span class="panel-id">ET-SUMMARY</span
+            ><span class="panel-desc"> · RESUMEN ENERGÉTICO</span>
+          </div>
+          <span
+            id="lastSolar"
+            style="
+              font-family: var(--font-mono);
+              font-size: 10px;
+              color: #d0d0d0;
+            "
+            >SIN DATOS</span
+          >
+        </div>
+        <div class="energy-grid">
+          <div class="energy-block">
+            <div class="eb-tag">PT-ENT · POTENCIA ENTRADA</div>
+            <div class="eb-val" id="sumPE">--.-</div>
+            <div class="eb-unit">W</div>
+            <div class="eb-bar-bg">
+              <div class="eb-bar-fill" id="barPE" style="width: 0%"></div>
+            </div>
+            <div class="eb-bar-lbl"><span>0W</span><span>5000W</span></div>
+          </div>
+          <div class="energy-block">
+            <div class="eb-tag">PT-SAL · POTENCIA SALIDA</div>
+            <div class="eb-val" id="sumPS">--.-</div>
+            <div class="eb-unit">W</div>
+            <div class="eb-bar-bg">
+              <div class="eb-bar-fill" id="barPS" style="width: 0%"></div>
+            </div>
+            <div class="eb-bar-lbl"><span>0W</span><span>5000W</span></div>
+          </div>
+          <div class="energy-block">
+            <div class="eb-tag">ET-DIA · ACUMULADO HOY</div>
+            <div class="eb-val" id="sumKwh">--.-</div>
+            <div class="eb-unit">kWh</div>
+            <div class="eb-bar-bg">
+              <div class="eb-bar-fill good" id="barKwh" style="width: 0%"></div>
+            </div>
+            <div class="eb-bar-lbl"><span>0 kWh</span><span>10 kWh</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TREND PANEL ── -->
+      <div class="panel trend-panel">
+        <div class="panel-header">
+          <div>
+            <span class="panel-id">TREND-SOLR</span
+            ><span class="panel-desc"> · TENDENCIAS DE PROCESO</span>
+          </div>
+        </div>
+        <div class="charts-grid-3">
+          <div class="chart-block">
+            <div class="chart-tag">VT-P / VT-B / VT-I · VOLTAJES (V)</div>
+            <div class="chart-box"><canvas id="chartV"></canvas></div>
+          </div>
+          <div class="chart-block">
+            <div class="chart-tag">IT-P / IT-B / IT-I · CORRIENTES (A)</div>
+            <div class="chart-box"><canvas id="chartI"></canvas></div>
+          </div>
+          <div class="chart-block">
+            <div class="chart-tag">PT-ENT / PT-SAL · POTENCIAS (W)</div>
+            <div class="chart-box"><canvas id="chartP"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STATUS BAR ── -->
+    <div class="statusbar">
+      <span id="sb-srv">SRV: --</span>
+      <span id="sb-nodo">NODO: --</span>
+      <span>SOLR-001 · L2</span>
+      <span>ISA-101.01-2015</span>
+      <span style="margin-left: auto" id="sb-clock">--:--:--</span>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <script>
-      let lastResponseTime = Date.now();
       const ID = 2;
-      const MAX = 15;
+      const MAX = 20;
+      const ackedAlarms = new Set();
+      let lastData = 0;
 
       function updateClock() {
-        document.getElementById("clock").innerText =
-          new Date().toLocaleTimeString("es-EC", { hour12: false });
+        const t = new Date().toLocaleTimeString("es-EC", { hour12: false });
+        document.getElementById("clock").textContent = t;
+        document.getElementById("sb-clock").textContent = t;
       }
       setInterval(updateClock, 1000);
       updateClock();
 
-      function setDeviceOnline(online) {
-        const pill = document.getElementById("devicePill");
-        const text = document.getElementById("deviceStatus");
-        const info = document.getElementById("infoEstado");
-        if (online) {
-          pill.classList.add("online");
-          text.textContent = "Nodo Online";
-          info.textContent = "Online";
-          info.style.color = "var(--green)";
-          lastResponseTime = Date.now();
-        } else {
-          pill.classList.remove("online");
-          text.textContent = "Nodo Offline";
-          info.textContent = "Offline";
-          info.style.color = "var(--red)";
-        }
-      }
+      Chart.defaults.color = "#707070";
+      Chart.defaults.borderColor = "#404040";
 
-      Chart.defaults.font.family = "'Space Grotesk', sans-serif";
-      Chart.defaults.color = "#94A3B8";
-
-      function mkChart(id, color) {
+      function mkChart(id, datasets) {
         return new Chart(document.getElementById(id), {
           type: "line",
           data: {
-            labels: Array(MAX).fill(""),
-            datasets: [
-              {
-                data: [],
-                borderColor: color,
-                backgroundColor: color + "18",
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4,
-                pointRadius: 0,
-              },
-            ],
+            labels: [],
+            datasets: datasets.map(({ color }) => ({
+              data: [],
+              borderColor: color,
+              backgroundColor: "transparent",
+              borderWidth: 1.5,
+              pointRadius: 0,
+              tension: 0.3,
+            })),
           },
           options: {
             responsive: true,
@@ -891,116 +1029,295 @@
             scales: {
               x: { display: false },
               y: {
-                grid: { color: "#F1F5F9" },
-                ticks: { font: { size: 9 }, callback: (v) => v.toFixed(1) },
+                grid: { color: "#333" },
+                ticks: {
+                  font: { family: "IBM Plex Mono", size: 9 },
+                  color: "#707070",
+                },
               },
             },
           },
         });
       }
 
-      const charts = {
-        v1: mkChart("c1", "#059669"),
-        v2: mkChart("c2", "#EAB308"),
-        v3: mkChart("c3", "#0EA5E9"),
-        i1: mkChart("c4", "#059669"),
-        i2: mkChart("c5", "#EAB308"),
-        i3: mkChart("c6", "#0EA5E9"),
-        p1: mkChart("c7", "#059669"),
-        p2: mkChart("c8", "#EA580C"),
+      function mkMini(id) {
+        return new Chart(document.getElementById(id), {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                data: [],
+                borderColor: "#888",
+                backgroundColor: "transparent",
+                borderWidth: 1,
+                pointRadius: 0,
+                tension: 0.3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 200 },
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false }, y: { display: false } },
+          },
+        });
+      }
+
+      const trendV = mkChart("chartV", [
+        { color: "#A0A0A0" },
+        { color: "#808080" },
+        { color: "#C0C0C0" },
+      ]);
+      const trendI = mkChart("chartI", [
+        { color: "#A0A0A0" },
+        { color: "#808080" },
+        { color: "#C0C0C0" },
+      ]);
+      const trendP = mkChart("chartP", [
+        { color: "#A0A0A0" },
+        { color: "#808080" },
+      ]);
+
+      const minis = {
+        vp: mkMini("cVP"),
+        vb: mkMini("cVB"),
+        vi: mkMini("cVI"),
+        ip: mkMini("cIP"),
+        ib: mkMini("cIB"),
+        ii: mkMini("cII"),
+        pe: mkMini("cPE"),
+        ps: mkMini("cPS"),
       };
 
-      function pushChart(chart, val) {
+      function pushMini(chart, val) {
+        chart.data.labels.push("");
         chart.data.datasets[0].data.push(val);
-        if (chart.data.datasets[0].data.length > MAX)
+        if (chart.data.datasets[0].data.length > 15) {
+          chart.data.labels.shift();
           chart.data.datasets[0].data.shift();
+        }
         chart.update("none");
       }
 
-      async function loop() {
+      function pushTrend(chart, vals) {
+        const t = new Date().toLocaleTimeString("es-EC", { hour12: false });
+        chart.data.labels.push(t);
+        vals.forEach((v, i) => {
+          chart.data.datasets[i].data.push(v);
+          if (chart.data.datasets[i].data.length > MAX)
+            chart.data.datasets[i].data.shift();
+        });
+        if (chart.data.labels.length > MAX) chart.data.labels.shift();
+        chart.update();
+      }
+
+      function fmt(v, d = 1) {
+        return v === null || v === undefined
+          ? "--.-"
+          : parseFloat(v).toFixed(d);
+      }
+
+      function pct(v, min, max) {
+        return Math.min(100, Math.max(0, ((v - min) / (max - min)) * 100));
+      }
+
+      function setFP(valId, stateId, indId, val, min, max, loLim, hiLim) {
+        const el = document.getElementById(valId);
+        el.textContent = fmt(val);
+        const p = parseFloat(val);
+        let cls = "",
+          stateText = "NORMAL",
+          stateColor = "var(--ok-bg)";
+        if (p <= loLim || p >= hiLim) {
+          cls = "p1";
+          stateText = "ALARMA P1";
+          stateColor = "var(--p1-bg)";
+        } else if (p <= loLim * 1.5 || p >= hiLim * 0.9) {
+          cls = "p2";
+          stateText = "ALARMA P2";
+          stateColor = "var(--p2-bg)";
+        }
+        el.className = "fp-val " + cls;
+        if (stateId) {
+          document.getElementById(stateId).textContent = stateText;
+          document.getElementById(stateId).style.color = stateColor;
+        }
+        if (indId)
+          document.getElementById(indId).style.left = pct(p, min, max) + "%";
+      }
+
+      function setServerOnline(online) {
+        const dot = document.getElementById("serverDot");
+        const sb = document.getElementById("sb-srv");
+        dot.className = "node-dot " + (online ? "ok" : "fault");
+        document.getElementById("serverStatus").textContent = online
+          ? "SRV: OK"
+          : "SRV: FAULT";
+        sb.textContent = online ? "SRV: OK" : "SRV: FAULT";
+        sb.className = online ? "sb-ok" : "sb-err";
+      }
+
+      function setNodoOnline(online) {
+        const dot = document.getElementById("nodoDot");
+        const sb = document.getElementById("sb-nodo");
+        dot.className = "node-dot " + (online ? "ok" : "fault");
+        document.getElementById("nodoStatus").textContent = online
+          ? "NODO: ONLINE"
+          : "NODO: OFFLINE";
+        sb.textContent = online ? "NODO: OK" : "NODO: OFFLINE";
+        sb.className = online ? "sb-ok" : "sb-err";
+      }
+
+      async function fetchData() {
         try {
           const res = await fetch(`/api/solar/ultimo?dispositivo_id=${ID}`);
           const d = await res.json();
+          setServerOnline(true);
+          if (!d) return;
 
-          document.getElementById("serverStatus").textContent = "Servidor ✓";
+          const vp = parseFloat(d.voltaje_panel) || 0;
+          const vb = parseFloat(d.voltaje_bateria) || 0;
+          const vi = parseFloat(d.voltaje_inversor) || 0;
+          const ip = parseFloat(d.corriente_panel) || 0;
+          const ib = parseFloat(d.corriente_bateria) || 0;
+          const ii = parseFloat(d.corriente_inversor) || 0;
+          const pe = parseFloat(d.potencia_entrada) || 0;
+          const ps = parseFloat(d.potencia_salida) || 0;
+          const kwh = parseFloat(d.energia_kwh) || 0;
 
-          if (d) {
-            const f = (v, dec = 1) => parseFloat(v || 0).toFixed(dec);
+          // Faceplates
+          setFP("vpVal", "vpState", "vpInd", vp, 0, 100, 10, 90);
+          setFP("vbVal", "vbState", null, vb, 0, 60, 10, 58);
+          setFP("viVal", "viState", null, vi, 0, 250, 20, 240);
+          setFP("ipVal", "ipState", "ipInd", ip, 0, 20, 1, 18);
+          setFP("ibVal", "ibState", null, ib, 0, 20, 0.5, 18);
+          setFP("iiVal", "iiState", null, ii, 0, 20, 0.5, 18);
+          setFP("peVal", "peState", null, pe, 0, 5000, 0, 4500);
+          setFP("psVal", "psState", null, ps, 0, 5000, 0, 4500);
 
-            // Voltajes
-            document.getElementById("v1").textContent = f(d.voltaje_panel);
-            document.getElementById("v2").textContent = f(d.voltaje_bateria);
-            document.getElementById("v3").textContent = f(d.voltaje_inversor);
-            pushChart(charts.v1, parseFloat(d.voltaje_panel) || 0);
-            pushChart(charts.v2, parseFloat(d.voltaje_bateria) || 0);
-            pushChart(charts.v3, parseFloat(d.voltaje_inversor) || 0);
+          // kWh
+          document.getElementById("kwhVal").textContent = fmt(kwh, 3);
+          const kp = pct(kwh, 0, 10);
+          document.getElementById("kwhInd").style.left = kp + "%";
+          document.getElementById("kwhPct").textContent = kp.toFixed(1) + "%";
 
-            // Corrientes
-            document.getElementById("i1").textContent = f(d.corriente_panel);
-            document.getElementById("i2").textContent = f(d.corriente_bateria);
-            document.getElementById("i3").textContent = f(d.corriente_inversor);
-            pushChart(charts.i1, parseFloat(d.corriente_panel) || 0);
-            pushChart(charts.i2, parseFloat(d.corriente_bateria) || 0);
-            pushChart(charts.i3, parseFloat(d.corriente_inversor) || 0);
+          // Summary
+          document.getElementById("sumPE").textContent = fmt(pe);
+          document.getElementById("sumPS").textContent = fmt(ps);
+          document.getElementById("sumKwh").textContent = fmt(kwh, 3);
+          document.getElementById("barPE").style.width =
+            Math.min(100, (pe / 5000) * 100) + "%";
+          document.getElementById("barPS").style.width =
+            Math.min(100, (ps / 5000) * 100) + "%";
+          document.getElementById("barKwh").style.width = kp + "%";
 
-            // Potencias
-            document.getElementById("p1").textContent = f(d.potencia_entrada);
-            document.getElementById("p2").textContent = f(d.potencia_salida);
-            pushChart(charts.p1, parseFloat(d.potencia_entrada) || 0);
-            pushChart(charts.p2, parseFloat(d.potencia_salida) || 0);
+          // Timestamp
+          const t = new Date(d.registrado_en).toLocaleTimeString("es-EC", {
+            hour12: false,
+          });
+          document.getElementById("lastSolar").textContent = `ÚLT: ${t}`;
 
-            // Energía
-            const kwh = parseFloat(d.energia_kwh) || 0;
-            document.getElementById("heroKwh").textContent = kwh.toFixed(3);
-            document.getElementById("energyKwh").textContent =
-              `${kwh.toFixed(4)} kWh acumulados hoy`;
-            const pct = Math.min(100, (kwh / 10) * 100);
-            document.getElementById("energyBar").style.width = pct + "%";
-            document.getElementById("energyPct").textContent =
-              pct.toFixed(1) + "%";
+          // Minis
+          pushMini(minis.vp, vp);
+          pushMini(minis.vb, vb);
+          pushMini(minis.vi, vi);
+          pushMini(minis.ip, ip);
+          pushMini(minis.ib, ib);
+          pushMini(minis.ii, ii);
+          pushMini(minis.pe, pe);
+          pushMini(minis.ps, ps);
 
-            // Tiempo
-            const t = new Date(d.registrado_en).toLocaleTimeString("es-EC", {
-              hour12: false,
-            });
-            document.getElementById("infoTime").textContent = t;
+          // Trends
+          pushTrend(trendV, [vp, vb, vi]);
+          pushTrend(trendI, [ip, ib, ii]);
+          pushTrend(trendP, [pe, ps]);
 
-            setDeviceOnline(true);
-          }
-
-          // Alarmas
-          const resAl = await fetch(
-            `/api/alarmas/activas?dispositivo_id=${ID}`,
-          );
-          const al = await resAl.json();
-          document.getElementById("alarmaCount").textContent = al.length;
-
-          document.getElementById("alarmasList").innerHTML = al.length
-            ? al
-                .map(
-                  (a) => `
-          <div class="alarma-item">
-            <div class="alarma-tipo">${a.tipo.replace(/_/g, " ")}</div>
-            <div class="alarma-desc">${a.descripcion || "—"}</div>
-          </div>`,
-                )
-                .join("")
-            : `<div class="estable">
-           <div class="icon">✅</div>
-           <p>Sistema Estable</p>
-           <span style="font-size:12px">Sin alertas activas</span>
-         </div>`;
-        } catch (e) {
-          document.getElementById("serverStatus").textContent = "Sin conexión";
+          setNodoOnline(true);
+          lastData = Date.now();
+        } catch {
+          setServerOnline(false);
         }
       }
 
-      setInterval(() => {
-        if (Date.now() - lastResponseTime > 10000) setDeviceOnline(false);
-      }, 2000);
+      async function fetchAlarmas() {
+        try {
+          const res = await fetch(`/api/alarmas/activas?dispositivo_id=${ID}`);
+          const alarmas = await res.json();
+          const list = document.getElementById("almList");
+          const count = document.getElementById("almCount");
+          const banner = document.getElementById("alarmBanner");
 
-      setInterval(loop, 3000);
-      loop();
+          const sinAck = alarmas.filter((a) => !ackedAlarms.has(a.id));
+          count.textContent = sinAck.length ? `(${sinAck.length})` : "";
+
+          const p1 = sinAck.filter((a) =>
+            ["EMERGENCIA", "SOBRECARGA"].includes(a.tipo),
+          );
+          banner.classList.toggle("active", p1.length > 0);
+          document.getElementById("bannerTxt").textContent = p1.length
+            ? `${p1.length} P1 SIN ACK`
+            : "";
+
+          if (!alarmas.length) {
+            list.innerHTML =
+              '<div class="no-alarms">■ SIN ALARMAS ACTIVAS</div>';
+            return;
+          }
+
+          function pTag(tipo) {
+            if (["EMERGENCIA", "SOBRECARGA"].includes(tipo))
+              return { p: "P1", cls: "p1" };
+            if (["FLUJO", "NIVEL_CRITICO", "TEMP_CRITICA"].includes(tipo))
+              return { p: "P2", cls: "p2" };
+            return { p: "P3", cls: "p3" };
+          }
+
+          list.innerHTML = alarmas
+            .map((a) => {
+              const { p, cls } = pTag(a.tipo);
+              const isAck = ackedAlarms.has(a.id);
+              const t = new Date(a.registrado_en).toLocaleTimeString("es-EC", {
+                hour12: false,
+              });
+              return `
+        <div class="alarm-row ${isAck ? "ack" : cls}">
+          <div class="alm-pri ${cls}">${p}</div>
+          <div>
+            <div class="alm-type">${a.tipo.replace(/_/g, " ")}</div>
+            <div class="alm-desc">${a.descripcion || "—"}</div>
+            <div class="alm-time">${t}</div>
+          </div>
+          ${
+            !isAck
+              ? `<button class="alm-ack" onclick="ackAlarm(${a.id})">ACK</button>`
+              : `<span style="font-size:9px;color:#888;font-family:var(--font-mono)">ACK</span>`
+          }
+        </div>`;
+            })
+            .join("");
+        } catch {
+          /* silencioso */
+        }
+      }
+
+      function ackAlarm(id) {
+        ackedAlarms.add(id);
+        fetchAlarmas();
+      }
+
+      setInterval(() => {
+        if (Date.now() - lastData > 12000) setNodoOnline(false);
+      }, 3000);
+
+      async function refresh() {
+        await Promise.all([fetchData(), fetchAlarmas()]);
+      }
+
+      refresh();
+      setInterval(refresh, 3000);
     </script>
   </body>
 </html>
