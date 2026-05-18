@@ -3,32 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MAINTRONIC — Alarmas</title>
+    <title>MAINTRONIC — ALM-CONSOLE</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <style>
+      /*
+  ANSI/ISA-101.01-2015 — ALARM MANAGEMENT DISPLAY
+  ─────────────────────────────────────────────────
+  ISA-18.2 Alarm Priority:
+    P1 Crítica  → fondo ROJO    — acción inmediata
+    P2 Alta     → fondo NARANJA — acción < 10 min
+    P3 Media    → fondo AMARILLO— acción < 1 hora
+  Estados: ACTIVA / ACK / RESUELTA
+*/
+
       :root {
-        --primary: #2563eb;
-        --primary-lt: #eff6ff;
-        --red: #dc2626;
-        --red-lt: #fef2f2;
-        --amber: #d97706;
-        --amber-lt: #fffbeb;
-        --green: #059669;
-        --green-lt: #ecfdf5;
-        --slate: #475569;
-        --border: #e2e8f0;
-        --bg: #f1f5f9;
-        --white: #ffffff;
-        --text: #0f172a;
-        --text-2: #64748b;
-        --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
-        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
-        --radius: 16px;
-        --font: "Nunito", sans-serif;
-        --font2: "Space Grotesk", sans-serif;
+        --isa-bg: #b4b4b4;
+        --isa-bg-panel: #a0a0a0;
+        --isa-bg-widget: #c8c8c8;
+        --isa-border: #787878;
+        --isa-text: #1a1a1a;
+        --isa-text-2: #3a3a3a;
+        --isa-text-dim: #606060;
+
+        --p1: #cc0000;
+        --p1-bg: #ff4444;
+        --p1-lt: #ffd0d0;
+        --p2: #cc6600;
+        --p2-bg: #ff8c00;
+        --p2-lt: #ffe0b0;
+        --p3: #7a7a00;
+        --p3-bg: #dddd00;
+        --p3-lt: #f8f800;
+        --ok: #2a5c2a;
+        --ok-bg: #44aa44;
+
+        --font-mono: "IBM Plex Mono", monospace;
+        --font-sans: "IBM Plex Sans", sans-serif;
       }
 
       * {
@@ -38,551 +51,878 @@
       }
 
       body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: var(--font);
+        background: var(--isa-bg);
+        color: var(--isa-text);
+        font-family: var(--font-sans);
+        font-size: 13px;
         min-height: 100vh;
       }
 
-      /* ── HEADER ── */
-      header {
-        background: var(--white);
-        border-bottom: 1px solid var(--border);
-        padding: 0 32px;
+      /* ── TITLE BAR ── */
+      .titlebar {
+        background: #2a2a2a;
+        color: #e0e0e0;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: 68px;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
-      }
-
-      .logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .logo-icon {
-        width: 40px;
-        height: 40px;
-        background: var(--red-lt);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-      }
-
-      .logo-name {
-        font-family: var(--font2);
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--text);
-      }
-
-      .logo-name span {
-        color: var(--red);
-      }
-
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-
-      .status-pill {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        background: var(--green-lt);
-        border: 1px solid #a7f3d0;
-        border-radius: 20px;
-        padding: 6px 14px;
+        padding: 0 16px;
+        height: 36px;
+        border-bottom: 2px solid #000;
+        font-family: var(--font-mono);
         font-size: 12px;
-        font-weight: 700;
-        color: var(--green);
+      }
+      .titlebar-id {
+        font-weight: 600;
+        letter-spacing: 1px;
+        color: #f0f0f0;
+      }
+      .titlebar-desc {
+        color: #a0a0a0;
+        font-size: 11px;
+        margin-left: 16px;
+      }
+      .titlebar-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .sys-clock {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: #d0d0d0;
+        letter-spacing: 1px;
       }
 
-      .status-dot {
-        width: 7px;
-        height: 7px;
-        background: var(--green);
-        border-radius: 50%;
-        animation: pulse 2s infinite;
+      /* ── ALARM BANNER ── */
+      .alarm-banner {
+        display: none;
+        background: var(--p1);
+        color: #fff;
+        padding: 4px 16px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        align-items: center;
+        justify-content: space-between;
+        animation: blink-banner 1s step-end infinite;
+        border-bottom: 2px solid #880000;
       }
-
-      @keyframes pulse {
+      .alarm-banner.active {
+        display: flex;
+      }
+      @keyframes blink-banner {
         0%,
         100% {
-          opacity: 1;
+          background: var(--p1);
         }
         50% {
-          opacity: 0.4;
+          background: #880000;
         }
       }
 
-      #clock {
-        font-family: var(--font2);
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--slate);
-        background: var(--bg);
-        padding: 6px 14px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-      }
-
-      /* ── MAIN ── */
-      main {
-        max-width: 1200px;
+      /* ── LAYOUT ── */
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 6px;
+        padding: 6px;
+        padding-bottom: 28px;
+        max-width: 1400px;
         margin: 0 auto;
-        padding: 32px 24px;
       }
 
-      /* ── PAGE HEADER ── */
-      .page-header {
+      /* ── PANEL ── */
+      .panel {
+        background: var(--isa-bg-widget);
+        border: 1px solid var(--isa-border);
+        border-top: 3px solid var(--isa-border);
+      }
+
+      .panel-header {
+        background: #787878;
+        color: #f0f0f0;
+        padding: 4px 10px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 28px;
-        flex-wrap: wrap;
-        gap: 16px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #606060;
+      }
+      .panel-id {
+        color: #d0d0d0;
+      }
+      .panel-desc {
+        color: #b0b0b0;
+        font-weight: 400;
       }
 
-      .page-title {
-        font-family: var(--font2);
-        font-size: 26px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .page-title-icon {
-        width: 44px;
-        height: 44px;
-        background: var(--red-lt);
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-      }
-
-      .page-sub {
-        font-size: 14px;
-        color: var(--text-2);
-        margin-top: 4px;
-        font-weight: 500;
-      }
-
-      /* ── STATS CARDS ── */
+      /* ── STATS ROW ── */
       .stats-row {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 16px;
-        margin-bottom: 28px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        padding: 8px;
+        border-bottom: 1px solid var(--isa-border);
       }
 
-      .stat-card {
-        background: var(--white);
-        border-radius: var(--radius);
-        padding: 20px;
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-
-      .stat-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-        flex-shrink: 0;
+      .stat-box {
+        background: #2a2a2a;
+        border: 1px solid #505050;
+        padding: 10px 12px;
+        text-align: center;
       }
 
       .stat-val {
-        font-family: var(--font2);
+        font-family: var(--font-mono);
         font-size: 28px;
-        font-weight: 700;
+        font-weight: 600;
+        color: #d8d8d8;
         line-height: 1;
-        margin-bottom: 2px;
+      }
+      .stat-val.p1 {
+        color: var(--p1-bg);
+      }
+      .stat-val.p2 {
+        color: var(--p2-bg);
+      }
+      .stat-val.p3 {
+        color: var(--p3-bg);
+      }
+      .stat-val.ok {
+        color: var(--ok-bg);
       }
 
-      .stat-label {
-        font-size: 12px;
-        color: var(--text-2);
-        font-weight: 600;
+      .stat-tag {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: #707070;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 4px;
       }
 
-      /* ── TABLE CARD ── */
-      .table-card {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        overflow: hidden;
-      }
-
-      .table-card-header {
-        padding: 18px 24px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      .table-card-title {
-        font-family: var(--font2);
-        font-size: 15px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .refresh-btn {
-        background: var(--bg);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 7px 14px;
-        font-size: 13px;
-        font-weight: 700;
-        font-family: var(--font);
-        cursor: pointer;
-        color: var(--slate);
-        transition: background 0.2s;
+      /* ── FILTROS ── */
+      .filter-bar {
         display: flex;
         align-items: center;
         gap: 6px;
+        padding: 6px 8px;
+        border-bottom: 1px solid var(--isa-border);
+        background: #ababab;
       }
-      .refresh-btn:hover {
-        background: var(--border);
+
+      .filter-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--isa-text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-right: 4px;
+      }
+
+      .filter-btn {
+        background: #888;
+        border: 1px solid #606060;
+        color: #e0e0e0;
+        padding: 3px 10px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        transition: background 0.15s;
+      }
+      .filter-btn:hover {
+        background: #a0a0a0;
+      }
+      .filter-btn.active {
+        background: #2a2a2a;
+        color: #f0f0f0;
+        border-color: #000;
+      }
+
+      .filter-btn.p1-btn.active {
+        background: var(--p1);
+        border-color: #880000;
+      }
+      .filter-btn.p2-btn.active {
+        background: var(--p2);
+        border-color: #884400;
+        color: #fff;
+      }
+      .filter-btn.p3-btn.active {
+        background: var(--p3);
+        border-color: #555500;
+        color: #fff;
+      }
+
+      .ack-all-btn {
+        margin-left: auto;
+        background: #3a3a3a;
+        border: 1px solid #555;
+        color: #d0d0d0;
+        padding: 3px 12px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        transition: background 0.15s;
+      }
+      .ack-all-btn:hover {
+        background: #555;
+      }
+
+      /* ── TABLE ── */
+      .alarm-table-wrap {
+        overflow-x: auto;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
+        font-family: var(--font-mono);
+        font-size: 11px;
       }
 
       thead th {
-        background: #f8fafc;
-        padding: 14px 20px;
+        background: #505050;
+        color: #d0d0d0;
+        padding: 6px 10px;
         text-align: left;
-        font-size: 11px;
-        font-weight: 800;
+        font-size: 10px;
+        font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
-        color: var(--text-2);
-        border-bottom: 1px solid var(--border);
+        letter-spacing: 0.5px;
+        border-right: 1px solid #606060;
+        white-space: nowrap;
+      }
+      thead th:last-child {
+        border-right: none;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid #a0a0a0;
+        transition: opacity 0.2s;
+      }
+      tbody tr.hidden-row {
+        display: none;
+      }
+
+      tbody tr.row-p1 {
+        background: var(--p1-lt);
+        animation: blink-row 1s step-end infinite;
+      }
+      tbody tr.row-p2 {
+        background: var(--p2-lt);
+      }
+      tbody tr.row-p3 {
+        background: var(--p3-lt);
+      }
+      tbody tr.row-ack {
+        background: #d0d0d0;
+        opacity: 0.65;
+      }
+      tbody tr.row-hist {
+        background: #c8c8c8;
+      }
+
+      @keyframes blink-row {
+        0%,
+        100% {
+          background: var(--p1-lt);
+        }
+        50% {
+          background: #ffaaaa;
+        }
       }
 
       tbody td {
-        padding: 15px 20px;
-        border-bottom: 1px solid #f1f5f9;
-        font-size: 14px;
-        font-weight: 500;
+        padding: 6px 10px;
+        border-right: 1px solid #b0b0b0;
         vertical-align: middle;
       }
-
-      tbody tr:last-child td {
-        border-bottom: none;
+      tbody td:last-child {
+        border-right: none;
       }
       tbody tr:hover {
-        background: #fafbfc;
+        filter: brightness(0.95);
       }
 
-      .planta-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 4px 10px;
-        border-radius: 8px;
-        font-size: 11px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+      .priority-cell {
+        font-weight: 700;
+        font-size: 12px;
+        text-align: center;
+        width: 40px;
+      }
+      .p1-tag {
+        color: var(--p1);
+      }
+      .p2-tag {
+        color: var(--p2);
+      }
+      .p3-tag {
+        color: #5a5a00;
       }
 
-      .tag {
+      .estado-pill {
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        padding: 5px 10px;
-        border-radius: 8px;
-        font-size: 11px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
+        padding: 2px 7px;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        border: 1px solid;
+      }
+      .estado-activa {
+        background: var(--p1);
+        color: #fff;
+        border-color: #880000;
+      }
+      .estado-ack {
+        background: #505050;
+        color: #d0d0d0;
+        border-color: #333;
+      }
+      .estado-resuelta {
+        background: var(--ok);
+        color: #fff;
+        border-color: #1a4a1a;
       }
 
-      .tag-SOBRECARGA {
-        background: #fef2f2;
-        color: #dc2626;
+      .ack-btn {
+        background: #3a3a3a;
+        border: 1px solid #555;
+        color: #d0d0d0;
+        padding: 2px 8px;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
       }
-      .tag-FLUJO {
-        background: #fff7ed;
-        color: #c2410c;
-      }
-      .tag-EMERGENCIA {
-        background: #fef2f2;
-        color: #991b1b;
-      }
-      .tag-ENCENDIDO_SP {
-        background: #eff6ff;
-        color: #1d4ed8;
-      }
-      .tag-MODO_CONEXION {
-        background: #f5f3ff;
-        color: #6d28d9;
-      }
-      .tag-NIVEL_CRITICO {
-        background: #ecfdf5;
-        color: #065f46;
-      }
-      .tag-TEMP_CRITICA {
-        background: #fffbeb;
-        color: #92400e;
-      }
-      .tag-default {
-        background: #f1f5f9;
-        color: #475569;
+      .ack-btn:hover {
+        background: #555;
       }
 
-      .fecha-cell {
-        font-family: var(--font2);
-        font-size: 13px;
-        color: var(--slate);
+      .planta-tag {
+        font-size: 10px;
+        padding: 1px 6px;
+        background: #3a3a3a;
+        color: #c0c0c0;
+        border: 1px solid #555;
+        white-space: nowrap;
       }
 
       .empty-state {
+        padding: 40px;
         text-align: center;
-        padding: 60px 20px;
-        color: var(--text-2);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--isa-text-dim);
       }
-      .empty-state .empty-icon {
-        font-size: 48px;
-        margin-bottom: 12px;
+      .empty-icon {
+        font-size: 32px;
+        display: block;
+        margin-bottom: 8px;
       }
-      .empty-state p {
-        font-size: 15px;
+
+      /* ── SIDEBAR ── */
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .legend-panel .panel-body {
+        padding: 10px;
+      }
+
+      .legend-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 8px;
+        margin-bottom: 4px;
+        border: 1px solid transparent;
+      }
+      .legend-row.p1 {
+        background: var(--p1-lt);
+        border-color: #ffaaaa;
+      }
+      .legend-row.p2 {
+        background: var(--p2-lt);
+        border-color: #ffd0a0;
+      }
+      .legend-row.p3 {
+        background: var(--p3-lt);
+        border-color: #eeee80;
+      }
+
+      .legend-priority {
+        font-family: var(--font-mono);
+        font-size: 14px;
+        font-weight: 700;
+        width: 28px;
+      }
+      .legend-title {
         font-weight: 600;
+        font-size: 12px;
       }
-      .empty-state span {
+      .legend-desc {
+        font-size: 10px;
+        color: var(--isa-text-dim);
+        margin-top: 1px;
+      }
+
+      /* Tipos de alarma */
+      .tipo-list {
+        padding: 8px;
+      }
+      .tipo-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 8px;
+        border-bottom: 1px solid #a0a0a0;
+        font-family: var(--font-mono);
+        font-size: 10px;
+      }
+      .tipo-row:last-child {
+        border-bottom: none;
+      }
+      .tipo-name {
+        color: var(--isa-text-2);
+      }
+      .tipo-count {
+        font-weight: 700;
         font-size: 13px;
-        font-weight: 400;
+        min-width: 24px;
+        text-align: right;
+      }
+
+      /* ── STATUS BAR ── */
+      .statusbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #1a1a1a;
+        color: #909090;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        height: 22px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        gap: 24px;
+        border-top: 1px solid #333;
+        z-index: 50;
+      }
+      .sb-ok {
+        color: #44aa44;
+      }
+      .sb-err {
+        color: #cc0000;
       }
 
       /* ── RESPONSIVE ── */
-      @media (max-width: 768px) {
-        header {
-          padding: 0 16px;
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
         }
-        main {
-          padding: 20px 12px;
+        .stats-row {
+          grid-template-columns: repeat(2, 1fr);
         }
-        .page-title {
-          font-size: 20px;
+      }
+      @media (max-width: 500px) {
+        .stats-row {
+          grid-template-columns: 1fr 1fr;
         }
-        thead th:nth-child(4),
-        tbody td:nth-child(4) {
+        thead th:nth-child(5),
+        tbody td:nth-child(5) {
           display: none;
         }
       }
     </style>
   </head>
   <body>
-    <header>
-      <div class="logo">
-        <div class="logo-icon">⚠️</div>
-        <div>
-          <div class="logo-name">MAIN<span>TRONIC</span></div>
-        </div>
+    <!-- ── TITLE BAR ── -->
+    <div class="titlebar">
+      <div style="display: flex; align-items: center">
+        <span class="titlebar-id">MAINTRONIC / ALM-CONSOLE-001</span>
+        <span class="titlebar-desc"
+          >CONSOLA DE ALARMAS — ISA-18.2 / ISA-101.01-2015</span
+        >
       </div>
-      <div class="header-right">
-        <div class="status-pill">
-          <div class="status-dot"></div>
-          Sistema Activo
-        </div>
-        <div id="clock">00:00:00</div>
+      <div class="titlebar-right">
+        <span id="serverStatus" style="font-size: 11px; color: #a0a0a0"
+          >CONECTANDO</span
+        >
+        <span class="sys-clock" id="clock">00:00:00</span>
       </div>
-    </header>
+    </div>
 
-    <main>
-      <div class="page-header">
-        <div>
-          <div class="page-title">
-            <div class="page-title-icon">🚨</div>
-            Bitácora de Alarmas
-          </div>
-          <div class="page-sub">Historial de eventos y alertas del sistema</div>
-        </div>
-      </div>
+    <!-- ── ALARM BANNER ── -->
+    <div class="alarm-banner" id="alarmBanner">
+      <span
+        >⚠ ALARMAS P1 ACTIVAS SIN ACK — REQUIERE ATENCIÓN INMEDIATA DEL
+        OPERADOR</span
+      >
+      <span id="bannerCount"></span>
+    </div>
 
-      <!-- Stats -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-icon" style="background: #fef2f2">🔴</div>
+    <div class="layout">
+      <!-- ── MAIN PANEL ── -->
+      <div class="panel">
+        <div class="panel-header">
           <div>
-            <div class="stat-val" id="stat-total" style="color: var(--red)">
-              —
-            </div>
-            <div class="stat-label">Total Eventos</div>
+            <span class="panel-id">ALM-LOG</span>
+            <span class="panel-desc"> · REGISTRO DE ALARMAS Y EVENTOS</span>
           </div>
+          <span id="totalCount" style="font-size: 10px; color: #d0d0d0"></span>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background: #fff7ed">🔥</div>
-          <div>
-            <div class="stat-val" id="stat-caldero" style="color: var(--amber)">
-              —
-            </div>
-            <div class="stat-label">Caldero</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background: #fefce8">☀️</div>
-          <div>
-            <div class="stat-val" id="stat-solar" style="color: #a16207">—</div>
-            <div class="stat-label">Solar</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background: var(--green-lt)">✅</div>
-          <div>
-            <div class="stat-val" id="stat-activas" style="color: var(--green)">
-              —
-            </div>
-            <div class="stat-label">Activas ahora</div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Table -->
-      <div class="table-card">
-        <div class="table-card-header">
-          <div class="table-card-title">📋 Registro de Eventos</div>
-          <button class="refresh-btn" onclick="fetchLogs()">
-            🔄 Actualizar
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="stat-val p1" id="stat-p1">0</div>
+            <div class="stat-tag">P1 · CRÍTICAS</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val p2" id="stat-p2">0</div>
+            <div class="stat-tag">P2 · ALTAS</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val p3" id="stat-p3">0</div>
+            <div class="stat-tag">P3 · MEDIAS</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val ok" id="stat-ack">0</div>
+            <div class="stat-tag">ACK · RECONOCIDAS</div>
+          </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filter-bar">
+          <span class="filter-label">FILTRO:</span>
+          <button
+            class="filter-btn active"
+            id="f-all"
+            onclick="setFilter('all')"
+          >
+            TODAS
           </button>
+          <button class="filter-btn p1-btn" id="f-p1" onclick="setFilter('p1')">
+            P1
+          </button>
+          <button class="filter-btn p2-btn" id="f-p2" onclick="setFilter('p2')">
+            P2
+          </button>
+          <button class="filter-btn p3-btn" id="f-p3" onclick="setFilter('p3')">
+            P3
+          </button>
+          <button class="filter-btn" id="f-act" onclick="setFilter('act')">
+            ACTIVAS
+          </button>
+          <button class="filter-btn" id="f-ack" onclick="setFilter('ack')">
+            ACK
+          </button>
+          <button class="ack-all-btn" onclick="ackAll()">ACK TODAS</button>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Fecha / Hora</th>
-              <th>Planta</th>
-              <th>Tipo de Evento</th>
-              <th>Descripción</th>
-            </tr>
-          </thead>
-          <tbody id="logBody">
-            <tr>
-              <td colspan="4">
-                <div class="empty-state">
-                  <div class="empty-icon">⏳</div>
-                  <p>Cargando registros...</p>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+
+        <!-- Tabla -->
+        <div class="alarm-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>PRI</th>
+                <th>TIMESTAMP</th>
+                <th>TAG / TIPO</th>
+                <th>DESCRIPCIÓN</th>
+                <th>PLANTA</th>
+                <th>ESTADO</th>
+                <th>ACCIÓN</th>
+              </tr>
+            </thead>
+            <tbody id="alarmTable">
+              <tr>
+                <td colspan="7">
+                  <div class="empty-state">
+                    <span class="empty-icon">■</span>
+                    CARGANDO REGISTROS...
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </main>
+
+      <!-- ── SIDEBAR ── -->
+      <div class="sidebar">
+        <!-- Leyenda ISA-18.2 -->
+        <div class="panel legend-panel">
+          <div class="panel-header">
+            <span class="panel-id">ISA-18.2</span>
+            <span class="panel-desc"> · PRIORIDADES</span>
+          </div>
+          <div class="panel-body">
+            <div class="legend-row p1">
+              <div class="legend-priority p1-tag">P1</div>
+              <div>
+                <div class="legend-title">CRÍTICA</div>
+                <div class="legend-desc">Acción inmediata requerida</div>
+              </div>
+            </div>
+            <div class="legend-row p2">
+              <div class="legend-priority p2-tag">P2</div>
+              <div>
+                <div class="legend-title">ALTA</div>
+                <div class="legend-desc">Acción en menos de 10 min</div>
+              </div>
+            </div>
+            <div class="legend-row p3">
+              <div class="legend-priority p3-tag">P3</div>
+              <div>
+                <div class="legend-title">MEDIA</div>
+                <div class="legend-desc">Acción en menos de 1 hora</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conteo por tipo -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-id">ALM-STAT</span>
+            <span class="panel-desc"> · POR TIPO</span>
+          </div>
+          <div class="tipo-list" id="tipoList">
+            <div class="tipo-row">
+              <span class="tipo-name">CARGANDO...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info normativa -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-id">NORM-REF</span>
+            <span class="panel-desc"> · REFERENCIA</span>
+          </div>
+          <div
+            style="
+              padding: 10px;
+              font-family: var(--font-mono);
+              font-size: 10px;
+              color: var(--isa-text-dim);
+              line-height: 1.6;
+            "
+          >
+            <div>ANSI/ISA-18.2-2016</div>
+            <div>Management of Alarm Systems</div>
+            <div style="margin-top: 6px">ANSI/ISA-101.01-2015</div>
+            <div>Human Machine Interfaces</div>
+            <div style="margin-top: 8px; color: #888">Refresh: 5s</div>
+            <div id="lastRefresh" style="color: #888">ÚLT: --:--:--</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STATUS BAR ── -->
+    <div class="statusbar">
+      <span id="sb-srv">SRV: --</span>
+      <span>ALM-CONSOLE-001</span>
+      <span>ISA-18.2 / ISA-101.01-2015</span>
+      <span style="margin-left: auto" id="sb-clock">--:--:--</span>
+    </div>
 
     <script>
+      let currentFilter = "all";
+      const ackedAlarms = new Set();
+
       function updateClock() {
-        document.getElementById("clock").innerText =
-          new Date().toLocaleTimeString("es-EC", { hour12: false });
+        const t = new Date().toLocaleTimeString("es-EC", { hour12: false });
+        document.getElementById("clock").textContent = t;
+        document.getElementById("sb-clock").textContent = t;
       }
       setInterval(updateClock, 1000);
       updateClock();
 
-      const PLANTAS = {
-        1: { name: "Caldero", emoji: "🔥", bg: "#FFF7ED", color: "#C2410C" },
-        2: { name: "Solar", emoji: "☀️", bg: "#FEFCE8", color: "#A16207" },
-        3: { name: "Industrial", emoji: "🏭", bg: "#F1F5F9", color: "#475569" },
-      };
-
-      function tagClass(tipo) {
-        const map = {
-          SOBRECARGA: "tag-SOBRECARGA",
-          FLUJO: "tag-FLUJO",
-          EMERGENCIA: "tag-EMERGENCIA",
-          ENCENDIDO_SP: "tag-ENCENDIDO_SP",
-          MODO_CONEXION: "tag-MODO_CONEXION",
-          NIVEL_CRITICO: "tag-NIVEL_CRITICO",
-          TEMP_CRITICA: "tag-TEMP_CRITICA",
-        };
-        return map[tipo] || "tag-default";
+      function getP(tipo) {
+        if (["EMERGENCIA", "SOBRECARGA"].includes(tipo)) return "p1";
+        if (["FLUJO", "NIVEL_CRITICO", "TEMP_CRITICA"].includes(tipo))
+          return "p2";
+        return "p3";
       }
+
+      function getPLabel(tipo) {
+        const p = getP(tipo);
+        return p === "p1" ? "P1" : p === "p2" ? "P2" : "P3";
+      }
+
+      function setFilter(f) {
+        currentFilter = f;
+        ["all", "p1", "p2", "p3", "act", "ack"].forEach((id) => {
+          const btn = document.getElementById("f-" + id);
+          if (btn) btn.classList.toggle("active", id === f);
+        });
+        applyFilter();
+      }
+
+      function applyFilter() {
+        document.querySelectorAll("#alarmTable tr[data-p]").forEach((row) => {
+          const p = row.dataset.p;
+          const estado = row.dataset.estado;
+          let show = true;
+          if (currentFilter === "p1") show = p === "p1";
+          if (currentFilter === "p2") show = p === "p2";
+          if (currentFilter === "p3") show = p === "p3";
+          if (currentFilter === "act") show = estado === "activa";
+          if (currentFilter === "ack") show = estado === "ack";
+          row.classList.toggle("hidden-row", !show);
+        });
+      }
+
+      function ackAlarm(id) {
+        ackedAlarms.add(parseInt(id));
+        fetchLogs();
+      }
+
+      function ackAll() {
+        document.querySelectorAll("#alarmTable tr[data-p]").forEach((row) => {
+          if (row.dataset.estado === "activa")
+            ackedAlarms.add(parseInt(row.dataset.id));
+        });
+        fetchLogs();
+      }
+
+      const PLANTAS = {
+        1: "CALDERO",
+        2: "SOLAR",
+        3: "INDUSTRIAL",
+      };
 
       async function fetchLogs() {
         try {
           const res = await fetch("/api/alarmas/historico");
           const logs = await res.json();
 
-          // Stats
-          document.getElementById("stat-total").textContent = logs.length;
-          document.getElementById("stat-caldero").textContent = logs.filter(
-            (l) => l.dispositivo_id == 1,
-          ).length;
-          document.getElementById("stat-solar").textContent = logs.filter(
-            (l) => l.dispositivo_id == 2,
-          ).length;
-          document.getElementById("stat-activas").textContent = logs.filter(
-            (l) => l.activa,
-          ).length;
+          document.getElementById("serverStatus").textContent = "EN LÍNEA";
+          document.getElementById("sb-srv").textContent = "SRV: OK";
+          document.getElementById("sb-srv").className = "sb-ok";
+          document.getElementById("lastRefresh").textContent =
+            "ÚLT: " + new Date().toLocaleTimeString("es-EC", { hour12: false });
 
+          // Stats
+          const p1c = logs.filter((l) => getP(l.tipo) === "p1").length;
+          const p2c = logs.filter((l) => getP(l.tipo) === "p2").length;
+          const p3c = logs.filter((l) => getP(l.tipo) === "p3").length;
+          const akc = logs.filter((l) => ackedAlarms.has(l.id)).length;
+
+          document.getElementById("stat-p1").textContent = p1c;
+          document.getElementById("stat-p2").textContent = p2c;
+          document.getElementById("stat-p3").textContent = p3c;
+          document.getElementById("stat-ack").textContent = akc;
+          document.getElementById("totalCount").textContent =
+            `(${logs.length} REGISTROS)`;
+
+          // Banner P1 sin ACK
+          const p1Activas = logs.filter(
+            (l) => getP(l.tipo) === "p1" && !ackedAlarms.has(l.id),
+          );
+          const banner = document.getElementById("alarmBanner");
+          if (p1Activas.length > 0) {
+            banner.classList.add("active");
+            document.getElementById("bannerCount").textContent =
+              `${p1Activas.length} P1 SIN ACK`;
+          } else {
+            banner.classList.remove("active");
+          }
+
+          // Tabla
           if (!logs.length) {
-            document.getElementById("logBody").innerHTML = `
-        <tr><td colspan="4">
+            document.getElementById("alarmTable").innerHTML = `
+        <tr><td colspan="7">
           <div class="empty-state">
-            <div class="empty-icon">✅</div>
-            <p>Sin eventos registrados</p>
-            <span>El sistema opera con normalidad</span>
+            <span class="empty-icon">■</span>
+            SIN REGISTROS EN LA BITÁCORA
           </div>
         </td></tr>`;
             return;
           }
 
-          document.getElementById("logBody").innerHTML = logs
+          const tbody = document.getElementById("alarmTable");
+          tbody.innerHTML = logs
             .map((l) => {
-              const p = PLANTAS[l.dispositivo_id] || {
-                name: "Desconocido",
-                emoji: "❓",
-                bg: "#F1F5F9",
-                color: "#475569",
-              };
-              const fecha = new Date(l.registrado_en).toLocaleString("es-EC", {
+              const p = getP(l.tipo);
+              const pLabel = getPLabel(l.tipo);
+              const isAck = ackedAlarms.has(l.id);
+              const estado = isAck ? "ack" : l.activa ? "activa" : "resuelta";
+              const rowCls = isAck ? "row-ack" : `row-${p}`;
+              const ts = new Date(l.registrado_en).toLocaleString("es-EC", {
                 hour12: false,
               });
+              const planta =
+                PLANTAS[l.dispositivo_id] || `ID:${l.dispositivo_id}`;
+
               return `
-        <tr>
-          <td class="fecha-cell">${fecha}</td>
+        <tr class="${rowCls}" data-p="${p}" data-estado="${estado}" data-id="${l.id}">
+          <td class="priority-cell ${p}-tag">${pLabel}</td>
+          <td style="white-space:nowrap">${ts}</td>
+          <td style="font-weight:600">${l.tipo.replace(/_/g, " ")}</td>
+          <td>${l.descripcion || "—"}</td>
+          <td><span class="planta-tag">${planta}</span></td>
           <td>
-            <span class="planta-badge" style="background:${p.bg};color:${p.color}">
-              ${p.emoji} ${p.name}
+            <span class="estado-pill estado-${estado}">
+              ${estado.toUpperCase()}
             </span>
           </td>
-          <td><span class="tag ${tagClass(l.tipo)}">${l.tipo.replace(/_/g, " ")}</span></td>
-          <td style="color:var(--text-2)">${l.descripcion || "—"}</td>
+          <td>
+            ${
+              !isAck && l.activa
+                ? `<button class="ack-btn" onclick="ackAlarm(${l.id})">ACK</button>`
+                : `<span style="font-family:var(--font-mono);font-size:9px;color:#888">—</span>`
+            }
+          </td>
         </tr>`;
             })
             .join("");
+
+          // Conteo por tipo
+          const tipos = {};
+          logs.forEach((l) => {
+            tipos[l.tipo] = (tipos[l.tipo] || 0) + 1;
+          });
+          document.getElementById("tipoList").innerHTML = Object.entries(tipos)
+            .sort((a, b) => b[1] - a[1])
+            .map(
+              ([tipo, cnt]) => `
+        <div class="tipo-row">
+          <span class="tipo-name">${tipo.replace(/_/g, " ")}</span>
+          <span class="tipo-count ${getP(tipo)}-tag">${cnt}</span>
+        </div>`,
+            )
+            .join("");
+
+          applyFilter();
         } catch (e) {
-          document.getElementById("logBody").innerHTML = `
-      <tr><td colspan="4">
+          document.getElementById("serverStatus").textContent = "FALLO";
+          document.getElementById("sb-srv").textContent = "SRV: FAULT";
+          document.getElementById("sb-srv").className = "sb-err";
+          document.getElementById("alarmTable").innerHTML = `
+      <tr><td colspan="7">
         <div class="empty-state">
-          <div class="empty-icon">⚠️</div>
-          <p>Error al conectar con el servidor</p>
-          <span>Verifica que el servidor esté activo</span>
+          <span class="empty-icon">■</span>
+          ERROR DE CONEXIÓN CON EL SERVIDOR
         </div>
       </td></tr>`;
         }

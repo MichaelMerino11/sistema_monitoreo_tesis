@@ -3,38 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MAINTRONIC — Dashboard</title>
+    <title>MAINTRONIC — Dashboard ISA-101</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <style>
+      /*
+  ANSI/ISA-101.01-2015 COMPLIANCE
+  ─────────────────────────────────
+  • Fondo gris neutro Level 1: #B4B4B4
+  • Elementos en reposo: gris oscuro desaturado
+  • Alarma P1 (Crítica):  fondo ROJO    #CC0000, parpadeo
+  • Alarma P2 (Alta):     fondo NARANJA #CC6600, parpadeo
+  • Alarma P3 (Media):    fondo AMARILLO #CCCC00
+  • Estado normal:        sin color llamativo
+  • Colores decorativos:  prohibidos en estado normal
+  • ACK requerido en alarmas activas
+*/
+
       :root {
-        --primary: #2563eb;
-        --primary-lt: #eff6ff;
-        --amber: #d97706;
-        --amber-lt: #fffbeb;
-        --yellow: #eab308;
-        --yellow-lt: #fefce8;
-        --blue: #0ea5e9;
-        --blue-lt: #f0f9ff;
-        --green: #059669;
-        --green-lt: #ecfdf5;
-        --orange: #ea580c;
-        --orange-lt: #fff7ed;
-        --red: #dc2626;
-        --red-lt: #fef2f2;
-        --slate: #475569;
-        --border: #e2e8f0;
-        --bg: #f1f5f9;
-        --white: #ffffff;
-        --text: #0f172a;
-        --text-2: #64748b;
-        --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
-        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
-        --radius: 16px;
-        --font: "Nunito", sans-serif;
-        --font2: "Space Grotesk", sans-serif;
+        /* ISA-101 Palette */
+        --isa-bg: #b4b4b4;
+        --isa-bg-panel: #a0a0a0;
+        --isa-bg-widget: #c8c8c8;
+        --isa-border: #787878;
+        --isa-border-lt: #909090;
+        --isa-text: #1a1a1a;
+        --isa-text-2: #3a3a3a;
+        --isa-text-dim: #606060;
+
+        /* ISA-101 Estados */
+        --isa-normal: #3a3a3a;
+        --isa-ok: #2a5c2a; /* verde solo para OK explícito */
+        --isa-ok-bg: #d4ead4;
+        --isa-p3: #7a7a00; /* amarillo desaturado — advertencia */
+        --isa-p3-bg: #e8e800;
+        --isa-p2: #cc6600; /* naranja — alarma alta */
+        --isa-p2-bg: #ffb347;
+        --isa-p1: #cc0000; /* rojo — crítica */
+        --isa-p1-bg: #ff4444;
+        --isa-offline: #555555;
+
+        /* Tipografía ISA */
+        --font-mono: "IBM Plex Mono", monospace;
+        --font-sans: "IBM Plex Sans", sans-serif;
+
+        --radius-sm: 3px;
+        --radius: 5px;
       }
 
       * {
@@ -44,370 +60,425 @@
       }
 
       body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: var(--font);
+        background: var(--isa-bg);
+        color: var(--isa-text);
+        font-family: var(--font-sans);
+        font-size: 13px;
         min-height: 100vh;
+        user-select: none;
       }
 
-      /* ── HEADER ── */
-      header {
-        background: var(--white);
-        border-bottom: 1px solid var(--border);
-        padding: 0 32px;
+      /* ── TITLE BAR (Level 1 Header) ── */
+      .titlebar {
+        background: #2a2a2a;
+        color: #e0e0e0;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: 68px;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
-      }
-
-      .logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .logo-icon {
-        width: 42px;
-        height: 42px;
-        background: linear-gradient(135deg, #eff6ff, #dbeafe);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
-      }
-      .logo-name {
-        font-family: var(--font2);
-        font-size: 20px;
-        font-weight: 700;
-      }
-      .logo-name span {
-        color: var(--primary);
-      }
-      .logo-sub {
-        font-size: 11px;
-        color: var(--text-2);
-        margin-top: 1px;
-        font-weight: 500;
-      }
-
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .status-pill {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        padding: 6px 14px;
-        border-radius: 20px;
+        padding: 0 16px;
+        height: 36px;
+        border-bottom: 2px solid #000;
+        font-family: var(--font-mono);
         font-size: 12px;
-        font-weight: 700;
-        border: 1px solid;
-      }
-      .status-pill.online {
-        background: var(--green-lt);
-        border-color: #a7f3d0;
-        color: var(--green);
-      }
-      .status-pill.offline {
-        background: var(--red-lt);
-        border-color: #fecaca;
-        color: var(--red);
       }
 
-      .status-dot {
-        width: 7px;
-        height: 7px;
+      .titlebar-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .titlebar-id {
+        font-weight: 600;
+        letter-spacing: 1px;
+        color: #f0f0f0;
+      }
+
+      .titlebar-desc {
+        color: #a0a0a0;
+        font-size: 11px;
+      }
+
+      .titlebar-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .sys-clock {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: #d0d0d0;
+        letter-spacing: 1px;
+      }
+
+      .server-indicator {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: #a0a0a0;
+      }
+
+      .server-dot {
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
-        background: currentColor;
+        background: #2a2a2a;
+        border: 1px solid #555;
       }
-      .status-pill.online .status-dot {
-        animation: pulse 2s infinite;
+      .server-dot.ok {
+        background: #44aa44;
+        border-color: #22aa22;
+      }
+      .server-dot.fault {
+        background: #cc0000;
+        border-color: #aa0000;
       }
 
-      @keyframes pulse {
+      /* ── ALARM BANNER ── */
+      .alarm-banner {
+        display: none;
+        background: var(--isa-p1);
+        color: #fff;
+        padding: 4px 16px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        align-items: center;
+        justify-content: space-between;
+        animation: blink-banner 1s step-end infinite;
+        border-bottom: 2px solid #880000;
+      }
+      .alarm-banner.active {
+        display: flex;
+      }
+
+      @keyframes blink-banner {
+        0%,
+        100% {
+          background: var(--isa-p1);
+        }
+        50% {
+          background: #880000;
+        }
+      }
+
+      /* ── MAIN LAYOUT ── */
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr 260px;
+        grid-template-rows: auto auto auto;
+        gap: 6px;
+        padding: 6px;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
+      /* ── PANEL BASE ── */
+      .panel {
+        background: var(--isa-bg-widget);
+        border: 1px solid var(--isa-border);
+        border-top: 3px solid var(--isa-border);
+      }
+
+      .panel-header {
+        background: #787878;
+        color: #f0f0f0;
+        padding: 4px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #606060;
+      }
+
+      .panel-id {
+        color: #d0d0d0;
+      }
+      .panel-desc {
+        color: #b0b0b0;
+        font-weight: 400;
+      }
+
+      .panel-status {
+        font-size: 10px;
+        padding: 1px 6px;
+        border: 1px solid;
+        border-radius: 2px;
+      }
+      .panel-status.online {
+        color: #44aa44;
+        border-color: #44aa44;
+      }
+      .panel-status.offline {
+        color: #888;
+        border-color: #888;
+      }
+
+      .panel-body {
+        padding: 12px;
+      }
+
+      /* ── PROCESS VARIABLE DISPLAY (PV) ── */
+      .pv-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .pv-block {
+        background: #2a2a2a;
+        border: 1px solid #505050;
+        padding: 10px 12px;
+        position: relative;
+      }
+
+      .pv-tag {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: #888;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+      }
+
+      .pv-value {
+        font-family: var(--font-mono);
+        font-size: 36px;
+        font-weight: 600;
+        color: #e8e8e8;
+        line-height: 1;
+        letter-spacing: -1px;
+      }
+
+      .pv-value.alarm-p1 {
+        color: var(--isa-p1-bg);
+        animation: blink-val 0.8s step-end infinite;
+      }
+      .pv-value.alarm-p2 {
+        color: var(--isa-p2-bg);
+        animation: blink-val 1.2s step-end infinite;
+      }
+      .pv-value.alarm-p3 {
+        color: var(--isa-p3-bg);
+      }
+
+      @keyframes blink-val {
         0%,
         100% {
           opacity: 1;
         }
         50% {
-          opacity: 0.4;
+          opacity: 0.3;
         }
       }
 
-      #clock {
-        font-family: var(--font2);
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--slate);
-        background: var(--bg);
-        padding: 6px 14px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
+      .pv-unit {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: #888;
+        margin-left: 4px;
       }
 
-      /* ── MAIN ── */
-      main {
-        max-width: 1600px;
-        margin: 0 auto;
-        padding: 28px 24px;
-        display: grid;
-        grid-template-columns: 1fr 1fr 300px;
-        grid-template-rows: auto auto auto;
-        gap: 20px;
-      }
-
-      /* ── SECTION LABEL ── */
-      .section-label {
-        font-size: 11px;
-        font-weight: 800;
+      .pv-desc {
+        font-size: 10px;
+        color: #707070;
+        margin-top: 4px;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        color: var(--text-2);
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
+        letter-spacing: 0.3px;
       }
 
-      /* ── CARD BASE ── */
-      .card {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        overflow: hidden;
-        transition: box-shadow 0.2s;
-      }
-      .card:hover {
-        box-shadow: var(--shadow-lg);
+      /* ── RANGE BAR (ISA-101 Process Variable Bar) ── */
+      .range-bar-wrap {
+        margin-top: 6px;
+        position: relative;
       }
 
-      .card-header {
-        padding: 16px 20px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .card-header-icon {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 17px;
-      }
-      .card-header-title {
-        font-family: var(--font2);
-        font-size: 14px;
-        font-weight: 600;
-      }
-      .card-header-sub {
-        font-size: 11px;
-        color: var(--text-2);
-        margin-top: 1px;
-      }
-      .card-body {
-        padding: 20px;
-      }
-
-      /* ── CALDERO CARD ── */
-      .card-caldero {
-        grid-column: 1;
-        grid-row: 1;
-      }
-
-      .metrics-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-bottom: 12px;
-      }
-
-      .metric-box {
-        background: var(--bg);
-        border-radius: 12px;
-        padding: 16px;
-        text-align: center;
-        border: 1px solid var(--border);
+      .range-bar-track {
+        height: 8px;
+        background: #404040;
+        border: 1px solid #555;
         position: relative;
         overflow: hidden;
       }
-      .metric-box::before {
-        content: "";
+
+      .range-bar-zones {
+        position: absolute;
+        inset: 0;
+        display: flex;
+      }
+
+      .zone-lo-lo {
+        background: #cc0000;
+        opacity: 0.7;
+      }
+      .zone-lo {
+        background: #cc6600;
+        opacity: 0.7;
+      }
+      .zone-normal {
+        background: #2a5c2a;
+        opacity: 0.5;
+      }
+      .zone-hi {
+        background: #cc6600;
+        opacity: 0.7;
+      }
+      .zone-hi-hi {
+        background: #cc0000;
+        opacity: 0.7;
+      }
+
+      .range-bar-fill {
         position: absolute;
         top: 0;
         left: 0;
-        right: 0;
-        height: 3px;
-        border-radius: 3px 3px 0 0;
-      }
-      .metric-box.temp::before {
-        background: linear-gradient(90deg, #f59e0b, #d97706);
-      }
-      .metric-box.nivel::before {
-        background: linear-gradient(90deg, #0ea5e9, #2563eb);
+        bottom: 0;
+        background: #d8d8d8;
+        transition: width 0.5s ease;
+        border-right: 2px solid #fff;
       }
 
-      .metric-icon {
-        font-size: 22px;
-        margin-bottom: 6px;
-      }
-      .metric-val {
-        font-family: var(--font2);
-        font-size: 36px;
-        font-weight: 700;
-        line-height: 1;
-        margin-bottom: 2px;
-        transition: all 0.3s;
-      }
-      .metric-val.temp {
-        color: var(--amber);
-      }
-      .metric-val.nivel {
-        color: var(--blue);
-      }
-      .metric-unit {
-        font-size: 12px;
-        color: var(--text-2);
-        font-weight: 600;
-      }
-      .metric-label {
-        font-size: 10px;
-        color: var(--text-2);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin-top: 4px;
-      }
-
-      .last-time {
-        font-size: 11px;
-        color: var(--text-2);
-        text-align: right;
-        margin-top: 8px;
-        font-family: var(--font2);
-        font-weight: 500;
-      }
-
-      /* ── SOLAR CARD ── */
-      .card-solar {
-        grid-column: 2;
-        grid-row: 1;
-      }
-
-      .solar-mini-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-bottom: 14px;
-      }
-      .solar-mini {
-        background: var(--bg);
-        border-radius: 10px;
-        padding: 12px 8px;
-        text-align: center;
-        border: 1px solid var(--border);
-      }
-      .solar-mini-val {
-        font-family: var(--font2);
-        font-size: 20px;
-        font-weight: 700;
-        line-height: 1;
-        margin-bottom: 2px;
-      }
-      .solar-mini-unit {
-        font-size: 10px;
-        color: var(--text-2);
-        font-weight: 600;
-      }
-      .solar-mini-name {
-        font-size: 9px;
-        color: var(--text-2);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-top: 3px;
-      }
-
-      .energy-bar-wrap {
-        margin-top: 4px;
-      }
-      .energy-bar-top {
+      .range-labels {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 6px;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: #707070;
+        margin-top: 2px;
       }
-      .energy-bar-label {
-        font-size: 11px;
-        color: var(--text-2);
+
+      /* ── CHART ── */
+      .chart-panel {
+        grid-column: 1;
+      }
+      .chart-panel-2 {
+        grid-column: 2;
+      }
+
+      .chart-wrap {
+        height: 110px;
+        position: relative;
+        background: #1e1e1e;
+        border: 1px solid #444;
+        margin-top: 8px;
+      }
+
+      .chart-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: #707070;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      /* ── SOLAR GRID ── */
+      .solar-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+
+      .solar-pv {
+        background: #2a2a2a;
+        border: 1px solid #505050;
+        padding: 8px;
+        text-align: center;
+      }
+
+      .solar-pv-val {
+        font-family: var(--font-mono);
+        font-size: 20px;
         font-weight: 600;
-      }
-      .energy-bar-pct {
-        font-family: var(--font2);
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--yellow);
-      }
-      .energy-bar-bg {
-        height: 8px;
-        background: #f1f5f9;
-        border-radius: 4px;
-        overflow: hidden;
-      }
-      .energy-bar-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #eab308, #f59e0b);
-        border-radius: 4px;
-        transition: width 1s ease;
-        box-shadow: 0 0 6px rgba(234, 179, 8, 0.4);
+        color: #d8d8d8;
+        line-height: 1;
       }
 
-      /* ── ALARMAS CARD ── */
-      .card-alarmas {
-        grid-column: 3;
-        grid-row: 1/3;
+      .solar-pv-unit {
+        font-size: 10px;
+        color: #707070;
+        font-family: var(--font-mono);
+      }
+      .solar-pv-tag {
+        font-size: 9px;
+        color: #606060;
+        font-family: var(--font-mono);
+        margin-top: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
       }
 
-      .alarmas-list {
-        max-height: 440px;
-        overflow-y: auto;
+      /* ── ENERGY BAR ── */
+      .energy-section {
+        margin-top: 8px;
+      }
+      .energy-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: #707070;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
         display: flex;
-        flex-direction: column;
-        gap: 10px;
+        justify-content: space-between;
+        margin-bottom: 3px;
       }
-      .alarmas-list::-webkit-scrollbar {
-        width: 4px;
+      .energy-track {
+        height: 10px;
+        background: #2a2a2a;
+        border: 1px solid #505050;
+        position: relative;
       }
-      .alarmas-list::-webkit-scrollbar-track {
-        background: var(--bg);
+      .energy-fill {
+        height: 100%;
+        background: #606060;
+        transition: width 1s ease;
       }
-      .alarmas-list::-webkit-scrollbar-thumb {
-        background: var(--border);
-        border-radius: 2px;
+      .energy-fill.good {
+        background: #2a5c2a;
       }
 
-      .alarma-item {
-        background: var(--red-lt);
-        border-left: 3px solid var(--red);
-        border-radius: 8px;
-        padding: 12px 14px;
+      /* ── ALARM PANEL ── */
+      .alarm-panel {
+        grid-column: 3;
+        grid-row: 1 / 4;
+      }
+
+      .alarm-list {
+        max-height: 480px;
+        overflow-y: auto;
+      }
+
+      .alarm-list::-webkit-scrollbar {
+        width: 6px;
+      }
+      .alarm-list::-webkit-scrollbar-track {
+        background: #909090;
+      }
+      .alarm-list::-webkit-scrollbar-thumb {
+        background: #505050;
+      }
+
+      .alarm-row {
+        border-bottom: 1px solid #a0a0a0;
+        padding: 7px 8px;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 6px;
+        align-items: start;
         animation: slideIn 0.3s ease;
       }
+
       @keyframes slideIn {
         from {
-          transform: translateX(-8px);
+          transform: translateX(8px);
           opacity: 0;
         }
         to {
@@ -415,360 +486,487 @@
           opacity: 1;
         }
       }
-      .alarma-tipo {
+
+      .alarm-row.p1 {
+        background: #ff4444;
+        animation: blink-row 1s step-end infinite;
+      }
+      .alarm-row.p2 {
+        background: #ffb347;
+      }
+      .alarm-row.p3 {
+        background: #e8e800;
+      }
+      .alarm-row.ack {
+        background: #909090;
+        opacity: 0.7;
+      }
+
+      @keyframes blink-row {
+        0%,
+        100% {
+          background: #ff4444;
+        }
+        50% {
+          background: #cc0000;
+        }
+      }
+
+      .alarm-priority {
+        font-family: var(--font-mono);
         font-size: 11px;
-        font-weight: 800;
-        color: var(--red);
-        margin-bottom: 3px;
-      }
-      .alarma-desc {
-        font-size: 12px;
-        color: var(--text-2);
-        margin-bottom: 3px;
-      }
-      .alarma-meta {
-        font-family: var(--font2);
-        font-size: 10px;
-        color: var(--text-2);
-      }
-      .alarma-conexion {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 10px;
-        font-weight: 800;
-        padding: 2px 7px;
-        border-radius: 5px;
-        margin-left: 6px;
-      }
-      .alarma-conexion.wifi {
-        background: var(--green-lt);
-        color: var(--green);
-      }
-      .alarma-conexion.bluetooth {
-        background: var(--primary-lt);
-        color: var(--primary);
-      }
-
-      .no-alarmas {
-        text-align: center;
-        padding: 40px 16px;
-        color: var(--text-2);
-      }
-      .no-alarmas .icon {
-        font-size: 40px;
-        margin-bottom: 10px;
-      }
-      .no-alarmas p {
-        font-size: 14px;
         font-weight: 700;
-        color: var(--green);
-      }
-      .no-alarmas span {
-        font-size: 12px;
-      }
-
-      /* ── CHART CARDS ── */
-      .card-chart-t {
-        grid-column: 1;
-        grid-row: 2;
-      }
-      .card-chart-n {
-        grid-column: 2;
-        grid-row: 2;
+        width: 24px;
+        text-align: center;
+        color: #1a1a1a;
       }
 
-      .chart-wrap {
-        height: 130px;
-        position: relative;
+      .alarm-content {
+        min-width: 0;
+      }
+      .alarm-type {
+        font-size: 11px;
+        font-weight: 700;
+        color: #1a1a1a;
+        text-transform: uppercase;
+      }
+      .alarm-desc {
+        font-size: 10px;
+        color: #3a3a3a;
+        margin-top: 1px;
+      }
+      .alarm-time {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: #3a3a3a;
+        white-space: nowrap;
       }
 
-      /* ── FLICKER ── */
-      @keyframes flicker {
-        0% {
-          opacity: 1;
-        }
-        30% {
-          opacity: 0.6;
-        }
-        60% {
-          opacity: 1;
-        }
+      .alarm-ack-btn {
+        background: #3a3a3a;
+        color: #d0d0d0;
+        border: 1px solid #555;
+        padding: 2px 6px;
+        font-size: 9px;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        transition: background 0.15s;
       }
-      .updated {
-        animation: flicker 0.4s ease;
+      .alarm-ack-btn:hover {
+        background: #555;
+      }
+
+      .no-alarms {
+        padding: 24px 12px;
+        text-align: center;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: #707070;
+      }
+      .no-alarms-icon {
+        font-size: 24px;
+        margin-bottom: 6px;
+        display: block;
+      }
+
+      /* ── SUMMARY ROW ── */
+      .summary-row {
+        grid-column: 1 / 3;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+
+      .summary-box {
+        background: var(--isa-bg-widget);
+        border: 1px solid var(--isa-border);
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .summary-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 1px solid #505050;
+        flex-shrink: 0;
+      }
+      .summary-indicator.on {
+        background: #44aa44;
+      }
+      .summary-indicator.off {
+        background: #cc0000;
+      }
+      .summary-indicator.warn {
+        background: #cccc00;
+      }
+
+      .summary-label {
+        font-size: 10px;
+        color: var(--isa-text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+      .summary-value {
+        font-family: var(--font-mono);
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--isa-text);
+      }
+
+      /* ── CHART GRID ROW ── */
+      .charts-row {
+        grid-column: 1 / 3;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+      }
+
+      /* ── STATUS BAR ── */
+      .statusbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #1a1a1a;
+        color: #909090;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        height: 22px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        gap: 24px;
+        border-top: 1px solid #333;
+        z-index: 50;
+      }
+
+      .statusbar-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .statusbar-item.ok {
+        color: #44aa44;
+      }
+      .statusbar-item.err {
+        color: #cc0000;
       }
 
       /* ── RESPONSIVE ── */
       @media (max-width: 1200px) {
-        main {
+        .layout {
           grid-template-columns: 1fr 1fr;
         }
-        .card-alarmas {
+        .alarm-panel {
           grid-column: 1/3;
-          grid-row: 3;
+          grid-row: auto;
         }
-        .card-chart-t {
-          grid-column: 1;
-          grid-row: 4;
+        .summary-row {
+          grid-column: 1/3;
         }
-        .card-chart-n {
-          grid-column: 2;
-          grid-row: 4;
+        .charts-row {
+          grid-column: 1/3;
         }
       }
+
       @media (max-width: 700px) {
-        header {
-          padding: 0 16px;
-        }
-        main {
+        .layout {
           grid-template-columns: 1fr;
-          padding: 16px 12px;
         }
-        .card-caldero,
-        .card-solar,
-        .card-alarmas,
-        .card-chart-t,
-        .card-chart-n {
+        .alarm-panel,
+        .summary-row,
+        .charts-row {
           grid-column: 1;
         }
-        .card-alarmas {
-          grid-row: auto;
+        .pv-group {
+          grid-template-columns: 1fr 1fr;
+        }
+        .solar-grid {
+          grid-template-columns: repeat(3, 1fr);
         }
       }
     </style>
   </head>
   <body>
-    <header>
-      <div class="logo">
-        <div class="logo-icon">⚙️</div>
-        <div>
-          <div class="logo-name">MAIN<span>TRONIC</span></div>
-          <div class="logo-sub">Sistema de Monitoreo Industrial</div>
-        </div>
+    <!-- ── TITLE BAR ── -->
+    <div class="titlebar">
+      <div class="titlebar-left">
+        <span class="titlebar-id">MAINTRONIC / HMI-L1-001</span>
+        <span class="titlebar-desc"
+          >SISTEMA DE MONITOREO INDUSTRIAL — VISTA GENERAL</span
+        >
       </div>
-      <div class="header-right">
-        <div class="status-pill online" id="serverPill">
-          <div class="status-dot"></div>
-          <span id="serverStatus">Conectando...</span>
+      <div class="titlebar-right">
+        <div class="server-indicator">
+          <div class="server-dot" id="serverDot"></div>
+          <span id="serverStatus">CONECTANDO</span>
         </div>
-        <div id="clock">--:--:--</div>
+        <div class="sys-clock" id="clock">00:00:00</div>
       </div>
-    </header>
+    </div>
 
-    <main>
-      <!-- ── CALDERO ── -->
-      <div class="card card-caldero">
-        <div class="card-header">
-          <div class="card-header-icon" style="background: var(--amber-lt)">
-            🔥
-          </div>
+    <!-- ── ALARM BANNER ── -->
+    <div class="alarm-banner" id="alarmBanner">
+      <span>⚠ ALARMAS ACTIVAS — REQUIEREN ATENCIÓN DEL OPERADOR</span>
+      <span id="bannerCount"></span>
+    </div>
+
+    <div class="layout" style="padding-bottom: 28px">
+      <!-- ── PANEL CALDERO ── -->
+      <div class="panel" style="grid-column: 1; grid-row: 1">
+        <div class="panel-header">
           <div>
-            <div class="card-header-title">Planta Caldero</div>
-            <div class="card-header-sub">Temperatura · Nivel de agua</div>
+            <span class="panel-id">TAG: CALD-001</span>
+            <span class="panel-desc"> · CALDERO INDUSTRIAL</span>
           </div>
+          <span class="panel-status offline" id="calderoStatus">OFFLINE</span>
         </div>
-        <div class="card-body">
-          <div class="metrics-row">
-            <div class="metric-box temp">
-              <div class="metric-icon">🌡️</div>
-              <div class="metric-val temp updated" id="valTemp">--.-</div>
-              <div class="metric-unit">°C</div>
-              <div class="metric-label">Temperatura</div>
+        <div class="panel-body">
+          <div class="pv-group">
+            <!-- Temperatura -->
+            <div class="pv-block">
+              <div class="pv-tag">TT-001 · TEMPERATURA</div>
+              <div>
+                <span class="pv-value" id="valTemp">--.-</span>
+                <span class="pv-unit">°C</span>
+              </div>
+              <div class="pv-desc">Temperatura proceso caldero</div>
+              <div class="range-bar-wrap">
+                <div class="range-bar-track">
+                  <div class="range-bar-zones">
+                    <div class="zone-lo-lo" style="width: 10%"></div>
+                    <div class="zone-lo" style="width: 10%"></div>
+                    <div class="zone-normal" style="width: 60%"></div>
+                    <div class="zone-hi" style="width: 10%"></div>
+                    <div class="zone-hi-hi" style="width: 10%"></div>
+                  </div>
+                  <div
+                    class="range-bar-fill"
+                    id="barTemp"
+                    style="width: 0%"
+                  ></div>
+                </div>
+                <div class="range-labels">
+                  <span>0°C</span><span>LOЛО</span><span>NORMAL</span
+                  ><span>HIHI</span><span>200°C</span>
+                </div>
+              </div>
             </div>
-            <div class="metric-box nivel">
-              <div class="metric-icon">💧</div>
-              <div class="metric-val nivel" id="valNivel">--.-</div>
-              <div class="metric-unit">cm</div>
-              <div class="metric-label">Nivel</div>
+
+            <!-- Nivel -->
+            <div class="pv-block">
+              <div class="pv-tag">LT-001 · NIVEL</div>
+              <div>
+                <span class="pv-value" id="valNivel">--.-</span>
+                <span class="pv-unit">cm</span>
+              </div>
+              <div class="pv-desc">Nivel agua en caldera</div>
+              <div class="range-bar-wrap">
+                <div class="range-bar-track">
+                  <div class="range-bar-zones">
+                    <div class="zone-lo-lo" style="width: 10%"></div>
+                    <div class="zone-lo" style="width: 15%"></div>
+                    <div class="zone-normal" style="width: 50%"></div>
+                    <div class="zone-hi" style="width: 15%"></div>
+                    <div class="zone-hi-hi" style="width: 10%"></div>
+                  </div>
+                  <div
+                    class="range-bar-fill"
+                    id="barNivel"
+                    style="width: 0%"
+                  ></div>
+                </div>
+                <div class="range-labels">
+                  <span>0cm</span><span>LOLO</span><span>NORMAL</span
+                  ><span>HIHI</span><span>100cm</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="last-time" id="lastCaldero">Sin datos aún</div>
+          <div
+            style="
+              font-family: var(--font-mono);
+              font-size: 10px;
+              color: #707070;
+              text-align: right;
+            "
+            id="lastCaldero"
+          >
+            SIN DATOS
+          </div>
         </div>
       </div>
 
-      <!-- ── SOLAR ── -->
-      <div class="card card-solar">
-        <div class="card-header">
-          <div class="card-header-icon" style="background: var(--yellow-lt)">
-            ☀️
-          </div>
+      <!-- ── PANEL SOLAR ── -->
+      <div class="panel" style="grid-column: 2; grid-row: 1">
+        <div class="panel-header">
           <div>
-            <div class="card-header-title">Planta Solar</div>
-            <div class="card-header-sub">
-              Voltaje · Corriente · Potencia · kWh
-            </div>
+            <span class="panel-id">TAG: SOLR-001</span>
+            <span class="panel-desc"> · PLANTA FOTOVOLTAICA</span>
           </div>
+          <span class="panel-status offline" id="solarStatus">OFFLINE</span>
         </div>
-        <div class="card-body">
-          <div class="solar-mini-grid">
-            <div class="solar-mini">
-              <div
-                class="solar-mini-val"
-                style="color: var(--green)"
-                id="valVoltPanel"
-              >
-                --.-
-              </div>
-              <div class="solar-mini-unit">V</div>
-              <div class="solar-mini-name">V. Panel</div>
+        <div class="panel-body">
+          <div class="solar-grid">
+            <div class="solar-pv">
+              <div class="solar-pv-val" id="valVP">--.-</div>
+              <div class="solar-pv-unit">V</div>
+              <div class="solar-pv-tag">VT-P · Panel</div>
             </div>
-            <div class="solar-mini">
-              <div
-                class="solar-mini-val"
-                style="color: var(--yellow)"
-                id="valVoltBat"
-              >
-                --.-
-              </div>
-              <div class="solar-mini-unit">V</div>
-              <div class="solar-mini-name">V. Batería</div>
+            <div class="solar-pv">
+              <div class="solar-pv-val" id="valVB">--.-</div>
+              <div class="solar-pv-unit">V</div>
+              <div class="solar-pv-tag">VT-B · Batería</div>
             </div>
-            <div class="solar-mini">
-              <div
-                class="solar-mini-val"
-                style="color: var(--blue)"
-                id="valVoltInv"
-              >
-                --.-
-              </div>
-              <div class="solar-mini-unit">V</div>
-              <div class="solar-mini-name">V. Inversor</div>
+            <div class="solar-pv">
+              <div class="solar-pv-val" id="valVI">--.-</div>
+              <div class="solar-pv-unit">V</div>
+              <div class="solar-pv-tag">VT-I · Inversor</div>
             </div>
-            <div class="solar-mini">
-              <div
-                class="solar-mini-val"
-                style="color: var(--green)"
-                id="valCorrPanel"
-              >
-                --.-
-              </div>
-              <div class="solar-mini-unit">A</div>
-              <div class="solar-mini-name">I. Panel</div>
+            <div class="solar-pv">
+              <div class="solar-pv-val" id="valIP">--.-</div>
+              <div class="solar-pv-unit">A</div>
+              <div class="solar-pv-tag">IT-P · Panel</div>
             </div>
-            <div class="solar-mini">
-              <div
-                class="solar-mini-val"
-                style="color: var(--yellow)"
-                id="valCorrBat"
-              >
-                --.-
-              </div>
-              <div class="solar-mini-unit">A</div>
-              <div class="solar-mini-name">I. Batería</div>
+            <div class="solar-pv">
+              <div class="solar-pv-val" id="valIB">--.-</div>
+              <div class="solar-pv-unit">A</div>
+              <div class="solar-pv-tag">IT-B · Batería</div>
             </div>
-            <div class="solar-mini">
-              <div
-                class="solar-mini-val"
-                style="color: var(--blue)"
-                id="valCorrInv"
-              >
-                --.-
-              </div>
-              <div class="solar-mini-unit">A</div>
-              <div class="solar-mini-name">I. Inversor</div>
+            <div class="solar-pv">
+              <div class="solar-pv-val" id="valII">--.-</div>
+              <div class="solar-pv-unit">A</div>
+              <div class="solar-pv-tag">IT-I · Inversor</div>
             </div>
-            <div class="solar-mini">
-              <div
-                class="solar-mini-val"
-                style="color: var(--green)"
-                id="valPotEnt"
-              >
-                --.-
-              </div>
-              <div class="solar-mini-unit">W</div>
-              <div class="solar-mini-name">Pot. Entrada</div>
+            <div class="solar-pv">
+              <div class="solar-pv-val" id="valPE">--.-</div>
+              <div class="solar-pv-unit">W</div>
+              <div class="solar-pv-tag">PT-ENT · Entrada</div>
             </div>
-            <div class="solar-mini">
-              <div
-                class="solar-mini-val"
-                style="color: var(--orange)"
-                id="valPotSal"
-              >
-                --.-
-              </div>
-              <div class="solar-mini-unit">W</div>
-              <div class="solar-mini-name">Pot. Salida</div>
+            <div class="solar-pv">
+              <div class="solar-pv-val" id="valPS">--.-</div>
+              <div class="solar-pv-unit">W</div>
+              <div class="solar-pv-tag">PT-SAL · Salida</div>
             </div>
-            <div class="solar-mini">
-              <div
-                class="solar-mini-val"
-                style="color: var(--yellow)"
-                id="valKwh"
-              >
-                --.-
-              </div>
-              <div class="solar-mini-unit">kWh</div>
-              <div class="solar-mini-name">Hoy</div>
+            <div class="solar-pv">
+              <div class="solar-pv-val" id="valKwh">--.-</div>
+              <div class="solar-pv-unit">kWh</div>
+              <div class="solar-pv-tag">ET-DIA · Hoy</div>
             </div>
           </div>
-          <div class="energy-bar-wrap">
-            <div class="energy-bar-top">
-              <span class="energy-bar-label">☀️ Consumo diario</span>
-              <span class="energy-bar-pct" id="pctKwh">0%</span>
+          <div class="energy-section">
+            <div class="energy-label">
+              <span>ET-DIA · ENERGÍA ACUMULADA HOY</span>
+              <span id="pctKwh">0.0%</span>
             </div>
-            <div class="energy-bar-bg">
-              <div class="energy-bar-fill" id="barKwh" style="width: 0%"></div>
+            <div class="energy-track">
+              <div class="energy-fill" id="barKwh" style="width: 0%"></div>
             </div>
           </div>
-          <div class="last-time" id="lastSolar">Sin datos aún</div>
-        </div>
-      </div>
-
-      <!-- ── ALARMAS ── -->
-      <div class="card card-alarmas">
-        <div class="card-header">
-          <div class="card-header-icon" style="background: var(--red-lt)">
-            ⚠️
-          </div>
-          <div style="flex: 1">
-            <div class="card-header-title">Alarmas Activas</div>
-            <div class="card-header-sub" id="alarmaCount">Sin alertas</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="alarmas-list" id="alarmasList">
-            <div class="no-alarmas">
-              <div class="icon">✅</div>
-              <p>Sistema Estable</p>
-              <span>Sin alarmas activas</span>
-            </div>
+          <div
+            style="
+              font-family: var(--font-mono);
+              font-size: 10px;
+              color: #707070;
+              text-align: right;
+              margin-top: 4px;
+            "
+            id="lastSolar"
+          >
+            SIN DATOS
           </div>
         </div>
       </div>
 
-      <!-- ── CHART TEMPERATURA ── -->
-      <div class="card card-chart-t">
-        <div class="card-header">
-          <div class="card-header-icon" style="background: var(--amber-lt)">
-            📈
-          </div>
+      <!-- ── ALARM PANEL ── -->
+      <div class="panel alarm-panel">
+        <div class="panel-header">
           <div>
-            <div class="card-header-title">Historial Temperatura</div>
-            <div class="card-header-sub">Últimas 20 lecturas · °C</div>
+            <span class="panel-id">ALM-CONSOLE</span>
+            <span class="panel-desc"> · ALARMAS</span>
           </div>
+          <span id="alarmaCount" style="font-size: 10px; color: #d0d0d0"></span>
         </div>
-        <div class="card-body">
-          <div class="chart-wrap"><canvas id="chartTemp"></canvas></div>
+        <div class="panel-body" style="padding: 0">
+          <div class="alarm-list" id="alarmasList">
+            <div class="no-alarms">
+              <span class="no-alarms-icon">■</span>
+              SISTEMA SIN ALARMAS ACTIVAS
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- ── CHART NIVEL ── -->
-      <div class="card card-chart-n">
-        <div class="card-header">
-          <div class="card-header-icon" style="background: var(--blue-lt)">
-            📈
-          </div>
+      <!-- ── SUMMARY ROW ── -->
+      <div class="summary-row">
+        <div class="summary-box">
+          <div class="summary-indicator off" id="ind-caldero"></div>
           <div>
-            <div class="card-header-title">Historial Nivel</div>
-            <div class="card-header-sub">Últimas 20 lecturas · cm</div>
+            <div class="summary-label">CALD-001 · Estado</div>
+            <div class="summary-value" id="sum-caldero">OFFLINE</div>
           </div>
         </div>
-        <div class="card-body">
-          <div class="chart-wrap"><canvas id="chartNivel"></canvas></div>
+        <div class="summary-box">
+          <div class="summary-indicator off" id="ind-solar"></div>
+          <div>
+            <div class="summary-label">SOLR-001 · Estado</div>
+            <div class="summary-value" id="sum-solar">OFFLINE</div>
+          </div>
+        </div>
+        <div class="summary-box">
+          <div class="summary-indicator warn" id="ind-alarmas"></div>
+          <div>
+            <div class="summary-label">ALM · Alarmas Activas</div>
+            <div class="summary-value" id="sum-alarmas">0</div>
+          </div>
+        </div>
+        <div class="summary-box">
+          <div class="summary-indicator off" id="ind-server"></div>
+          <div>
+            <div class="summary-label">SRV · Servidor</div>
+            <div class="summary-value" id="sum-server">OFFLINE</div>
+          </div>
         </div>
       </div>
-    </main>
+
+      <!-- ── TREND CHARTS ── -->
+      <div class="charts-row">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-id">TREND-TT001</span>
+            <span class="panel-desc"> · TENDENCIA TEMPERATURA</span>
+          </div>
+          <div class="panel-body">
+            <div class="chart-wrap"><canvas id="chartTemp"></canvas></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-id">TREND-LT001</span>
+            <span class="panel-desc"> · TENDENCIA NIVEL</span>
+          </div>
+          <div class="panel-body">
+            <div class="chart-wrap"><canvas id="chartNivel"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STATUS BAR ── -->
+    <div class="statusbar">
+      <div class="statusbar-item" id="sb-server">SRV: --</div>
+      <div class="statusbar-item">REFRESH: 3s</div>
+      <div class="statusbar-item">NORM: ISA-101.01-2015</div>
+      <div class="statusbar-item" id="sb-time">--:--:--</div>
+      <div class="statusbar-item" style="margin-left: auto">
+        HMI-L1-001 · MAINTRONIC v1.0
+      </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <script>
@@ -778,17 +976,39 @@
       const DISP_SOLAR = 2;
       const MAX_PUNTOS = 20;
 
+      // Límites ISA-101 para barras de proceso
+      const TEMP_RANGE = {
+        min: 0,
+        max: 200,
+        loло: 10,
+        lo: 20,
+        hi: 160,
+        hihi: 180,
+      };
+      const NIVEL_RANGE = {
+        min: 0,
+        max: 100,
+        lolo: 10,
+        lo: 15,
+        hi: 80,
+        hihi: 90,
+      };
+
+      // ACK store
+      const ackedAlarms = new Set();
+
       // ── RELOJ ──
       function updateClock() {
-        document.getElementById("clock").textContent =
-          new Date().toLocaleTimeString("es-EC", { hour12: false });
+        const t = new Date().toLocaleTimeString("es-EC", { hour12: false });
+        document.getElementById("clock").textContent = t;
+        document.getElementById("sb-time").textContent = t;
       }
       setInterval(updateClock, 1000);
       updateClock();
 
       // ── CHARTS ──
-      Chart.defaults.font.family = "'Space Grotesk', sans-serif";
-      Chart.defaults.color = "#94A3B8";
+      Chart.defaults.color = "#707070";
+      Chart.defaults.borderColor = "#404040";
 
       function makeChart(id, color) {
         return new Chart(document.getElementById(id), {
@@ -799,35 +1019,35 @@
               {
                 data: [],
                 borderColor: color,
-                backgroundColor: color + "15",
-                borderWidth: 2.5,
-                pointRadius: 3,
-                pointBackgroundColor: color,
-                pointBorderColor: "#fff",
-                pointBorderWidth: 2,
-                tension: 0.4,
-                fill: true,
+                backgroundColor: "transparent",
+                borderWidth: 1.5,
+                pointRadius: 0,
+                tension: 0.3,
+                fill: false,
               },
             ],
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: { duration: 400 },
+            animation: { duration: 300 },
             plugins: { legend: { display: false } },
             scales: {
-              x: {
-                grid: { color: "#F1F5F9" },
-                ticks: { maxTicksLimit: 5, font: { size: 10 } },
+              x: { display: false },
+              y: {
+                grid: { color: "#333" },
+                ticks: {
+                  font: { family: "IBM Plex Mono", size: 9 },
+                  color: "#707070",
+                },
               },
-              y: { grid: { color: "#F1F5F9" }, ticks: { font: { size: 10 } } },
             },
           },
         });
       }
 
-      const chartTemp = makeChart("chartTemp", "#D97706");
-      const chartNivel = makeChart("chartNivel", "#0EA5E9");
+      const chartTemp = makeChart("chartTemp", "#D8D8D8");
+      const chartNivel = makeChart("chartNivel", "#D8D8D8");
 
       function pushPoint(chart, val) {
         const t = new Date().toLocaleTimeString("es-EC", { hour12: false });
@@ -846,97 +1066,139 @@
         return parseFloat(val).toFixed(dec);
       }
 
-      function flash(id) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.classList.remove("updated");
-        void el.offsetWidth;
-        el.classList.add("updated");
+      function pct(val, min, max) {
+        return Math.min(
+          100,
+          Math.max(0, ((val - min) / (max - min)) * 100),
+        ).toFixed(1);
+      }
+
+      function alarmClass(val, range) {
+        if (val <= range.min || val >= range.max) return "alarm-p1";
+        if (val < range.lo || val > range.hi) return "alarm-p2";
+        if (val < range.lo || val > range.hi) return "alarm-p3";
+        return "";
       }
 
       function setServer(online) {
-        const pill = document.getElementById("serverPill");
+        const dot = document.getElementById("serverDot");
         const text = document.getElementById("serverStatus");
-        pill.className = "status-pill " + (online ? "online" : "offline");
-        text.textContent = online ? "Servidor online ✓" : "Sin conexión";
+        const ind = document.getElementById("ind-server");
+        const sum = document.getElementById("sum-server");
+        const sb = document.getElementById("sb-server");
+
+        dot.className = "server-dot " + (online ? "ok" : "fault");
+        text.textContent = online ? "EN LÍNEA" : "FALLO";
+        ind.className = "summary-indicator " + (online ? "on" : "off");
+        sum.textContent = online ? "EN LÍNEA" : "OFFLINE";
+        sb.textContent = "SRV: " + (online ? "OK" : "FAULT");
+        sb.className = "statusbar-item " + (online ? "ok" : "err");
+      }
+
+      function setNodeStatus(elId, sumId, indId, online) {
+        document.getElementById(elId).className =
+          "panel-status " + (online ? "online" : "offline");
+        document.getElementById(elId).textContent = online
+          ? "ONLINE"
+          : "OFFLINE";
+        document.getElementById(indId).className =
+          "summary-indicator " + (online ? "on" : "off");
+        document.getElementById(sumId).textContent = online
+          ? "EN LÍNEA"
+          : "OFFLINE";
       }
 
       // ── FETCH CALDERO ──
+      let lastCaldero = 0;
       async function fetchCaldero() {
         try {
           const res = await fetch(
             `${API}/caldero/ultimo?dispositivo_id=${DISP_CALDERO}`,
           );
-          if (!res.ok) throw new Error();
           const d = await res.json();
           setServer(true);
           if (!d) return;
 
-          document.getElementById("valTemp").textContent = fmt(d.temperatura);
-          document.getElementById("valNivel").textContent = fmt(d.nivel);
-          flash("valTemp");
-          flash("valNivel");
+          const temp = parseFloat(d.temperatura) || 0;
+          const nivel = parseFloat(d.nivel) || 0;
 
+          // Valores
+          const tempEl = document.getElementById("valTemp");
+          const nivelEl = document.getElementById("valNivel");
+          tempEl.textContent = fmt(temp);
+          nivelEl.textContent = fmt(nivel);
+
+          // Clase de alarma ISA
+          tempEl.className = "pv-value " + alarmClass(temp, TEMP_RANGE);
+          nivelEl.className = "pv-value " + alarmClass(nivel, NIVEL_RANGE);
+
+          // Barras de proceso
+          document.getElementById("barTemp").style.width =
+            pct(temp, 0, 200) + "%";
+          document.getElementById("barNivel").style.width =
+            pct(nivel, 0, 100) + "%";
+
+          // Timestamp
           const t = new Date(d.registrado_en).toLocaleTimeString("es-EC", {
             hour12: false,
           });
           document.getElementById("lastCaldero").textContent =
-            `Última lectura: ${t}`;
+            `ÚLT. LECTURA: ${t}`;
 
-          pushPoint(chartTemp, parseFloat(d.temperatura) || 0);
-          pushPoint(chartNivel, parseFloat(d.nivel) || 0);
+          // Trends
+          pushPoint(chartTemp, temp);
+          pushPoint(chartNivel, nivel);
+
+          setNodeStatus("calderoStatus", "sum-caldero", "ind-caldero", true);
+          lastCaldero = Date.now();
         } catch {
           setServer(false);
         }
       }
 
       // ── FETCH SOLAR ──
+      let lastSolar = 0;
       async function fetchSolar() {
         try {
           const res = await fetch(
             `${API}/solar/ultimo?dispositivo_id=${DISP_SOLAR}`,
           );
-          if (!res.ok) throw new Error();
           const d = await res.json();
           if (!d) return;
 
-          document.getElementById("valVoltPanel").textContent = fmt(
-            d.voltaje_panel,
-          );
-          document.getElementById("valVoltBat").textContent = fmt(
-            d.voltaje_bateria,
-          );
-          document.getElementById("valVoltInv").textContent = fmt(
+          document.getElementById("valVP").textContent = fmt(d.voltaje_panel);
+          document.getElementById("valVB").textContent = fmt(d.voltaje_bateria);
+          document.getElementById("valVI").textContent = fmt(
             d.voltaje_inversor,
           );
-          document.getElementById("valCorrPanel").textContent = fmt(
-            d.corriente_panel,
-          );
-          document.getElementById("valCorrBat").textContent = fmt(
+          document.getElementById("valIP").textContent = fmt(d.corriente_panel);
+          document.getElementById("valIB").textContent = fmt(
             d.corriente_bateria,
           );
-          document.getElementById("valCorrInv").textContent = fmt(
+          document.getElementById("valII").textContent = fmt(
             d.corriente_inversor,
           );
-          document.getElementById("valPotEnt").textContent = fmt(
+          document.getElementById("valPE").textContent = fmt(
             d.potencia_entrada,
           );
-          document.getElementById("valPotSal").textContent = fmt(
-            d.potencia_salida,
-          );
+          document.getElementById("valPS").textContent = fmt(d.potencia_salida);
           document.getElementById("valKwh").textContent = fmt(d.energia_kwh, 3);
 
-          const pct = Math.min(100, ((d.energia_kwh || 0) / 10) * 100).toFixed(
-            1,
-          );
-          document.getElementById("barKwh").style.width = pct + "%";
-          document.getElementById("pctKwh").textContent = pct + "%";
+          const kwh = parseFloat(d.energia_kwh) || 0;
+          const p = Math.min(100, (kwh / 10) * 100);
+          document.getElementById("barKwh").style.width = p + "%";
+          document.getElementById("barKwh").className =
+            "energy-fill" + (p > 5 ? " good" : "");
+          document.getElementById("pctKwh").textContent = p.toFixed(1) + "%";
 
           const t = new Date(d.registrado_en).toLocaleTimeString("es-EC", {
             hour12: false,
           });
           document.getElementById("lastSolar").textContent =
-            `Última lectura: ${t}`;
+            `ÚLT. LECTURA: ${t}`;
+
+          setNodeStatus("solarStatus", "sum-solar", "ind-solar", true);
+          lastSolar = Date.now();
         } catch {
           /* silencioso */
         }
@@ -946,36 +1208,59 @@
       async function fetchAlarmas() {
         try {
           const res = await fetch(`${API}/alarmas/activas`);
-          if (!res.ok) throw new Error();
           const alarmas = await res.json();
           const list = document.getElementById("alarmasList");
           const count = document.getElementById("alarmaCount");
+          const banner = document.getElementById("alarmBanner");
+          const sumAlm = document.getElementById("sum-alarmas");
+          const indAlm = document.getElementById("ind-alarmas");
+
+          const activas = alarmas.filter((a) => !ackedAlarms.has(a.id));
+
+          sumAlm.textContent = activas.length;
+          indAlm.className =
+            "summary-indicator " + (activas.length > 0 ? "off" : "on");
+
+          if (activas.length > 0) {
+            banner.classList.add("active");
+            document.getElementById("bannerCount").textContent =
+              `${activas.length} ALARMA(S) SIN ACK`;
+            count.textContent = `(${activas.length})`;
+          } else {
+            banner.classList.remove("active");
+            count.textContent = "";
+          }
 
           if (!alarmas.length) {
-            count.textContent = "Sin alertas activas";
-            list.innerHTML = `
-        <div class="no-alarmas">
-          <div class="icon">✅</div>
-          <p>Sistema Estable</p>
-          <span>Sin alarmas activas</span>
-        </div>`;
+            list.innerHTML = `<div class="no-alarms"><span class="no-alarms-icon">■</span>SISTEMA SIN ALARMAS ACTIVAS</div>`;
             return;
           }
 
-          count.textContent = `${alarmas.length} alerta${alarmas.length > 1 ? "s" : ""} activa${alarmas.length > 1 ? "s" : ""}`;
+          // Prioridad ISA: P1=EMERGENCIA/SOBRECARGA P2=FLUJO/NIVEL/TEMP P3=resto
+          function getP(tipo) {
+            if (["EMERGENCIA", "SOBRECARGA"].includes(tipo))
+              return { p: "P1", cls: "p1" };
+            if (["FLUJO", "NIVEL_CRITICO", "TEMP_CRITICA"].includes(tipo))
+              return { p: "P2", cls: "p2" };
+            return { p: "P3", cls: "p3" };
+          }
+
           list.innerHTML = alarmas
             .map((a) => {
-              const t = new Date(a.registrado_en).toLocaleString("es-EC", {
+              const { p, cls } = getP(a.tipo);
+              const isAck = ackedAlarms.has(a.id);
+              const t = new Date(a.registrado_en).toLocaleTimeString("es-EC", {
                 hour12: false,
               });
-              const badge = a.modo_conexion
-                ? `<span class="alarma-conexion ${a.modo_conexion.toLowerCase()}">${a.modo_conexion}</span>`
-                : "";
               return `
-        <div class="alarma-item">
-          <div class="alarma-tipo">${a.tipo.replace(/_/g, " ")} ${badge}</div>
-          <div class="alarma-desc">${a.descripcion || a.planta || "—"}</div>
-          <div class="alarma-meta">${t} · ${a.dispositivo || ""}</div>
+        <div class="alarm-row ${isAck ? "ack" : cls}" id="alm-${a.id}">
+          <div class="alarm-priority">${p}</div>
+          <div class="alarm-content">
+            <div class="alarm-type">${a.tipo.replace(/_/g, " ")}</div>
+            <div class="alarm-desc">${a.descripcion || a.dispositivo || "—"}</div>
+            <div class="alarm-time">${t}</div>
+          </div>
+          ${!isAck ? `<button class="alarm-ack-btn" onclick="ackAlarm(${a.id})">ACK</button>` : '<span style="font-size:9px;color:#555;font-family:var(--font-mono)">ACK</span>'}
         </div>`;
             })
             .join("");
@@ -983,6 +1268,19 @@
           /* silencioso */
         }
       }
+
+      function ackAlarm(id) {
+        ackedAlarms.add(id);
+        fetchAlarmas();
+      }
+
+      // ── WATCHDOG ──
+      setInterval(() => {
+        if (Date.now() - lastCaldero > 12000)
+          setNodeStatus("calderoStatus", "sum-caldero", "ind-caldero", false);
+        if (Date.now() - lastSolar > 12000)
+          setNodeStatus("solarStatus", "sum-solar", "ind-solar", false);
+      }, 3000);
 
       // ── LOOP ──
       async function refresh() {
