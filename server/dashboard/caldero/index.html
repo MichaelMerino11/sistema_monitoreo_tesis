@@ -3,33 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MAINTRONIC — Caldero</title>
+    <title>MAINTRONIC — CALD-001</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <style>
+      /*
+  ANSI/ISA-101.01-2015 — LEVEL 2 DISPLAY
+  TAG: CALD-001 · CALDERO INDUSTRIAL
+  ─────────────────────────────────────
+  Fondo gris neutro, sin colores decorativos,
+  colores solo para indicar estado de proceso.
+*/
+
       :root {
-        --primary: #2563eb;
-        --primary-lt: #eff6ff;
-        --amber: #d97706;
-        --amber-lt: #fffbeb;
-        --blue: #0ea5e9;
-        --blue-lt: #f0f9ff;
-        --red: #dc2626;
-        --red-lt: #fef2f2;
-        --green: #059669;
-        --green-lt: #ecfdf5;
-        --slate: #475569;
-        --border: #e2e8f0;
-        --bg: #f1f5f9;
-        --white: #ffffff;
-        --text: #0f172a;
-        --text-2: #64748b;
-        --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
-        --radius: 16px;
-        --font: "Nunito", sans-serif;
-        --font2: "Space Grotesk", sans-serif;
+        --isa-bg: #b4b4b4;
+        --isa-bg-panel: #a0a0a0;
+        --isa-bg-widget: #c8c8c8;
+        --isa-bg-dark: #2a2a2a;
+        --isa-border: #787878;
+        --isa-text: #1a1a1a;
+        --isa-text-2: #3a3a3a;
+        --isa-text-dim: #606060;
+
+        --p1: #cc0000;
+        --p1-bg: #ff4444;
+        --p2: #cc6600;
+        --p2-bg: #ff8c00;
+        --p3: #7a7a00;
+        --p3-bg: #dddd00;
+        --ok: #2a5c2a;
+        --ok-bg: #44aa44;
+        --normal: #d8d8d8;
+
+        --font-mono: "IBM Plex Mono", monospace;
+        --font-sans: "IBM Plex Sans", sans-serif;
       }
 
       * {
@@ -39,585 +48,897 @@
       }
 
       body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: var(--font);
+        background: var(--isa-bg);
+        color: var(--isa-text);
+        font-family: var(--font-sans);
+        font-size: 13px;
         min-height: 100vh;
       }
 
-      /* ── HEADER ── */
-      header {
-        background: var(--white);
-        border-bottom: 1px solid var(--border);
-        padding: 0 32px;
+      /* ── TITLE BAR ── */
+      .titlebar {
+        background: #2a2a2a;
+        color: #e0e0e0;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: 68px;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
-      }
-
-      .logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .logo-icon {
-        width: 40px;
-        height: 40px;
-        background: var(--amber-lt);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-      }
-
-      .logo-name {
-        font-family: var(--font2);
-        font-size: 18px;
-        font-weight: 700;
-      }
-      .logo-name span {
-        color: var(--amber);
-      }
-      .logo-sub {
-        font-size: 11px;
-        color: var(--text-2);
-        margin-top: 1px;
-      }
-
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .status-pill {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        padding: 6px 14px;
-        border-radius: 20px;
+        padding: 0 16px;
+        height: 36px;
+        border-bottom: 2px solid #000;
+        font-family: var(--font-mono);
         font-size: 12px;
-        font-weight: 700;
-        border: 1px solid;
       }
-
-      .status-pill.server {
-        background: var(--green-lt);
-        border-color: #a7f3d0;
-        color: var(--green);
+      .titlebar-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
       }
-      .status-pill.device {
-        background: var(--red-lt);
-        border-color: #fecaca;
-        color: var(--red);
+      .titlebar-id {
+        font-weight: 600;
+        letter-spacing: 1px;
+        color: #f0f0f0;
       }
-      .status-pill.device.online {
-        background: var(--green-lt);
-        border-color: #a7f3d0;
-        color: var(--green);
+      .titlebar-desc {
+        color: #a0a0a0;
+        font-size: 11px;
       }
-
-      .status-dot {
-        width: 7px;
-        height: 7px;
+      .titlebar-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .node-pill {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: #a0a0a0;
+      }
+      .node-dot {
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
-        background: currentColor;
-        animation: pulse 2s infinite;
+        background: #2a2a2a;
+        border: 1px solid #555;
       }
-      .status-pill.device .status-dot {
-        animation: none;
+      .node-dot.ok {
+        background: #44aa44;
+        border-color: #22aa22;
       }
-      .status-pill.device.online .status-dot {
-        animation: pulse 2s infinite;
+      .node-dot.fault {
+        background: #cc0000;
+        border-color: #aa0000;
+        animation: blink-dot 1s step-end infinite;
       }
-
-      @keyframes pulse {
+      @keyframes blink-dot {
         0%,
         100% {
           opacity: 1;
         }
         50% {
-          opacity: 0.4;
+          opacity: 0.2;
+        }
+      }
+      .sys-clock {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: #d0d0d0;
+        letter-spacing: 1px;
+      }
+
+      /* ── ALARM BANNER ── */
+      .alarm-banner {
+        display: none;
+        background: var(--p1);
+        color: #fff;
+        padding: 4px 16px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 2px solid #880000;
+        animation: blink-banner 1s step-end infinite;
+      }
+      .alarm-banner.active {
+        display: flex;
+      }
+      @keyframes blink-banner {
+        0%,
+        100% {
+          background: var(--p1);
+        }
+        50% {
+          background: #880000;
         }
       }
 
-      #clock {
-        font-family: var(--font2);
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--slate);
-        background: var(--bg);
-        padding: 6px 14px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-      }
-
-      /* ── MAIN LAYOUT ── */
-      main {
-        max-width: 1400px;
+      /* ── LAYOUT ── */
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr 260px;
+        grid-template-rows: auto auto auto;
+        gap: 6px;
+        padding: 6px 6px 28px;
+        max-width: 1500px;
         margin: 0 auto;
-        padding: 28px 24px;
-        display: grid;
-        grid-template-columns: 1fr 300px;
-        gap: 24px;
       }
 
-      /* ── CARDS ── */
-      .card {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        overflow: hidden;
+      /* ── PANEL ── */
+      .panel {
+        background: var(--isa-bg-widget);
+        border: 1px solid var(--isa-border);
+        border-top: 3px solid var(--isa-border);
       }
 
-      .card-header {
-        padding: 18px 22px 16px;
-        border-bottom: 1px solid var(--border);
+      .panel-header {
+        background: #787878;
+        color: #f0f0f0;
+        padding: 4px 10px;
         display: flex;
         align-items: center;
-        gap: 10px;
-      }
-
-      .card-header-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-      }
-
-      .card-header-title {
-        font-family: var(--font2);
-        font-size: 14px;
-        font-weight: 600;
-      }
-
-      .card-header-sub {
+        justify-content: space-between;
+        font-family: var(--font-mono);
         font-size: 11px;
-        color: var(--text-2);
-        margin-top: 1px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #606060;
+      }
+      .panel-id {
+        color: #d0d0d0;
+      }
+      .panel-desc {
+        color: #b0b0b0;
+        font-weight: 400;
+      }
+      .panel-status {
+        font-size: 10px;
+        padding: 1px 6px;
+        border: 1px solid;
+        border-radius: 2px;
+      }
+      .panel-status.online {
+        color: #44aa44;
+        border-color: #44aa44;
+      }
+      .panel-status.offline {
+        color: #888;
+        border-color: #888;
       }
 
-      .card-body {
-        padding: 22px;
+      .panel-body {
+        padding: 12px;
       }
 
-      /* ── BIG METRICS ── */
-      .metrics-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 4px;
+      /* ── FACEPLATE PV ── */
+      /* Estilo faceplate industrial ISA — como un instrumento real */
+      .faceplate {
+        background: #1e1e1e;
+        border: 2px solid #505050;
+        padding: 14px 16px;
+        position: relative;
       }
 
-      .metric-box {
-        background: var(--bg);
-        border-radius: 14px;
-        padding: 22px 18px;
+      .faceplate-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .faceplate-tag {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: #707070;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .faceplate-mode {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        padding: 1px 6px;
+        border: 1px solid #505050;
+        color: #888;
+      }
+      .faceplate-mode.auto {
+        border-color: #44aa44;
+        color: #44aa44;
+      }
+
+      .faceplate-pv {
+        font-family: var(--font-mono);
+        font-size: 52px;
+        font-weight: 600;
+        color: var(--normal);
+        line-height: 1;
+        letter-spacing: -2px;
         text-align: center;
-        border: 1px solid var(--border);
+        transition: color 0.3s;
+      }
+      .faceplate-pv.p1 {
+        color: var(--p1-bg);
+        animation: blink-val 0.8s step-end infinite;
+      }
+      .faceplate-pv.p2 {
+        color: var(--p2-bg);
+        animation: blink-val 1.2s step-end infinite;
+      }
+      .faceplate-pv.p3 {
+        color: var(--p3-bg);
+      }
+
+      @keyframes blink-val {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.25;
+        }
+      }
+
+      .faceplate-unit {
+        font-family: var(--font-mono);
+        font-size: 16px;
+        color: #606060;
+        text-align: center;
+        margin-top: 2px;
+      }
+
+      .faceplate-desc {
+        font-size: 10px;
+        color: #606060;
+        text-align: center;
+        margin-top: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .faceplate-footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: #606060;
+      }
+
+      /* ── PROCESS BAR (ISA) ── */
+      .process-bar-section {
+        margin-top: 12px;
+      }
+
+      .process-bar-label {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: #707070;
+        margin-bottom: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      .process-bar-outer {
+        height: 14px;
+        background: #1e1e1e;
+        border: 1px solid #505050;
         position: relative;
         overflow: hidden;
       }
 
-      .metric-box::before {
-        content: "";
+      /* Zonas coloreadas de fondo */
+      .process-bar-zones {
+        position: absolute;
+        inset: 0;
+        display: flex;
+      }
+      .z-lolo {
+        background: rgba(204, 0, 0, 0.5);
+      }
+      .z-lo {
+        background: rgba(204, 102, 0, 0.4);
+      }
+      .z-normal {
+        background: rgba(42, 92, 42, 0.35);
+      }
+      .z-hi {
+        background: rgba(204, 102, 0, 0.4);
+      }
+      .z-hihi {
+        background: rgba(204, 0, 0, 0.5);
+      }
+
+      /* Indicador de valor actual */
+      .process-bar-indicator {
         position: absolute;
         top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        border-radius: 3px 3px 0 0;
+        bottom: 0;
+        width: 3px;
+        background: #f0f0f0;
+        transform: translateX(-50%);
+        transition: left 0.5s ease;
+        box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
       }
 
-      .metric-box.temp::before {
-        background: linear-gradient(90deg, #f59e0b, #d97706);
-      }
-      .metric-box.nivel::before {
-        background: linear-gradient(90deg, #0ea5e9, #2563eb);
-      }
-
-      .metric-icon {
-        font-size: 28px;
-        margin-bottom: 8px;
+      .process-bar-ticks {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 8px;
+        color: #606060;
+        margin-top: 2px;
       }
 
-      .metric-val {
-        font-family: var(--font2);
-        font-size: 48px;
-        font-weight: 700;
-        line-height: 1;
-        margin-bottom: 4px;
-        transition: color 0.3s;
+      /* ── LIMITS TABLE ── */
+      .limits-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        margin-top: 10px;
       }
-
-      .metric-val.temp {
-        color: var(--amber);
+      .limits-table th {
+        background: #505050;
+        color: #c0c0c0;
+        padding: 3px 6px;
+        text-align: left;
+        font-size: 9px;
+        letter-spacing: 0.3px;
+        border-right: 1px solid #606060;
       }
-      .metric-val.nivel {
-        color: var(--blue);
+      .limits-table td {
+        padding: 3px 6px;
+        border-bottom: 1px solid #a8a8a8;
+        border-right: 1px solid #a8a8a8;
+        color: var(--isa-text-2);
       }
-
-      .metric-unit {
-        font-size: 14px;
-        color: var(--text-2);
+      .limits-table td:last-child {
+        border-right: none;
+      }
+      .lim-lolo {
+        color: var(--p1);
         font-weight: 600;
       }
-      .metric-label {
-        font-size: 11px;
-        color: var(--text-2);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin-top: 4px;
+      .lim-lo {
+        color: var(--p2);
+        font-weight: 600;
+      }
+      .lim-norm {
+        color: var(--ok);
+        font-weight: 600;
+      }
+      .lim-hi {
+        color: var(--p2);
+        font-weight: 600;
+      }
+      .lim-hihi {
+        color: var(--p1);
+        font-weight: 600;
       }
 
-      .metric-time {
-        font-size: 10px;
-        color: var(--text-2);
-        margin-top: 20px;
-        font-family: var(--font2);
-        text-align: right;
+      /* ── TREND ── */
+      .trend-panel {
+        grid-column: 1/3;
       }
 
-      /* ── CHARTS ── */
-      .charts-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-top: 16px;
-      }
-
-      .chart-card {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        padding: 18px;
-      }
-
-      .chart-title {
-        font-size: 12px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        color: var(--text-2);
-        margin-bottom: 14px;
+      .trend-toolbar {
         display: flex;
         align-items: center;
         gap: 6px;
+        padding: 5px 8px;
+        background: #ababab;
+        border-bottom: 1px solid var(--isa-border);
       }
-
-      .chart-box {
-        height: 180px;
-      }
-
-      /* ── SIDEBAR ── */
-      .sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
-
-      .alarmas-card {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        overflow: hidden;
-        flex: 1;
-      }
-
-      .alarmas-header {
-        padding: 16px 20px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      .alarmas-title {
-        font-family: var(--font2);
-        font-size: 14px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .alarmas-count {
-        background: var(--red-lt);
-        color: var(--red);
-        border-radius: 20px;
+      .trend-btn {
+        background: #888;
+        border: 1px solid #606060;
+        color: #e0e0e0;
         padding: 2px 8px;
-        font-size: 11px;
-        font-weight: 800;
-      }
-
-      .alarmas-body {
-        padding: 16px;
-      }
-
-      .alarma-item {
-        background: var(--red-lt);
-        border-left: 3px solid var(--red);
-        border-radius: 8px;
-        padding: 12px 14px;
-        margin-bottom: 10px;
-      }
-
-      .alarma-tipo {
-        font-size: 12px;
-        font-weight: 800;
-        color: var(--red);
-        margin-bottom: 3px;
-      }
-      .alarma-desc {
-        font-size: 12px;
-        color: var(--text-2);
-      }
-
-      .alarma-estable {
-        text-align: center;
-        padding: 32px 16px;
-        color: var(--text-2);
-      }
-      .alarma-estable .icon {
-        font-size: 36px;
-        margin-bottom: 8px;
-      }
-      .alarma-estable p {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--green);
-      }
-      .alarma-estable span {
-        font-size: 12px;
-      }
-
-      /* ── INFO CARD ── */
-      .info-card {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        padding: 18px;
-      }
-
-      .info-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 0;
-        border-bottom: 1px solid #f8fafc;
-        font-size: 13px;
-      }
-      .info-row:last-child {
-        border-bottom: none;
-      }
-      .info-key {
-        color: var(--text-2);
+        font-family: var(--font-mono);
+        font-size: 9px;
         font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.3px;
       }
-      .info-val {
-        font-weight: 800;
-        font-family: var(--font2);
+      .trend-btn.active {
+        background: #2a2a2a;
+        color: #f0f0f0;
+      }
+      .trend-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--isa-text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      .charts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 10px;
+      }
+
+      .chart-block {
+      }
+      .chart-tag {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: #707070;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+      .chart-box {
+        height: 120px;
+        background: #1e1e1e;
+        border: 1px solid #444;
+      }
+
+      /* ── ALARM PANEL ── */
+      .alarm-panel {
+        grid-column: 3;
+        grid-row: 1/4;
+      }
+
+      .alarm-list {
+        max-height: 560px;
+        overflow-y: auto;
+      }
+      .alarm-list::-webkit-scrollbar {
+        width: 6px;
+      }
+      .alarm-list::-webkit-scrollbar-track {
+        background: #909090;
+      }
+      .alarm-list::-webkit-scrollbar-thumb {
+        background: #505050;
+      }
+
+      .alarm-row {
+        border-bottom: 1px solid #a0a0a0;
+        padding: 7px 8px;
+        display: grid;
+        grid-template-columns: 24px 1fr auto;
+        gap: 5px;
+        align-items: start;
+      }
+      .alarm-row.p1 {
+        background: #ffd0d0;
+        animation: blink-alm 1s step-end infinite;
+      }
+      .alarm-row.p2 {
+        background: #ffe0b0;
+      }
+      .alarm-row.p3 {
+        background: #f8f800;
+      }
+      .alarm-row.ack {
+        background: #c0c0c0;
+        opacity: 0.65;
+      }
+
+      @keyframes blink-alm {
+        0%,
+        100% {
+          background: #ffd0d0;
+        }
+        50% {
+          background: #ffaaaa;
+        }
+      }
+
+      .alm-pri {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 700;
+        text-align: center;
+        margin-top: 1px;
+      }
+      .alm-pri.p1 {
+        color: var(--p1);
+      }
+      .alm-pri.p2 {
+        color: var(--p2);
+      }
+      .alm-pri.p3 {
+        color: #5a5a00;
+      }
+
+      .alm-type {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--isa-text);
+        text-transform: uppercase;
+      }
+      .alm-desc {
+        font-size: 10px;
+        color: var(--isa-text-2);
+        margin-top: 1px;
+      }
+      .alm-time {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: var(--isa-text-dim);
+        margin-top: 2px;
+      }
+
+      .alm-ack {
+        background: #3a3a3a;
+        border: 1px solid #555;
+        color: #d0d0d0;
+        padding: 2px 5px;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.3px;
+      }
+      .alm-ack:hover {
+        background: #555;
+      }
+
+      .no-alarms {
+        padding: 28px 12px;
+        text-align: center;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--isa-text-dim);
+      }
+
+      /* ── STATUS BAR ── */
+      .statusbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #1a1a1a;
+        color: #909090;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        height: 22px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        gap: 24px;
+        border-top: 1px solid #333;
+        z-index: 50;
+      }
+      .sb-ok {
+        color: #44aa44;
+      }
+      .sb-err {
+        color: #cc0000;
       }
 
       /* ── RESPONSIVE ── */
-      @media (max-width: 1024px) {
-        main {
-          grid-template-columns: 1fr;
-        }
-        .sidebar {
-          display: grid;
+      @media (max-width: 1100px) {
+        .layout {
           grid-template-columns: 1fr 1fr;
+        }
+        .alarm-panel {
+          grid-column: 1/3;
+          grid-row: auto;
+        }
+        .trend-panel {
+          grid-column: 1/3;
         }
       }
       @media (max-width: 600px) {
-        header {
-          padding: 0 16px;
-        }
-        main {
-          padding: 16px 12px;
-        }
-        .metrics-row {
-          grid-template-columns: 1fr 1fr;
-        }
-        .metric-val {
-          font-size: 36px;
-        }
-        .charts-grid {
+        .layout {
           grid-template-columns: 1fr;
         }
-        .sidebar {
+        .alarm-panel,
+        .trend-panel {
+          grid-column: 1;
+        }
+        .charts-grid {
           grid-template-columns: 1fr;
         }
       }
     </style>
   </head>
   <body>
-    <header>
-      <div class="logo">
-        <div class="logo-icon">🔥</div>
-        <div>
-          <div class="logo-name">MAIN<span>TRONIC</span></div>
-          <div class="logo-sub">Planta Caldero Industrial</div>
-        </div>
+    <!-- ── TITLE BAR ── -->
+    <div class="titlebar">
+      <div class="titlebar-left">
+        <span class="titlebar-id">MAINTRONIC / CALD-001</span>
+        <span class="titlebar-desc">CALDERO INDUSTRIAL — MONITOREO L2</span>
       </div>
-      <div class="header-right">
-        <div class="status-pill server">
-          <div class="status-dot"></div>
-          <span id="serverStatus">Servidor</span>
+      <div class="titlebar-right">
+        <div class="node-pill">
+          <div class="node-dot" id="serverDot"></div>
+          <span id="serverStatus">SRV: --</span>
         </div>
-        <div class="status-pill device" id="devicePill">
-          <div class="status-dot"></div>
-          <span id="deviceStatus">Nodo Offline</span>
+        <div class="node-pill">
+          <div class="node-dot" id="nodoDot"></div>
+          <span id="nodoStatus">NODO: OFFLINE</span>
         </div>
-        <div id="clock">00:00:00</div>
+        <span class="sys-clock" id="clock">00:00:00</span>
       </div>
-    </header>
+    </div>
 
-    <main>
-      <!-- COLUMNA PRINCIPAL -->
-      <div>
-        <!-- Métricas grandes -->
-        <div class="card" style="margin-bottom: 16px">
-          <div class="card-header">
-            <div class="card-header-icon" style="background: var(--amber-lt)">
-              🏭
-            </div>
-            <div>
-              <div class="card-header-title">01 — Caldero Industrial</div>
-              <div class="card-header-sub">Lecturas en tiempo real</div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="metrics-row">
-              <div class="metric-box temp">
-                <div class="metric-icon">🌡️</div>
-                <div class="metric-val temp" id="temp">--.-</div>
-                <div class="metric-unit">°C</div>
-                <div class="metric-label">Temperatura</div>
-              </div>
-              <div class="metric-box nivel">
-                <div class="metric-icon">💧</div>
-                <div class="metric-val nivel" id="nivel">--.-</div>
-                <div class="metric-unit">cm</div>
-                <div class="metric-label">Nivel de Agua</div>
-              </div>
-            </div>
-            <div class="metric-time" id="lastUpdate">Sin datos aún</div>
+    <!-- ── ALARM BANNER ── -->
+    <div class="alarm-banner" id="alarmBanner">
+      <span>⚠ ALARMA ACTIVA EN CALD-001 — REQUIERE ATENCIÓN DEL OPERADOR</span>
+      <span id="bannerTxt"></span>
+    </div>
+
+    <div class="layout">
+      <!-- ── FACEPLATE TEMPERATURA ── -->
+      <div class="panel" style="grid-column: 1; grid-row: 1">
+        <div class="panel-header">
+          <div>
+            <span class="panel-id">TT-001</span
+            ><span class="panel-desc"> · TEMPERATURA PROCESO</span>
           </div>
         </div>
+        <div class="panel-body">
+          <div class="faceplate">
+            <div class="faceplate-header">
+              <span class="faceplate-tag">TT-001 · TEMPERATURA CALDERO</span>
+              <span class="faceplate-mode auto">AUTO</span>
+            </div>
+            <div class="faceplate-pv" id="pvTemp">--.-</div>
+            <div class="faceplate-unit">°C — GRADOS CELSIUS</div>
+            <div class="faceplate-desc">Temperatura proceso en caldera</div>
+            <div class="faceplate-footer">
+              <span>PV</span>
+              <span id="tempEstado" style="color: #707070">SIN DATOS</span>
+              <span id="tempTime">--:--:--</span>
+            </div>
+          </div>
 
-        <!-- Gráficos -->
+          <div class="process-bar-section">
+            <div class="process-bar-label">
+              <span>RANGO DE PROCESO</span>
+              <span id="tempPct">0.0%</span>
+            </div>
+            <div class="process-bar-outer">
+              <div class="process-bar-zones">
+                <div class="z-lolo" style="width: 10%"></div>
+                <div class="z-lo" style="width: 10%"></div>
+                <div class="z-normal" style="width: 60%"></div>
+                <div class="z-hi" style="width: 10%"></div>
+                <div class="z-hihi" style="width: 10%"></div>
+              </div>
+              <div
+                class="process-bar-indicator"
+                id="indTemp"
+                style="left: 0%"
+              ></div>
+            </div>
+            <div class="process-bar-ticks">
+              <span>0°C</span><span>20°C</span><span>40°C</span
+              ><span>100°C</span><span>160°C</span><span>180°C</span
+              ><span>200°C</span>
+            </div>
+          </div>
+
+          <table class="limits-table">
+            <thead>
+              <tr>
+                <th>LÍMITE</th>
+                <th>VALOR</th>
+                <th>PRIORIDAD</th>
+                <th>ESTADO</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="lim-hihi">HI-HI</td>
+                <td>180 °C</td>
+                <td>P1 CRÍTICA</td>
+                <td id="lim-hh-t">—</td>
+              </tr>
+              <tr>
+                <td class="lim-hi">HI</td>
+                <td>160 °C</td>
+                <td>P2 ALTA</td>
+                <td id="lim-h-t">—</td>
+              </tr>
+              <tr>
+                <td class="lim-norm">NORM</td>
+                <td>20–160 °C</td>
+                <td>—</td>
+                <td id="lim-n-t">—</td>
+              </tr>
+              <tr>
+                <td class="lim-lo">LO</td>
+                <td>20 °C</td>
+                <td>P2 ALTA</td>
+                <td id="lim-l-t">—</td>
+              </tr>
+              <tr>
+                <td class="lim-lolo">LO-LO</td>
+                <td>10 °C</td>
+                <td>P1 CRÍTICA</td>
+                <td id="lim-ll-t">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── FACEPLATE NIVEL ── -->
+      <div class="panel" style="grid-column: 2; grid-row: 1">
+        <div class="panel-header">
+          <div>
+            <span class="panel-id">LT-001</span
+            ><span class="panel-desc"> · NIVEL AGUA CALDERA</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="faceplate">
+            <div class="faceplate-header">
+              <span class="faceplate-tag">LT-001 · NIVEL AGUA CALDERO</span>
+              <span class="faceplate-mode auto">AUTO</span>
+            </div>
+            <div class="faceplate-pv" id="pvNivel">--.-</div>
+            <div class="faceplate-unit">cm — CENTÍMETROS</div>
+            <div class="faceplate-desc">Nivel de agua en caldera</div>
+            <div class="faceplate-footer">
+              <span>PV</span>
+              <span id="nivelEstado" style="color: #707070">SIN DATOS</span>
+              <span id="nivelTime">--:--:--</span>
+            </div>
+          </div>
+
+          <div class="process-bar-section">
+            <div class="process-bar-label">
+              <span>RANGO DE PROCESO</span>
+              <span id="nivelPct">0.0%</span>
+            </div>
+            <div class="process-bar-outer">
+              <div class="process-bar-zones">
+                <div class="z-lolo" style="width: 10%"></div>
+                <div class="z-lo" style="width: 15%"></div>
+                <div class="z-normal" style="width: 50%"></div>
+                <div class="z-hi" style="width: 15%"></div>
+                <div class="z-hihi" style="width: 10%"></div>
+              </div>
+              <div
+                class="process-bar-indicator"
+                id="indNivel"
+                style="left: 0%"
+              ></div>
+            </div>
+            <div class="process-bar-ticks">
+              <span>0cm</span><span>10cm</span><span>25cm</span><span>50cm</span
+              ><span>75cm</span><span>90cm</span><span>100cm</span>
+            </div>
+          </div>
+
+          <table class="limits-table">
+            <thead>
+              <tr>
+                <th>LÍMITE</th>
+                <th>VALOR</th>
+                <th>PRIORIDAD</th>
+                <th>ESTADO</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="lim-hihi">HI-HI</td>
+                <td>90 cm</td>
+                <td>P1 CRÍTICA</td>
+                <td id="lim-hh-n">—</td>
+              </tr>
+              <tr>
+                <td class="lim-hi">HI</td>
+                <td>75 cm</td>
+                <td>P2 ALTA</td>
+                <td id="lim-h-n">—</td>
+              </tr>
+              <tr>
+                <td class="lim-norm">NORM</td>
+                <td>25–75 cm</td>
+                <td>—</td>
+                <td id="lim-n-n">—</td>
+              </tr>
+              <tr>
+                <td class="lim-lo">LO</td>
+                <td>25 cm</td>
+                <td>P2 ALTA</td>
+                <td id="lim-l-n">—</td>
+              </tr>
+              <tr>
+                <td class="lim-lolo">LO-LO</td>
+                <td>10 cm</td>
+                <td>P1 CRÍTICA</td>
+                <td id="lim-ll-n">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── ALARM PANEL ── -->
+      <div class="panel alarm-panel">
+        <div class="panel-header">
+          <div>
+            <span class="panel-id">ALM-CALD</span
+            ><span class="panel-desc"> · ALARMAS</span>
+          </div>
+          <span id="almCount" style="font-size: 10px; color: #d0d0d0"></span>
+        </div>
+        <div class="alarm-list" id="almList">
+          <div class="no-alarms">■ SIN ALARMAS ACTIVAS</div>
+        </div>
+      </div>
+
+      <!-- ── TREND PANEL ── -->
+      <div class="panel trend-panel">
+        <div class="panel-header">
+          <div>
+            <span class="panel-id">TREND-CALD</span
+            ><span class="panel-desc"> · TENDENCIAS DE PROCESO</span>
+          </div>
+        </div>
+        <div class="trend-toolbar">
+          <span class="trend-label">HISTORIAL:</span>
+          <button class="trend-btn active" onclick="">EN VIVO</button>
+          <span
+            style="
+              font-family: var(--font-mono);
+              font-size: 10px;
+              color: #707070;
+              margin-left: auto;
+            "
+          >
+            TT-001 · LT-001 · CALD-001
+          </span>
+        </div>
         <div class="charts-grid">
-          <div class="chart-card">
-            <div class="chart-title" style="color: var(--amber)">
-              🌡️ Historial Temperatura
-            </div>
-            <div class="chart-box"><canvas id="c1"></canvas></div>
+          <div class="chart-block">
+            <div class="chart-tag">TT-001 · TEMPERATURA °C</div>
+            <div class="chart-box"><canvas id="chartTemp"></canvas></div>
           </div>
-          <div class="chart-card">
-            <div class="chart-title" style="color: var(--blue)">
-              💧 Historial Nivel
-            </div>
-            <div class="chart-box"><canvas id="c2"></canvas></div>
+          <div class="chart-block">
+            <div class="chart-tag">LT-001 · NIVEL cm</div>
+            <div class="chart-box"><canvas id="chartNivel"></canvas></div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- SIDEBAR -->
-      <div class="sidebar">
-        <!-- Alarmas -->
-        <div class="alarmas-card">
-          <div class="alarmas-header">
-            <div class="alarmas-title">
-              ⚠️ Alarmas <span class="alarmas-count" id="alarmaCount">0</span>
-            </div>
-          </div>
-          <div class="alarmas-body" id="alarmasList">
-            <div class="alarma-estable">
-              <div class="icon">✅</div>
-              <p>Sistema Estable</p>
-              <span>Sin alertas activas</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Info dispositivo -->
-        <div class="info-card">
-          <div class="chart-title" style="margin-bottom: 12px">
-            📡 Dispositivo
-          </div>
-          <div class="info-row">
-            <span class="info-key">ID</span>
-            <span class="info-val">ESP32_SOLCA</span>
-          </div>
-          <div class="info-row">
-            <span class="info-key">IP</span>
-            <span class="info-val" style="font-size: 12px">192.168.18.15</span>
-          </div>
-          <div class="info-row">
-            <span class="info-key">Refresco</span>
-            <span class="info-val">3 seg</span>
-          </div>
-          <div class="info-row">
-            <span class="info-key">Estado</span>
-            <span class="info-val" id="infoEstado" style="color: var(--red)"
-              >Offline</span
-            >
-          </div>
-        </div>
-      </div>
-    </main>
+    <!-- ── STATUS BAR ── -->
+    <div class="statusbar">
+      <span id="sb-srv">SRV: --</span>
+      <span id="sb-nodo">NODO: --</span>
+      <span>CALD-001 · L2</span>
+      <span>ISA-101.01-2015</span>
+      <span style="margin-left: auto" id="sb-clock">--:--:--</span>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <script>
-      let lastResponseTime = Date.now();
       const ID = 1;
+      const MAX = 20;
+      const ackedAlarms = new Set();
+      let lastData = 0;
+
+      // Límites de proceso
+      const T = { min: 0, max: 200, lolo: 10, lo: 20, hi: 160, hihi: 180 };
+      const L = { min: 0, max: 100, lolo: 10, lo: 25, hi: 75, hihi: 90 };
 
       function updateClock() {
-        document.getElementById("clock").innerText =
-          new Date().toLocaleTimeString("es-EC", { hour12: false });
+        const t = new Date().toLocaleTimeString("es-EC", { hour12: false });
+        document.getElementById("clock").textContent = t;
+        document.getElementById("sb-clock").textContent = t;
       }
       setInterval(updateClock, 1000);
       updateClock();
 
-      function setDeviceOnline(online) {
-        const pill = document.getElementById("devicePill");
-        const text = document.getElementById("deviceStatus");
-        const info = document.getElementById("infoEstado");
-        if (online) {
-          pill.classList.add("online");
-          text.textContent = "Nodo Online";
-          info.textContent = "Online";
-          info.style.color = "var(--green)";
-          lastResponseTime = Date.now();
-        } else {
-          pill.classList.remove("online");
-          text.textContent = "Nodo Offline";
-          info.textContent = "Offline";
-          info.style.color = "var(--red)";
-        }
-      }
-
       // Charts
-      Chart.defaults.font.family = "'Space Grotesk', sans-serif";
-      Chart.defaults.color = "#94A3B8";
+      Chart.defaults.color = "#707070";
+      Chart.defaults.borderColor = "#404040";
 
-      function initChart(id, color, fillColor) {
+      function mkChart(id, color) {
         return new Chart(document.getElementById(id), {
           type: "line",
           data: {
@@ -626,116 +947,274 @@
               {
                 data: [],
                 borderColor: color,
-                backgroundColor: fillColor,
-                borderWidth: 2.5,
-                fill: true,
-                tension: 0.4,
-                pointRadius: 3,
-                pointBackgroundColor: color,
-                pointBorderColor: "#fff",
-                pointBorderWidth: 2,
+                backgroundColor: "transparent",
+                borderWidth: 1.5,
+                pointRadius: 0,
+                tension: 0.3,
               },
             ],
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: { duration: 400 },
+            animation: { duration: 300 },
             plugins: { legend: { display: false } },
             scales: {
               x: { display: false },
               y: {
-                grid: { color: "#F1F5F9" },
-                ticks: { font: { size: 11 } },
+                grid: { color: "#333" },
+                ticks: {
+                  font: { family: "IBM Plex Mono", size: 9 },
+                  color: "#707070",
+                },
               },
             },
           },
         });
       }
 
-      const charts = [
-        initChart("c1", "#D97706", "rgba(217,119,6,0.08)"),
-        initChart("c2", "#0EA5E9", "rgba(14,165,233,0.08)"),
-      ];
+      const charts = {
+        temp: mkChart("chartTemp", "#D0D0D0"),
+        nivel: mkChart("chartNivel", "#D0D0D0"),
+      };
 
-      async function update() {
+      function pushChart(chart, val) {
+        const t = new Date().toLocaleTimeString("es-EC", { hour12: false });
+        chart.data.labels.push(t);
+        chart.data.datasets[0].data.push(val);
+        if (chart.data.labels.length > MAX) {
+          chart.data.labels.shift();
+          chart.data.datasets[0].data.shift();
+        }
+        chart.update();
+      }
+
+      function fmt(v, d = 1) {
+        return v === null || v === undefined
+          ? "--.-"
+          : parseFloat(v).toFixed(d);
+      }
+
+      function pct(v, min, max) {
+        return Math.min(100, Math.max(0, ((v - min) / (max - min)) * 100));
+      }
+
+      function getAlarmClass(v, limits) {
+        if (v <= limits.lolo || v >= limits.hihi) return "p1";
+        if (v < limits.lo || v > limits.hi) return "p2";
+        return "";
+      }
+
+      function updateLimits(val, limits, ids) {
+        const { lim_hh, lim_h, lim_n, lim_l, lim_ll } = ids;
+        const ok = "✓ OK";
+        const act = "⚠ ACT";
+        document.getElementById(lim_hh).textContent =
+          val >= limits.hihi ? act : ok;
+        document.getElementById(lim_hh).style.color =
+          val >= limits.hihi ? "var(--p1)" : "var(--ok)";
+        document.getElementById(lim_h).textContent =
+          val >= limits.hi && val < limits.hihi ? act : ok;
+        document.getElementById(lim_h).style.color =
+          val >= limits.hi && val < limits.hihi ? "var(--p2)" : "var(--ok)";
+        document.getElementById(lim_n).textContent =
+          val >= limits.lo && val <= limits.hi ? ok : "—";
+        document.getElementById(lim_n).style.color =
+          val >= limits.lo && val <= limits.hi
+            ? "var(--ok)"
+            : "var(--isa-text-dim)";
+        document.getElementById(lim_l).textContent =
+          val <= limits.lo && val > limits.lolo ? act : ok;
+        document.getElementById(lim_l).style.color =
+          val <= limits.lo && val > limits.lolo ? "var(--p2)" : "var(--ok)";
+        document.getElementById(lim_ll).textContent =
+          val <= limits.lolo ? act : ok;
+        document.getElementById(lim_ll).style.color =
+          val <= limits.lolo ? "var(--p1)" : "var(--ok)";
+      }
+
+      function setServerOnline(online) {
+        const dot = document.getElementById("serverDot");
+        const txt = document.getElementById("serverStatus");
+        const sb = document.getElementById("sb-srv");
+        dot.className = "node-dot " + (online ? "ok" : "fault");
+        txt.textContent = online ? "SRV: OK" : "SRV: FAULT";
+        sb.textContent = online ? "SRV: OK" : "SRV: FAULT";
+        sb.className = online ? "sb-ok" : "sb-err";
+      }
+
+      function setNodoOnline(online) {
+        const dot = document.getElementById("nodoDot");
+        const txt = document.getElementById("nodoStatus");
+        const sb = document.getElementById("sb-nodo");
+        dot.className = "node-dot " + (online ? "ok" : "fault");
+        txt.textContent = online ? "NODO: ONLINE" : "NODO: OFFLINE";
+        sb.textContent = online ? "NODO: OK" : "NODO: OFFLINE";
+        sb.className = online ? "sb-ok" : "sb-err";
+      }
+
+      async function fetchData() {
         try {
           const res = await fetch(`/api/caldero/ultimo?dispositivo_id=${ID}`);
           const d = await res.json();
+          setServerOnline(true);
+          if (!d) return;
 
-          document.getElementById("serverStatus").textContent = "Servidor ✓";
+          const temp = parseFloat(d.temperatura) || 0;
+          const nivel = parseFloat(d.nivel) || 0;
+          const t = new Date(d.registrado_en).toLocaleTimeString("es-EC", {
+            hour12: false,
+          });
 
-          if (d) {
-            document.getElementById("temp").textContent = parseFloat(
-              d.temperatura,
-            ).toFixed(1);
-            document.getElementById("nivel").textContent = parseFloat(
-              d.nivel,
-            ).toFixed(1);
+          // Faceplates
+          const pvT = document.getElementById("pvTemp");
+          const pvN = document.getElementById("pvNivel");
+          pvT.textContent = fmt(temp);
+          pvN.textContent = fmt(nivel);
+          pvT.className = "faceplate-pv " + getAlarmClass(temp, T);
+          pvN.className = "faceplate-pv " + getAlarmClass(nivel, L);
 
-            const t = new Date(d.registrado_en).toLocaleTimeString("es-EC", {
-              hour12: false,
-            });
-            document.getElementById("lastUpdate").textContent =
-              `Última lectura: ${t}`;
+          // Timestamps
+          document.getElementById("tempTime").textContent = t;
+          document.getElementById("nivelTime").textContent = t;
 
-            const label = new Date().toLocaleTimeString("es-EC", {
-              hour12: false,
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-            });
-            charts.forEach((c, i) => {
-              c.data.labels.push(label);
-              c.data.datasets[0].data.push(
-                i === 0 ? parseFloat(d.temperatura) : parseFloat(d.nivel),
-              );
-              if (c.data.labels.length > 20) {
-                c.data.labels.shift();
-                c.data.datasets[0].data.shift();
-              }
-              c.update();
-            });
-
-            setDeviceOnline(true);
+          // Estado textual
+          function estadoTxt(v, lim) {
+            if (v >= lim.hihi || v <= lim.lolo) return "ALARMA P1";
+            if (v >= lim.hi || v <= lim.lo) return "ALARMA P2";
+            return "NORMAL";
           }
+          const te = estadoTxt(temp, T);
+          const ne = estadoTxt(nivel, L);
+          document.getElementById("tempEstado").textContent = te;
+          document.getElementById("tempEstado").style.color =
+            te === "NORMAL"
+              ? "var(--ok-bg)"
+              : te === "ALARMA P1"
+                ? "var(--p1-bg)"
+                : "var(--p2-bg)";
+          document.getElementById("nivelEstado").textContent = ne;
+          document.getElementById("nivelEstado").style.color =
+            ne === "NORMAL"
+              ? "var(--ok-bg)"
+              : ne === "ALARMA P1"
+                ? "var(--p1-bg)"
+                : "var(--p2-bg)";
 
-          // Alarmas
-          const resAl = await fetch(
-            `/api/alarmas/activas?dispositivo_id=${ID}`,
-          );
-          const al = await resAl.json();
-          document.getElementById("alarmaCount").textContent = al.length;
+          // Process bars
+          const tPct = pct(temp, T.min, T.max);
+          const nPct = pct(nivel, L.min, L.max);
+          document.getElementById("indTemp").style.left = tPct + "%";
+          document.getElementById("indNivel").style.left = nPct + "%";
+          document.getElementById("tempPct").textContent =
+            tPct.toFixed(1) + "%";
+          document.getElementById("nivelPct").textContent =
+            nPct.toFixed(1) + "%";
 
-          if (al.length) {
-            document.getElementById("alarmasList").innerHTML = al
-              .map(
-                (a) => `
-        <div class="alarma-item">
-          <div class="alarma-tipo">${a.tipo.replace(/_/g, " ")}</div>
-          <div class="alarma-desc">${a.descripcion || "—"}</div>
-        </div>`,
-              )
-              .join("");
-          } else {
-            document.getElementById("alarmasList").innerHTML = `
-        <div class="alarma-estable">
-          <div class="icon">✅</div>
-          <p>Sistema Estable</p>
-          <span>Sin alertas activas</span>
-        </div>`;
-          }
-        } catch (e) {
-          document.getElementById("serverStatus").textContent = "Sin conexión";
+          // Límites
+          updateLimits(temp, T, {
+            lim_hh: "lim-hh-t",
+            lim_h: "lim-h-t",
+            lim_n: "lim-n-t",
+            lim_l: "lim-l-t",
+            lim_ll: "lim-ll-t",
+          });
+          updateLimits(nivel, L, {
+            lim_hh: "lim-hh-n",
+            lim_h: "lim-h-n",
+            lim_n: "lim-n-n",
+            lim_l: "lim-l-n",
+            lim_ll: "lim-ll-n",
+          });
+
+          // Trends
+          pushChart(charts.temp, temp);
+          pushChart(charts.nivel, nivel);
+
+          setNodoOnline(true);
+          lastData = Date.now();
+        } catch {
+          setServerOnline(false);
         }
       }
 
-      setInterval(() => {
-        if (Date.now() - lastResponseTime > 10000) setDeviceOnline(false);
-      }, 2000);
+      async function fetchAlarmas() {
+        try {
+          const res = await fetch(`/api/alarmas/activas?dispositivo_id=${ID}`);
+          const alarmas = await res.json();
+          const list = document.getElementById("almList");
+          const count = document.getElementById("almCount");
+          const banner = document.getElementById("alarmBanner");
 
-      setInterval(update, 3000);
-      update();
+          const sinAck = alarmas.filter((a) => !ackedAlarms.has(a.id));
+          count.textContent = sinAck.length ? `(${sinAck.length})` : "";
+
+          const p1sinAck = sinAck.filter((a) =>
+            ["EMERGENCIA", "SOBRECARGA"].includes(a.tipo),
+          );
+          banner.classList.toggle("active", p1sinAck.length > 0);
+          document.getElementById("bannerTxt").textContent = p1sinAck.length
+            ? `${p1sinAck.length} P1 SIN ACK`
+            : "";
+
+          if (!alarmas.length) {
+            list.innerHTML =
+              '<div class="no-alarms">■ SIN ALARMAS ACTIVAS</div>';
+            return;
+          }
+
+          function pTag(tipo) {
+            if (["EMERGENCIA", "SOBRECARGA"].includes(tipo))
+              return { p: "P1", cls: "p1" };
+            if (["FLUJO", "NIVEL_CRITICO", "TEMP_CRITICA"].includes(tipo))
+              return { p: "P2", cls: "p2" };
+            return { p: "P3", cls: "p3" };
+          }
+
+          list.innerHTML = alarmas
+            .map((a) => {
+              const { p, cls } = pTag(a.tipo);
+              const isAck = ackedAlarms.has(a.id);
+              const t = new Date(a.registrado_en).toLocaleTimeString("es-EC", {
+                hour12: false,
+              });
+              return `
+        <div class="alarm-row ${isAck ? "ack" : cls}">
+          <div class="alm-pri ${cls}">${p}</div>
+          <div>
+            <div class="alm-type">${a.tipo.replace(/_/g, " ")}</div>
+            <div class="alm-desc">${a.descripcion || "—"}</div>
+            <div class="alm-time">${t}</div>
+          </div>
+          ${
+            !isAck
+              ? `<button class="alm-ack" onclick="ackAlarm(${a.id})">ACK</button>`
+              : `<span style="font-size:9px;color:#888;font-family:var(--font-mono)">ACK</span>`
+          }
+        </div>`;
+            })
+            .join("");
+        } catch {
+          /* silencioso */
+        }
+      }
+
+      function ackAlarm(id) {
+        ackedAlarms.add(id);
+        fetchAlarmas();
+      }
+
+      // Watchdog
+      setInterval(() => {
+        if (Date.now() - lastData > 12000) setNodoOnline(false);
+      }, 3000);
+
+      async function refresh() {
+        await Promise.all([fetchData(), fetchAlarmas()]);
+      }
+
+      refresh();
+      setInterval(refresh, 3000);
     </script>
   </body>
 </html>
