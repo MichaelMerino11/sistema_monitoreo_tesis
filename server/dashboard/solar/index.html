@@ -10,9 +10,9 @@
     />
     <style>
       /*
-  ANSI/ISA-101.01-2015 — LEVEL 2 DISPLAY
-  TAG: SOLR-001 · PLANTA FOTOVOLTAICA
-*/
+        ANSI/ISA-101.01-2015 — LEVEL 2 DISPLAY
+        TAG: SOLR-001 · PLANTA FOTOVOLTAICA
+      */
 
       :root {
         --isa-bg: #b4b4b4;
@@ -510,7 +510,282 @@
         color: var(--isa-text-dim);
       }
 
-      /* ── STATUS BAR ── */
+      /* ── FACEPLATE CLICKABLE ── */
+      .faceplate.clickable {
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      .faceplate.clickable:hover {
+        border-color: #a0a0a0;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+      }
+      .faceplate.clickable:hover .fp-tag::after {
+        content: " [+]";
+        color: #909090;
+        font-size: 8px;
+      }
+
+      /* ── MODAL OVERLAY ── */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        z-index: 200;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      .modal-overlay.open {
+        display: flex;
+      }
+
+      .modal {
+        background: #c8c8c8;
+        border: 2px solid #505050;
+        border-top: 4px solid #404040;
+        width: 100%;
+        max-width: 760px;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        animation: modalIn 0.2s ease;
+      }
+      @keyframes modalIn {
+        from {
+          transform: translateY(16px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-titlebar {
+        background: #2a2a2a;
+        color: #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 12px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .modal-tag {
+        color: #f0f0f0;
+      }
+      .modal-desc {
+        color: #a0a0a0;
+        font-weight: 400;
+        font-size: 11px;
+        margin-left: 12px;
+      }
+      .modal-close {
+        background: #505050;
+        border: 1px solid #707070;
+        color: #d0d0d0;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        font-family: var(--font-mono);
+        font-size: 14px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s;
+      }
+      .modal-close:hover {
+        background: #707070;
+      }
+
+      .modal-body {
+        padding: 12px;
+      }
+
+      /* Modal sections */
+      .modal-section {
+        margin-bottom: 12px;
+      }
+      .modal-section-title {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 600;
+        color: #606060;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+        border-bottom: 1px solid #a0a0a0;
+        padding-bottom: 3px;
+      }
+
+      /* Big PV in modal */
+      .modal-pv-block {
+        background: #1e1e1e;
+        border: 2px solid #505050;
+        padding: 16px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .modal-pv-main {
+        text-align: center;
+      }
+      .modal-pv-val {
+        font-family: var(--font-mono);
+        font-size: 56px;
+        font-weight: 600;
+        color: #d8d8d8;
+        line-height: 1;
+      }
+      .modal-pv-val.p1 {
+        color: var(--p1-bg);
+        animation: blink-val 0.8s step-end infinite;
+      }
+      .modal-pv-val.p2 {
+        color: var(--p2-bg);
+        animation: blink-val 1.2s step-end infinite;
+      }
+      .modal-pv-unit {
+        font-family: var(--font-mono);
+        font-size: 14px;
+        color: #606060;
+        margin-top: 4px;
+      }
+      .modal-pv-state {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 8px;
+        font-weight: 600;
+      }
+
+      /* Stats grid */
+      .modal-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        text-align: center;
+      }
+      .modal-stat {
+        background: #2a2a2a;
+        border: 1px solid #505050;
+        padding: 8px 6px;
+      }
+      .modal-stat-val {
+        font-family: var(--font-mono);
+        font-size: 18px;
+        font-weight: 600;
+        color: #d0d0d0;
+        line-height: 1;
+      }
+      .modal-stat-lbl {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: #707070;
+        text-transform: uppercase;
+        margin-top: 3px;
+        letter-spacing: 0.3px;
+      }
+
+      /* Limits table in modal */
+      .modal-limits {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: var(--font-mono);
+        font-size: 10px;
+      }
+      .modal-limits th {
+        background: #505050;
+        color: #c0c0c0;
+        padding: 4px 8px;
+        text-align: left;
+        font-size: 9px;
+        letter-spacing: 0.3px;
+        border-right: 1px solid #606060;
+      }
+      .modal-limits td {
+        padding: 4px 8px;
+        border-bottom: 1px solid #a8a8a8;
+        border-right: 1px solid #a8a8a8;
+        color: #3a3a3a;
+      }
+      .modal-limits td:last-child {
+        border-right: none;
+      }
+
+      /* Modal chart */
+      .modal-chart-box {
+        height: 140px;
+        background: #1e1e1e;
+        border: 1px solid #444;
+      }
+
+      /* Meta info */
+      .modal-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+      }
+      .modal-meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 8px;
+        background: #ababab;
+        border: 1px solid #989898;
+        font-family: var(--font-mono);
+        font-size: 10px;
+      }
+      .modal-meta-key {
+        color: #505050;
+      }
+      .modal-meta-val {
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+
+      /* Efficiency bar */
+      .eff-bar-wrap {
+        margin-top: 8px;
+      }
+      .eff-bar-lbl {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: #707070;
+        margin-bottom: 3px;
+      }
+      .eff-bar-bg {
+        height: 12px;
+        background: #1e1e1e;
+        border: 1px solid #505050;
+      }
+      .eff-bar-fill {
+        height: 100%;
+        background: #505050;
+        transition: width 0.8s ease;
+      }
+      .eff-bar-fill.good {
+        background: var(--ok);
+      }
+      .eff-bar-fill.warn {
+        background: var(--p2);
+      }
+      .eff-bar-fill.bad {
+        background: var(--p1);
+      }
       .statusbar {
         position: fixed;
         bottom: 0;
@@ -630,7 +905,7 @@
           >
             VT-P · PANEL
           </div>
-          <div class="faceplate">
+          <div class="faceplate clickable" onclick="openModal('VT-P')">
             <div class="fp-tag">
               <span>VT-P · VOLTAJE PANEL</span><span>V DC</span>
             </div>
@@ -667,7 +942,7 @@
           >
             VT-B · BATERÍA
           </div>
-          <div class="faceplate">
+          <div class="faceplate clickable" onclick="openModal('VT-B')">
             <div class="fp-tag">
               <span>VT-B · VOLTAJE BATERÍA</span><span>V DC</span>
             </div>
@@ -691,7 +966,7 @@
           >
             VT-I · INVERSOR
           </div>
-          <div class="faceplate">
+          <div class="faceplate clickable" onclick="openModal('VT-I')">
             <div class="fp-tag">
               <span>VT-I · VOLTAJE INVERSOR</span><span>V AC</span>
             </div>
@@ -726,7 +1001,7 @@
           >
             IT-P · PANEL
           </div>
-          <div class="faceplate">
+          <div class="faceplate clickable" onclick="openModal('IT-P')">
             <div class="fp-tag">
               <span>IT-P · CORRIENTE PANEL</span><span>A DC</span>
             </div>
@@ -763,7 +1038,7 @@
           >
             IT-B · BATERÍA
           </div>
-          <div class="faceplate">
+          <div class="faceplate clickable" onclick="openModal('IT-B')">
             <div class="fp-tag">
               <span>IT-B · CORRIENTE BATERÍA</span><span>A DC</span>
             </div>
@@ -787,7 +1062,7 @@
           >
             IT-I · INVERSOR
           </div>
-          <div class="faceplate">
+          <div class="faceplate clickable" onclick="openModal('IT-I')">
             <div class="fp-tag">
               <span>IT-I · CORRIENTE INVERSOR</span><span>A AC</span>
             </div>
@@ -822,7 +1097,7 @@
           >
             PT-ENT · POTENCIA ENTRADA
           </div>
-          <div class="faceplate">
+          <div class="faceplate clickable" onclick="openModal('PT-ENT')">
             <div class="fp-tag">
               <span>PT-ENT · POT. ENTRADA</span><span>W</span>
             </div>
@@ -846,7 +1121,7 @@
           >
             PT-SAL · POTENCIA SALIDA
           </div>
-          <div class="faceplate">
+          <div class="faceplate clickable" onclick="openModal('PT-SAL')">
             <div class="fp-tag">
               <span>PT-SAL · POT. SALIDA</span><span>W</span>
             </div>
@@ -870,7 +1145,7 @@
           >
             ET-DIA · ENERGÍA DIARIA
           </div>
-          <div class="faceplate">
+          <div class="faceplate clickable" onclick="openModal('ET-DIA')">
             <div class="fp-tag">
               <span>ET-DIA · ENERGÍA HOY</span><span>kWh</span>
             </div>
@@ -989,12 +1264,459 @@
       <span style="margin-left: auto" id="sb-clock">--:--:--</span>
     </div>
 
+    <!-- ── MODAL DETALLE INSTRUMENTO ── -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+      <div class="modal" id="modal">
+        <div class="modal-titlebar">
+          <div>
+            <span class="modal-tag" id="modalTag">TAG</span>
+            <span class="modal-desc" id="modalDesc">DESCRIPCIÓN</span>
+          </div>
+          <button class="modal-close" onclick="closeModalBtn()">✕</button>
+        </div>
+        <div class="modal-body">
+          <!-- PV + Stats -->
+          <div class="modal-pv-block">
+            <div class="modal-pv-main">
+              <div class="modal-pv-val" id="modalPvVal">--.-</div>
+              <div class="modal-pv-unit" id="modalPvUnit">—</div>
+              <div class="modal-pv-state" id="modalPvState">SIN DATOS</div>
+            </div>
+            <div class="modal-stats">
+              <div class="modal-stat">
+                <div class="modal-stat-val" id="modalMin">--.-</div>
+                <div class="modal-stat-lbl">MÍNIMO</div>
+              </div>
+              <div class="modal-stat">
+                <div class="modal-stat-val" id="modalMax">--.-</div>
+                <div class="modal-stat-lbl">MÁXIMO</div>
+              </div>
+              <div class="modal-stat">
+                <div class="modal-stat-val" id="modalAvg">--.-</div>
+                <div class="modal-stat-lbl">PROMEDIO</div>
+              </div>
+              <div class="modal-stat" id="modalExtra1Wrap">
+                <div class="modal-stat-val" id="modalExtra1">--.-</div>
+                <div class="modal-stat-lbl" id="modalExtra1Lbl">—</div>
+              </div>
+              <div class="modal-stat" id="modalExtra2Wrap">
+                <div class="modal-stat-val" id="modalExtra2">--.-</div>
+                <div class="modal-stat-lbl" id="modalExtra2Lbl">—</div>
+              </div>
+              <div class="modal-stat">
+                <div class="modal-stat-val" id="modalSamples">0</div>
+                <div class="modal-stat-lbl">MUESTRAS</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tendencia -->
+          <div class="modal-section">
+            <div class="modal-section-title">
+              TREND — TENDENCIA EN TIEMPO REAL
+            </div>
+            <div class="modal-chart-box"><canvas id="modalChart"></canvas></div>
+          </div>
+
+          <!-- Eficiencia (solo potencias) -->
+          <div class="modal-section" id="modalEffSection" style="display: none">
+            <div class="modal-section-title">EFICIENCIA — PT-SAL / PT-ENT</div>
+            <div class="eff-bar-wrap">
+              <div class="eff-bar-lbl">
+                <span>EFICIENCIA DEL SISTEMA</span>
+                <span id="effPct">0%</span>
+              </div>
+              <div class="eff-bar-bg">
+                <div class="eff-bar-fill" id="effBar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Proyección kWh -->
+          <div
+            class="modal-section"
+            id="modalProjSection"
+            style="display: none"
+          >
+            <div class="modal-section-title">
+              PROYECCIÓN — ESTIMADO AL CIERRE DEL DÍA
+            </div>
+            <div class="modal-stats" style="grid-template-columns: 1fr 1fr 1fr">
+              <div class="modal-stat">
+                <div class="modal-stat-val" id="projActual">--.-</div>
+                <div class="modal-stat-lbl">kWh AHORA</div>
+              </div>
+              <div class="modal-stat">
+                <div class="modal-stat-val" id="projEstimado">--.-</div>
+                <div class="modal-stat-lbl">kWh PROYECTADO</div>
+              </div>
+              <div class="modal-stat">
+                <div class="modal-stat-val" id="projHorasRest">--</div>
+                <div class="modal-stat-lbl">HORAS RESTANTES</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Límites -->
+          <div class="modal-section" id="modalLimSection">
+            <div class="modal-section-title">LÍMITES DE PROCESO — ISA-101</div>
+            <table class="modal-limits">
+              <thead>
+                <tr>
+                  <th>LÍMITE</th>
+                  <th>VALOR</th>
+                  <th>PRIORIDAD</th>
+                  <th>ESTADO</th>
+                </tr>
+              </thead>
+              <tbody id="modalLimBody"></tbody>
+            </table>
+          </div>
+
+          <!-- Meta -->
+          <div class="modal-section">
+            <div class="modal-section-title">METADATOS DEL INSTRUMENTO</div>
+            <div class="modal-meta">
+              <div class="modal-meta-row">
+                <span class="modal-meta-key">TAG</span
+                ><span class="modal-meta-val" id="metaTag">—</span>
+              </div>
+              <div class="modal-meta-row">
+                <span class="modal-meta-key">DISPOSITIVO</span
+                ><span class="modal-meta-val">ESP32_SOLAR</span>
+              </div>
+              <div class="modal-meta-row">
+                <span class="modal-meta-key">PLANTA</span
+                ><span class="modal-meta-val">SOLR-001</span>
+              </div>
+              <div class="modal-meta-row">
+                <span class="modal-meta-key">PROTOCOLO</span
+                ><span class="modal-meta-val">MQTT → REST</span>
+              </div>
+              <div class="modal-meta-row">
+                <span class="modal-meta-key">ÚLT. LECTURA</span
+                ><span class="modal-meta-val" id="metaTime">—</span>
+              </div>
+              <div class="modal-meta-row">
+                <span class="modal-meta-key">REFRESH</span
+                ><span class="modal-meta-val">3 SEG</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <script>
       const ID = 2;
       const MAX = 20;
       const ackedAlarms = new Set();
       let lastData = 0;
+      let lastSolarData = null;
+
+      // ── MODAL ──────────────────────────────────────────────
+      const INSTRUMENTS = {
+        "VT-P": {
+          desc: "VOLTAJE PANEL SOLAR",
+          unit: "V DC",
+          field: "voltaje_panel",
+          lo: 10,
+          hi: 90,
+          lolo: 5,
+          hihi: 95,
+          max: 100,
+        },
+        "VT-B": {
+          desc: "VOLTAJE BATERÍA",
+          unit: "V DC",
+          field: "voltaje_bateria",
+          lo: 10,
+          hi: 58,
+          lolo: 8,
+          hihi: 60,
+          max: 60,
+        },
+        "VT-I": {
+          desc: "VOLTAJE INVERSOR",
+          unit: "V AC",
+          field: "voltaje_inversor",
+          lo: 20,
+          hi: 240,
+          lolo: 10,
+          hihi: 245,
+          max: 250,
+        },
+        "IT-P": {
+          desc: "CORRIENTE PANEL SOLAR",
+          unit: "A DC",
+          field: "corriente_panel",
+          lo: 0.5,
+          hi: 18,
+          lolo: 0,
+          hihi: 20,
+          max: 20,
+        },
+        "IT-B": {
+          desc: "CORRIENTE BATERÍA",
+          unit: "A DC",
+          field: "corriente_bateria",
+          lo: 0.5,
+          hi: 18,
+          lolo: 0,
+          hihi: 20,
+          max: 20,
+        },
+        "IT-I": {
+          desc: "CORRIENTE INVERSOR",
+          unit: "A AC",
+          field: "corriente_inversor",
+          lo: 0.5,
+          hi: 18,
+          lolo: 0,
+          hihi: 20,
+          max: 20,
+        },
+        "PT-ENT": {
+          desc: "POTENCIA ENTRADA",
+          unit: "W",
+          field: "potencia_entrada",
+          lo: 0,
+          hi: 4500,
+          lolo: 0,
+          hihi: 5000,
+          max: 5000,
+          isPower: true,
+        },
+        "PT-SAL": {
+          desc: "POTENCIA SALIDA",
+          unit: "W",
+          field: "potencia_salida",
+          lo: 0,
+          hi: 4500,
+          lolo: 0,
+          hihi: 5000,
+          max: 5000,
+          isPower: true,
+        },
+        "ET-DIA": {
+          desc: "ENERGÍA ACUMULADA HOY",
+          unit: "kWh",
+          field: "energia_kwh",
+          lo: 0,
+          hi: 9.5,
+          lolo: 0,
+          hihi: 10,
+          max: 10,
+          isEnergy: true,
+        },
+      };
+
+      let modalChartInst = null;
+      let activeModalTag = null;
+      let modalHistory = [];
+      let modalInterval = null;
+
+      function openModal(tag) {
+        activeModalTag = tag;
+        modalHistory = [];
+        const inst = INSTRUMENTS[tag];
+
+        document.getElementById("modalTag").textContent = tag;
+        document.getElementById("modalDesc").textContent = inst.desc;
+        document.getElementById("metaTag").textContent = tag;
+        document.getElementById("modalEffSection").style.display = inst.isPower
+          ? "block"
+          : "none";
+        document.getElementById("modalProjSection").style.display =
+          inst.isEnergy ? "block" : "none";
+        document.getElementById("modalLimSection").style.display = inst.isEnergy
+          ? "none"
+          : "block";
+
+        if (!inst.isEnergy) {
+          document.getElementById("modalLimBody").innerHTML = `
+      <tr><td style="color:var(--p1);font-weight:700">HI-HI</td><td>${inst.hihi} ${inst.unit}</td><td>P1 CRÍTICA</td><td id="ml-hh">—</td></tr>
+      <tr><td style="color:var(--p2);font-weight:700">HI</td>   <td>${inst.hi}   ${inst.unit}</td><td>P2 ALTA</td>  <td id="ml-h">—</td></tr>
+      <tr><td style="color:var(--ok);font-weight:700">NORM</td> <td>${inst.lo}–${inst.hi} ${inst.unit}</td><td>—</td><td id="ml-n">—</td></tr>
+      <tr><td style="color:var(--p2);font-weight:700">LO</td>   <td>${inst.lo}   ${inst.unit}</td><td>P2 ALTA</td>  <td id="ml-l">—</td></tr>
+      <tr><td style="color:var(--p1);font-weight:700">LO-LO</td><td>${inst.lolo} ${inst.unit}</td><td>P1 CRÍTICA</td><td id="ml-ll">—</td></tr>`;
+        }
+
+        if (modalChartInst) {
+          modalChartInst.destroy();
+          modalChartInst = null;
+        }
+        modalChartInst = new Chart(
+          document.getElementById("modalChart").getContext("2d"),
+          {
+            type: "line",
+            data: {
+              labels: [],
+              datasets: [
+                {
+                  data: [],
+                  borderColor: "#D0D0D0",
+                  backgroundColor: "transparent",
+                  borderWidth: 1.5,
+                  pointRadius: 0,
+                  tension: 0.3,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: { duration: 300 },
+              plugins: { legend: { display: false } },
+              scales: {
+                x: { display: false },
+                y: {
+                  grid: { color: "#333" },
+                  ticks: {
+                    font: { family: "IBM Plex Mono", size: 9 },
+                    color: "#707070",
+                  },
+                },
+              },
+            },
+          },
+        );
+
+        document.getElementById("modalOverlay").classList.add("open");
+        updateModal();
+        modalInterval = setInterval(updateModal, 3000);
+      }
+
+      function updateModal() {
+        if (!activeModalTag || !lastSolarData) return;
+        const inst = INSTRUMENTS[activeModalTag];
+        const raw = parseFloat(lastSolarData[inst.field]) || 0;
+        const t = new Date(lastSolarData.registrado_en).toLocaleTimeString(
+          "es-EC",
+          { hour12: false },
+        );
+
+        const pvEl = document.getElementById("modalPvVal");
+        pvEl.textContent = raw.toFixed(inst.isEnergy ? 3 : 1);
+        document.getElementById("modalPvUnit").textContent = inst.unit;
+
+        let estado = "NORMAL",
+          stateColor = "var(--ok-bg)";
+        if (!inst.isEnergy) {
+          if (raw >= inst.hihi || raw <= inst.lolo) {
+            estado = "ALARMA P1";
+            stateColor = "var(--p1-bg)";
+            pvEl.className = "modal-pv-val p1";
+          } else if (raw >= inst.hi || raw <= inst.lo) {
+            estado = "ALARMA P2";
+            stateColor = "var(--p2-bg)";
+            pvEl.className = "modal-pv-val p2";
+          } else {
+            pvEl.className = "modal-pv-val";
+          }
+        } else {
+          pvEl.className = "modal-pv-val";
+        }
+
+        document.getElementById("modalPvState").textContent = estado;
+        document.getElementById("modalPvState").style.color = stateColor;
+        document.getElementById("metaTime").textContent = t;
+
+        modalHistory.push(raw);
+        if (modalHistory.length > 20) modalHistory.shift();
+
+        document.getElementById("modalMin").textContent = Math.min(
+          ...modalHistory,
+        ).toFixed(1);
+        document.getElementById("modalMax").textContent = Math.max(
+          ...modalHistory,
+        ).toFixed(1);
+        document.getElementById("modalAvg").textContent = (
+          modalHistory.reduce((a, b) => a + b, 0) / modalHistory.length
+        ).toFixed(1);
+        document.getElementById("modalSamples").textContent =
+          modalHistory.length;
+
+        if (inst.isPower) {
+          const pe = parseFloat(lastSolarData.potencia_entrada) || 0;
+          const ps = parseFloat(lastSolarData.potencia_salida) || 0;
+          const eff = pe > 0 ? Math.min(100, (ps / pe) * 100) : 0;
+          document.getElementById("modalExtra1").textContent =
+            eff.toFixed(1) + "%";
+          document.getElementById("modalExtra1Lbl").textContent = "EFICIENCIA";
+          document.getElementById("modalExtra2").textContent = (
+            pe - ps
+          ).toFixed(1);
+          document.getElementById("modalExtra2Lbl").textContent = "PÉRDIDA W";
+          document.getElementById("effPct").textContent = eff.toFixed(1) + "%";
+          const bar = document.getElementById("effBar");
+          bar.style.width = eff + "%";
+          bar.className =
+            "eff-bar-fill " + (eff >= 85 ? "good" : eff >= 70 ? "warn" : "bad");
+        } else if (inst.isEnergy) {
+          const kwh = parseFloat(lastSolarData.energia_kwh) || 0;
+          const now = new Date();
+          const horaActual = now.getHours() + now.getMinutes() / 60;
+          const horasRest = Math.max(0, 24 - horaActual);
+          const kwhPH = horaActual > 0 ? kwh / horaActual : 0;
+          document.getElementById("modalExtra1").textContent = kwhPH.toFixed(3);
+          document.getElementById("modalExtra1Lbl").textContent = "kWh/HORA";
+          document.getElementById("modalExtra2").textContent =
+            ((kwh / 10) * 100).toFixed(1) + "%";
+          document.getElementById("modalExtra2Lbl").textContent = "% OBJETIVO";
+          document.getElementById("projActual").textContent = kwh.toFixed(3);
+          document.getElementById("projEstimado").textContent = (
+            kwh +
+            kwhPH * horasRest
+          ).toFixed(2);
+          document.getElementById("projHorasRest").textContent =
+            horasRest.toFixed(1) + "h";
+        } else {
+          document.getElementById("modalExtra1").textContent =
+            ((raw / inst.max) * 100).toFixed(1) + "%";
+          document.getElementById("modalExtra1Lbl").textContent = "% RANGO";
+          document.getElementById("modalExtra2").textContent = inst.max;
+          document.getElementById("modalExtra2Lbl").textContent = "RANGO MÁX";
+        }
+
+        if (!inst.isEnergy) {
+          const setLim = (id, active) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = active ? "⚠ ACT" : "✓ OK";
+            el.style.color = active ? "var(--p1)" : "var(--ok)";
+          };
+          setLim("ml-hh", raw >= inst.hihi);
+          setLim("ml-h", raw >= inst.hi && raw < inst.hihi);
+          setLim("ml-n", raw >= inst.lo && raw <= inst.hi);
+          setLim("ml-l", raw <= inst.lo && raw > inst.lolo);
+          setLim("ml-ll", raw <= inst.lolo);
+        }
+
+        const lbl = new Date().toLocaleTimeString("es-EC", { hour12: false });
+        modalChartInst.data.labels.push(lbl);
+        modalChartInst.data.datasets[0].data.push(raw);
+        if (modalChartInst.data.labels.length > 20) {
+          modalChartInst.data.labels.shift();
+          modalChartInst.data.datasets[0].data.shift();
+        }
+        modalChartInst.update();
+      }
+
+      function closeModal(e) {
+        if (e.target === document.getElementById("modalOverlay"))
+          closeModalBtn();
+      }
+      function closeModalBtn() {
+        document.getElementById("modalOverlay").classList.remove("open");
+        if (modalInterval) {
+          clearInterval(modalInterval);
+          modalInterval = null;
+        }
+        activeModalTag = null;
+        modalHistory = [];
+      }
 
       function updateClock() {
         const t = new Date().toLocaleTimeString("es-EC", { hour12: false });
@@ -1235,6 +1957,7 @@
           pushTrend(trendI, [ip, ib, ii]);
           pushTrend(trendP, [pe, ps]);
 
+          lastSolarData = d;
           setNodoOnline(true);
           lastData = Date.now();
         } catch {
