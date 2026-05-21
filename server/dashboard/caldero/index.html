@@ -419,6 +419,44 @@
         font-weight: 600;
       }
 
+      /* ── UNIT SELECTOR ── */
+      .unit-selector {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 8px;
+        background: #ababab;
+        border-bottom: 1px solid var(--isa-border);
+      }
+      .unit-label {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: var(--isa-text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-right: 4px;
+      }
+      .unit-btn {
+        background: #888;
+        border: 1px solid #606060;
+        color: #e0e0e0;
+        padding: 2px 8px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        transition: background 0.15s;
+      }
+      .unit-btn:hover {
+        background: #a0a0a0;
+      }
+      .unit-btn.active {
+        background: #2a2a2a;
+        color: #f0f0f0;
+        border-color: #000;
+      }
+
       /* ── TREND ── */
       .trend-panel {
         grid-column: 1/3;
@@ -676,6 +714,18 @@
             ><span class="panel-desc"> · TEMPERATURA PROCESO</span>
           </div>
         </div>
+        <div class="unit-selector">
+          <span class="unit-label">UNIDAD:</span>
+          <button class="unit-btn active" id="tu-c" onclick="setTempUnit('C')">
+            °C
+          </button>
+          <button class="unit-btn" id="tu-f" onclick="setTempUnit('F')">
+            °F
+          </button>
+          <button class="unit-btn" id="tu-k" onclick="setTempUnit('K')">
+            K
+          </button>
+        </div>
         <div class="panel-body">
           <div class="faceplate">
             <div class="faceplate-header">
@@ -683,7 +733,9 @@
               <span class="faceplate-mode auto">AUTO</span>
             </div>
             <div class="faceplate-pv" id="pvTemp">--.-</div>
-            <div class="faceplate-unit">°C — GRADOS CELSIUS</div>
+            <div class="faceplate-unit" id="tempUnitLabel">
+              °C — GRADOS CELSIUS
+            </div>
             <div class="faceplate-desc">Temperatura proceso en caldera</div>
             <div class="faceplate-footer">
               <span>PV</span>
@@ -771,6 +823,25 @@
             ><span class="panel-desc"> · NIVEL AGUA CALDERA</span>
           </div>
         </div>
+        <div class="unit-selector">
+          <span class="unit-label">UNIDAD:</span>
+          <button
+            class="unit-btn active"
+            id="nu-cm"
+            onclick="setNivelUnit('cm')"
+          >
+            cm
+          </button>
+          <button class="unit-btn" id="nu-mm" onclick="setNivelUnit('mm')">
+            mm
+          </button>
+          <button class="unit-btn" id="nu-m" onclick="setNivelUnit('m')">
+            m
+          </button>
+          <button class="unit-btn" id="nu-in" onclick="setNivelUnit('in')">
+            in
+          </button>
+        </div>
         <div class="panel-body">
           <div class="faceplate">
             <div class="faceplate-header">
@@ -778,7 +849,9 @@
               <span class="faceplate-mode auto">AUTO</span>
             </div>
             <div class="faceplate-pv" id="pvNivel">--.-</div>
-            <div class="faceplate-unit">cm — CENTÍMETROS</div>
+            <div class="faceplate-unit" id="nivelUnitLabel">
+              cm — CENTÍMETROS
+            </div>
             <div class="faceplate-desc">Nivel de agua en caldera</div>
             <div class="faceplate-footer">
               <span>PV</span>
@@ -922,6 +995,111 @@
       const ackedAlarms = new Set();
       let lastData = 0;
 
+      // ── UNIDADES ACTIVAS ──
+      let tempUnit = "C";
+      let nivelUnit = "cm";
+
+      // Conversiones
+      const TEMP_CONV = {
+        C: { fn: (v) => v, label: "°C — GRADOS CELSIUS", sym: "°C" },
+        F: { fn: (v) => (v * 9) / 5 + 32, label: "°F — FAHRENHEIT", sym: "°F" },
+        K: { fn: (v) => v + 273.15, label: "K — KELVIN", sym: "K" },
+      };
+      const NIVEL_CONV = {
+        cm: { fn: (v) => v, label: "cm — CENTÍMETROS", sym: "cm" },
+        mm: { fn: (v) => v * 10, label: "mm — MILÍMETROS", sym: "mm" },
+        m: { fn: (v) => v / 100, label: "m — METROS", sym: "m" },
+        in: { fn: (v) => v / 2.54, label: "in — PULGADAS", sym: "in" },
+      };
+
+      function setTempUnit(unit) {
+        tempUnit = unit;
+        ["C", "F", "K"].forEach((u) => {
+          document
+            .getElementById("tu-" + u.toLowerCase())
+            .classList.toggle("active", u === unit);
+        });
+        document.getElementById("tempUnitLabel").textContent =
+          TEMP_CONV[unit].label;
+        // Actualizar chart label
+        document
+          .querySelector("#chartTemp")
+          .closest(".chart-block")
+          .querySelector(".chart-tag").textContent =
+          `TT-001 · TEMPERATURA ${TEMP_CONV[unit].sym}`;
+        // Refrescar display con último valor
+        if (lastTempRaw !== null) updateTempDisplay(lastTempRaw);
+      }
+
+      function setNivelUnit(unit) {
+        nivelUnit = unit;
+        ["cm", "mm", "m", "in"].forEach((u) => {
+          document
+            .getElementById("nu-" + u)
+            .classList.toggle("active", u === unit);
+        });
+        document.getElementById("nivelUnitLabel").textContent =
+          NIVEL_CONV[unit].label;
+        document
+          .querySelector("#chartNivel")
+          .closest(".chart-block")
+          .querySelector(".chart-tag").textContent =
+          `LT-001 · NIVEL ${NIVEL_CONV[unit].sym}`;
+        if (lastNivelRaw !== null) updateNivelDisplay(lastNivelRaw);
+      }
+
+      // Últimos valores raw (en °C y cm)
+      let lastTempRaw = null;
+      let lastNivelRaw = null;
+
+      function updateTempDisplay(tempC) {
+        lastTempRaw = tempC;
+        const conv = TEMP_CONV[tempUnit];
+        const val = conv.fn(tempC);
+        const pvEl = document.getElementById("pvTemp");
+        pvEl.textContent = fmt(val);
+        pvEl.className = "faceplate-pv " + getAlarmClass(tempC, T); // alarma siempre en °C
+        document.getElementById("tempTime").textContent =
+          new Date().toLocaleTimeString("es-EC", { hour12: false });
+        const estado = estadoTxt(tempC, T);
+        document.getElementById("tempEstado").textContent = estado;
+        document.getElementById("tempEstado").style.color =
+          estado === "NORMAL"
+            ? "var(--ok-bg)"
+            : estado === "ALARMA P1"
+              ? "var(--p1-bg)"
+              : "var(--p2-bg)";
+        // Barra siempre en °C
+        const tPct = pct(tempC, T.min, T.max);
+        document.getElementById("indTemp").style.left = tPct + "%";
+        document.getElementById("tempPct").textContent = tPct.toFixed(1) + "%";
+        // Chart con valor convertido
+        pushChart(charts.temp, val);
+      }
+
+      function updateNivelDisplay(nivelCm) {
+        lastNivelRaw = nivelCm;
+        const conv = NIVEL_CONV[nivelUnit];
+        const val = conv.fn(nivelCm);
+        const pvEl = document.getElementById("pvNivel");
+        pvEl.textContent = fmt(val);
+        pvEl.className = "faceplate-pv " + getAlarmClass(nivelCm, L);
+        document.getElementById("nivelTime").textContent =
+          new Date().toLocaleTimeString("es-EC", { hour12: false });
+        const estado = estadoTxt(nivelCm, L);
+        document.getElementById("nivelEstado").textContent = estado;
+        document.getElementById("nivelEstado").style.color =
+          estado === "NORMAL"
+            ? "var(--ok-bg)"
+            : estado === "ALARMA P1"
+              ? "var(--p1-bg)"
+              : "var(--p2-bg)";
+        const nPct = pct(nivelCm, L.min, L.max);
+        document.getElementById("indNivel").style.left = nPct + "%";
+        document.getElementById("nivelPct").textContent = nPct.toFixed(1) + "%";
+        pushChart(charts.nivel, val);
+      }
+
       // Límites de proceso
       const T = { min: 0, max: 200, lolo: 10, lo: 20, hi: 160, hihi: 180 };
       const L = { min: 0, max: 100, lolo: 10, lo: 25, hi: 75, hihi: 90 };
@@ -1053,6 +1231,12 @@
         sb.className = online ? "sb-ok" : "sb-err";
       }
 
+      function estadoTxt(v, lim) {
+        if (v >= lim.hihi || v <= lim.lolo) return "ALARMA P1";
+        if (v >= lim.hi || v <= lim.lo) return "ALARMA P2";
+        return "NORMAL";
+      }
+
       async function fetchData() {
         try {
           const res = await fetch(`/api/caldero/ultimo?dispositivo_id=${ID}`);
@@ -1066,52 +1250,11 @@
             hour12: false,
           });
 
-          // Faceplates
-          const pvT = document.getElementById("pvTemp");
-          const pvN = document.getElementById("pvNivel");
-          pvT.textContent = fmt(temp);
-          pvN.textContent = fmt(nivel);
-          pvT.className = "faceplate-pv " + getAlarmClass(temp, T);
-          pvN.className = "faceplate-pv " + getAlarmClass(nivel, L);
+          // Faceplates con conversión
+          updateTempDisplay(temp);
+          updateNivelDisplay(nivel);
 
-          // Timestamps
-          document.getElementById("tempTime").textContent = t;
-          document.getElementById("nivelTime").textContent = t;
-
-          // Estado textual
-          function estadoTxt(v, lim) {
-            if (v >= lim.hihi || v <= lim.lolo) return "ALARMA P1";
-            if (v >= lim.hi || v <= lim.lo) return "ALARMA P2";
-            return "NORMAL";
-          }
-          const te = estadoTxt(temp, T);
-          const ne = estadoTxt(nivel, L);
-          document.getElementById("tempEstado").textContent = te;
-          document.getElementById("tempEstado").style.color =
-            te === "NORMAL"
-              ? "var(--ok-bg)"
-              : te === "ALARMA P1"
-                ? "var(--p1-bg)"
-                : "var(--p2-bg)";
-          document.getElementById("nivelEstado").textContent = ne;
-          document.getElementById("nivelEstado").style.color =
-            ne === "NORMAL"
-              ? "var(--ok-bg)"
-              : ne === "ALARMA P1"
-                ? "var(--p1-bg)"
-                : "var(--p2-bg)";
-
-          // Process bars
-          const tPct = pct(temp, T.min, T.max);
-          const nPct = pct(nivel, L.min, L.max);
-          document.getElementById("indTemp").style.left = tPct + "%";
-          document.getElementById("indNivel").style.left = nPct + "%";
-          document.getElementById("tempPct").textContent =
-            tPct.toFixed(1) + "%";
-          document.getElementById("nivelPct").textContent =
-            nPct.toFixed(1) + "%";
-
-          // Límites
+          // Límites siempre en unidades base
           updateLimits(temp, T, {
             lim_hh: "lim-hh-t",
             lim_h: "lim-h-t",
@@ -1126,10 +1269,6 @@
             lim_l: "lim-l-n",
             lim_ll: "lim-ll-n",
           });
-
-          // Trends
-          pushChart(charts.temp, temp);
-          pushChart(charts.nivel, nivel);
 
           setNodoOnline(true);
           lastData = Date.now();
