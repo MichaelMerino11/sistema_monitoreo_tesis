@@ -14,6 +14,7 @@ app.use(express.static(path.join(__dirname, '../dashboard')));
 app.use('/api/caldero', require('./routes/caldero'));
 app.use('/api/solar',   require('./routes/solar'));
 app.use('/api/alarmas', require('./routes/alarmas'));
+app.use('/api/industrial', require('./routes/industrial'));
 
 // --- Health check ---
 app.get('/api/status', (req, res) => {
