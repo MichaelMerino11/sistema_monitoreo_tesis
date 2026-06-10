@@ -15,6 +15,7 @@ app.use('/api/caldero', require('./routes/caldero'));
 app.use('/api/solar',   require('./routes/solar'));
 app.use('/api/alarmas', require('./routes/alarmas'));
 app.use('/api/industrial', require('./routes/industrial'));
+app.use('/api/medidores', require('./routes/medidores'));
 
 // --- Health check ---
 app.get('/api/status', (req, res) => {
