@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAINTRONIC — Histórico</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{
+  --isa-bg:#B4B4B4;--isa-bg-widget:#C8C8C8;--isa-border:#787878;
+  --isa-text:#1A1A1A;--isa-text-2:#3A3A3A;--isa-text-dim:#606060;
+  --ok:#2A5C2A;--ok-bg:#44AA44;
+  --p1:#CC0000;--p1-bg:#FF4444;
+  --p2:#CC6600;--p2-bg:#FF8C00;
+  --font-mono:'IBM Plex Mono',monospace;--font-sans:'IBM Plex Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--isa-bg);color:var(--isa-text);font-family:var(--font-sans);font-size:13px;min-height:100vh;}
+.titlebar{background:#2A2A2A;color:#E0E0E0;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:36px;border-bottom:2px solid #000;font-family:var(--font-mono);font-size:12px;}
+.titlebar-id{font-weight:600;letter-spacing:1px;color:#F0F0F0;}
+.titlebar-links{display:flex;align-items:center;gap:12px;}
+.titlebar-link{font-family:var(--font-mono);font-size:10px;color:#A0A0A0;text-decoration:none;padding:2px 8px;border:1px solid #444;}
+.titlebar-link:hover{background:#3A3A3A;color:#D0D0D0;}
+.titlebar-link.active{background:#2A5C2A;color:#D0FFD0;border-color:#2A5C2A;}
+.sys-clock{font-family:var(--font-mono);font-size:13px;color:#D0D0D0;}
+.layout{display:grid;grid-template-columns:280px 1fr;gap:6px;padding:6px 6px 28px;max-width:1500px;margin:0 auto;}
+.panel{background:var(--isa-bg-widget);border:1px solid var(--isa-border);border-top:3px solid var(--isa-border);}
+.panel-header{background:#787878;color:#F0F0F0;padding:4px 10px;display:flex;align-items:center;justify-content:space-between;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.5px;border-bottom:1px solid #606060;}
+.panel-id{color:#D0D0D0;}.panel-desc{color:#B0B0B0;font-weight:400;}
+.panel-body{padding:10px;}
+.form-group{margin-bottom:8px;}
+.form-label{display:block;font-family:var(--font-mono);font-size:9px;color:var(--isa-text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;}
+.form-input{width:100%;background:#1E1E1E;border:1px solid #505050;color:#D8D8D8;padding:7px 10px;font-family:var(--font-mono);font-size:12px;outline:none;}
+.form-input:focus{border-color:#A0A0A0;}
+.form-select{width:100%;background:#1E1E1E;border:1px solid #505050;color:#D8D8D8;padding:7px 10px;font-family:var(--font-mono);font-size:12px;outline:none;}
+.btn{background:#3A3A3A;border:1px solid #555;color:#D0D0D0;padding:6px 14px;font-family:var(--font-mono);font-size:10px;font-weight:600;cursor:pointer;letter-spacing:0.5px;transition:background 0.15s;}
+.btn:hover{background:#555;}
+.btn.primary{background:#2A5C2A;border-color:#1A4A1A;color:#D0FFD0;}
+.btn.primary:hover{background:#3A7A3A;}
+.btn.full{width:100%;margin-top:6px;padding:8px;}
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px;border-bottom:1px solid var(--isa-border);}
+.stat-box{background:#2A2A2A;border:1px solid #505050;padding:10px;text-align:center;}
+.stat-val{font-family:var(--font-mono);font-size:22px;font-weight:600;color:#D8D8D8;line-height:1;}
+.stat-lbl{font-family:var(--font-mono);font-size:9px;color:#707070;text-transform:uppercase;margin-top:4px;}
+.stat-val.max-val{color:var(--p2-bg);}
+.stat-val.min-val{color:#44AA44;}
+/* Chart */
+.chart-wrap{height:280px;background:#1E1E1E;border:1px solid #444;padding:10px;margin:10px;}
+/* Alarmas log */
+.alm-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:11px;}
+.alm-table th{background:#505050;color:#C0C0C0;padding:5px 8px;text-align:left;font-size:9px;border-right:1px solid #606060;}
+.alm-table td{padding:5px 8px;border-bottom:1px solid #A0A0A0;border-right:1px solid #A8A8A8;color:#3A3A3A;vertical-align:middle;}
+.alm-table td:last-child{border-right:none;}
+.alm-table tr.p1 td{background:#FFD0D0;}
+.alm-table tr.p2 td{background:#FFE0B0;}
+.alm-table tr.resuelta td{opacity:0.6;}
+.badge-p1{background:var(--p1);color:#fff;padding:2px 6px;font-size:9px;font-weight:700;}
+.badge-p2{background:var(--p2);color:#fff;padding:2px 6px;font-size:9px;font-weight:700;}
+.badge-ok{background:var(--ok);color:#fff;padding:2px 6px;font-size:9px;font-weight:700;}
+/* Variable selector list */
+.var-item{background:#2A2A2A;border:1px solid #505050;padding:7px 10px;margin-bottom:4px;cursor:pointer;transition:border-color 0.15s;}
+.var-item:hover{border-color:#A0A0A0;}
+.var-item.active{border-color:#44AA44;}
+.var-item-name{font-family:var(--font-mono);font-size:11px;font-weight:600;color:#D8D8D8;}
+.var-item-sub{font-family:var(--font-mono);font-size:9px;color:#707070;margin-top:1px;}
+.tabs{display:flex;border-bottom:1px solid var(--isa-border);background:#ABABAB;}
+.tab{font-family:var(--font-mono);font-size:10px;font-weight:600;padding:6px 14px;cursor:pointer;color:var(--isa-text-dim);letter-spacing:0.5px;text-transform:uppercase;border-right:1px solid var(--isa-border);}
+.tab:hover{background:#B8B8B8;}
+.tab.active{background:#2A2A2A;color:#F0F0F0;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.statusbar{position:fixed;bottom:0;left:0;right:0;background:#1A1A1A;color:#909090;display:flex;align-items:center;padding:0 16px;height:22px;font-family:var(--font-mono);font-size:10px;gap:24px;border-top:1px solid #333;z-index:50;}
+@media(max-width:900px){.layout{grid-template-columns:1fr;}.stats-row{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<div class="titlebar">
+  <span class="titlebar-id">MAINTRONIC / HISTÓRICO DE MEDICIONES</span>
+  <div class="titlebar-links">
+    <a href="/medidores/" class="titlebar-link">CONFIGURACIÓN</a>
+    <a href="/medidores/historico.html" class="titlebar-link active">HISTÓRICO</a>
+  </div>
+  <span class="sys-clock" id="clock">00:00:00</span>
+</div>
+
+<div class="layout">
+  <!-- IZQUIERDA: SELECTOR -->
+  <div>
+    <div class="panel">
+      <div class="panel-header"><span class="panel-id">FILTROS</span><span class="panel-desc"> · RANGO Y VARIABLE</span></div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label class="form-label">Desde</label>
+          <input class="form-input" type="datetime-local" id="filtro-desde">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hasta</label>
+          <input class="form-input" type="datetime-local" id="filtro-hasta">
+        </div>
+        <button class="btn primary full" onclick="aplicarFiltro()">APLICAR FILTRO</button>
+        <button class="btn full" onclick="resetFiltro()">ÚLTIMAS 2 HORAS</button>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:6px">
+      <div class="panel-header"><span class="panel-id">VARIABLES</span><span class="panel-desc"> · SELECCIONAR</span></div>
+      <div class="panel-body" id="listaVariables">
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--isa-text-dim);text-align:center;padding:20px">Cargando...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DERECHA: DATOS -->
+  <div class="panel">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('grafica')" id="tab-grafica">GRÁFICA</div>
+      <div class="tab" onclick="switchTab('alarmas')" id="tab-alarmas">LOG DE ALARMAS</div>
+    </div>
+
+    <!-- TAB GRÁFICA -->
+    <div class="tab-content active" id="content-grafica">
+      <div id="graficaHeader" style="padding:6px 10px;background:#ABABAB;border-bottom:1px solid var(--isa-border);font-family:var(--font-mono);font-size:10px;color:var(--isa-text-dim)">
+        Selecciona una variable de la izquierda
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-val max-val" id="stat-max">—</div><div class="stat-lbl">MÁXIMO</div></div>
+        <div class="stat-box"><div class="stat-val min-val" id="stat-min">—</div><div class="stat-lbl">MÍNIMO</div></div>
+        <div class="stat-box"><div class="stat-val" id="stat-avg">—</div><div class="stat-lbl">PROMEDIO</div></div>
+        <div class="stat-box"><div class="stat-val" id="stat-total">—</div><div class="stat-lbl">LECTURAS</div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--isa-text-dim);padding:0 10px 10px;text-align:right" id="graficaInfo"></div>
+    </div>
+
+    <!-- TAB ALARMAS -->
+    <div class="tab-content" id="content-alarmas">
+      <div style="padding:6px 10px;background:#ABABAB;border-bottom:1px solid var(--isa-border);font-family:var(--font-mono);font-size:10px;color:var(--isa-text-dim);display:flex;justify-content:space-between;align-items:center">
+        <span>HISTORIAL DE ALARMAS</span>
+        <span id="almLogCount">—</span>
+      </div>
+      <div style="overflow-x:auto;max-height:500px;overflow-y:auto">
+        <table class="alm-table">
+          <thead><tr><th>VARIABLE</th><th>MEDIDOR</th><th>VALOR</th><th>TIPO</th><th>PRIORIDAD</th><th>INICIO</th><th>FIN</th><th>DURACIÓN</th></tr></thead>
+          <tbody id="almLogBody">
+            <tr><td colspan="8" style="text-align:center;padding:20px;color:var(--isa-text-dim)">Sin alarmas en el rango seleccionado</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="statusbar">
+  <span>HISTÓRICO · ISA-101.01-2015</span>
+  <span style="margin-left:auto" id="sb-clock">--:--:--</span>
+</div>
+
+<script>
+let varActiva  = null;
+let mainChart  = null;
+
+function updateClock() {
+  const t = new Date().toLocaleTimeString('es-EC',{hour12:false});
+  document.getElementById('clock').textContent    = t;
+  document.getElementById('sb-clock').textContent = t;
+}
+setInterval(updateClock,1000); updateClock();
+
+function switchTab(tab) {
+  ['grafica','alarmas'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('content-'+t).classList.toggle('active', t===tab);
+  });
+  if(tab==='alarmas') cargarAlarmasLog();
+}
+
+function getFiltro() {
+  const desde = document.getElementById('filtro-desde').value;
+  const hasta = document.getElementById('filtro-hasta').value;
+  return { desde: desde||null, hasta: hasta||null };
+}
+
+function resetFiltro() {
+  const ahora = new Date();
+  const hace2h = new Date(ahora - 2*60*60*1000);
+  
+  // Formatear como hora local sin conversión UTC
+  function toLocal(d) {
+    const pad = n => String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+  
+  document.getElementById('filtro-desde').value = toLocal(hace2h);
+  document.getElementById('filtro-hasta').value = toLocal(ahora);
+  if(varActiva) cargarGrafica();
+  cargarAlarmasLog();
+}
+
+function aplicarFiltro() {
+  if(varActiva) cargarGrafica();
+  cargarAlarmasLog();
+}
+
+async function cargarVariables() {
+  const res  = await fetch('/api/medidores/lecturas/ultimo');
+  const list = await res.json();
+  const el   = document.getElementById('listaVariables');
+  if(!list.length){
+    el.innerHTML='<div style="font-family:var(--font-mono);font-size:11px;color:var(--isa-text-dim);text-align:center;padding:20px">Sin variables activas</div>';
+    return;
+  }
+  el.innerHTML = list.map(v=>`
+    <div class="var-item ${varActiva?.id===v.id?'active':''}" onclick="seleccionarVariable(${v.id},'${v.nombre}','${v.unidad||''}','${v.medidor_nombre}')">
+      <div class="var-item-name">${v.nombre}</div>
+      <div class="var-item-sub">${v.medidor_nombre} · ${v.unidad||'—'}</div>
+    </div>`).join('');
+}
+
+function seleccionarVariable(id, nombre, unidad, medidor) {
+  varActiva = {id, nombre, unidad, medidor};
+  cargarVariables();
+  cargarGrafica();
+  document.getElementById('graficaHeader').textContent = `${nombre} — ${medidor} · ${unidad||'—'}`;
+}
+
+async function cargarGrafica() {
+  if(!varActiva) return;
+  const {desde, hasta} = getFiltro();
+  let url = `/api/medidores/variables/${varActiva.id}/historico?limite=500`;
+  if(desde) url += `&desde=${encodeURIComponent(desde)}`;
+  if(hasta) url += `&hasta=${encodeURIComponent(hasta)}`;
+
+  const [resH, resS] = await Promise.all([
+    fetch(url),
+    fetch(`/api/medidores/variables/${varActiva.id}/stats${desde?`?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta||'')}`:''}`),
+  ]);
+  const hist  = await resH.json();
+  const stats = await resS.json();
+
+  // Stats
+  document.getElementById('stat-max').textContent   = stats.maximo   ? parseFloat(stats.maximo).toFixed(3)   : '—';
+  document.getElementById('stat-min').textContent   = stats.minimo   ? parseFloat(stats.minimo).toFixed(3)   : '—';
+  document.getElementById('stat-avg').textContent   = stats.promedio ? parseFloat(stats.promedio).toFixed(3) : '—';
+  document.getElementById('stat-total').textContent = stats.total    || '0';
+  document.getElementById('graficaInfo').textContent = `${hist.length} puntos graficados`;
+
+  // Chart
+  const labels = hist.map(h => new Date(h.registrado_en).toLocaleTimeString('es-EC',{hour12:false}));
+  const data   = hist.map(h => parseFloat(h.valor));
+
+  if(mainChart){ mainChart.destroy(); mainChart=null; }
+  mainChart = new Chart(document.getElementById('mainChart').getContext('2d'), {
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label: varActiva.nombre,
+        data,
+        borderColor:'#D0D0D0',
+        backgroundColor:'rgba(208,208,208,0.05)',
+        borderWidth:1.5,
+        pointRadius: hist.length < 100 ? 3 : 0,
+        pointBackgroundColor:'#D0D0D0',
+        tension:0.3,
+        fill:true,
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      animation:{duration:400},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          callbacks:{
+            label: ctx => `${ctx.parsed.y.toFixed(3)} ${varActiva.unidad||''}`
+          }
+        }
+      },
+      scales:{
+        x:{
+          grid:{color:'#333'},
+          ticks:{font:{family:'IBM Plex Mono',size:9},color:'#707070',maxTicksLimit:10}
+        },
+        y:{
+          grid:{color:'#333'},
+          ticks:{font:{family:'IBM Plex Mono',size:9},color:'#707070'}
+        }
+      }
+    }
+  });
+}
+
+async function cargarAlarmasLog() {
+  const {desde, hasta} = getFiltro();
+  let url = '/api/medidores/alarmas/log/historico?';
+  if(varActiva) url += `variable_id=${varActiva.id}&`;
+  if(desde) url += `desde=${encodeURIComponent(desde)}&`;
+  if(hasta) url += `hasta=${encodeURIComponent(hasta)}&`;
+
+  const res  = await fetch(url);
+  const list = await res.json();
+  document.getElementById('almLogCount').textContent = `${list.length} registro(s)`;
+
+  const tbody = document.getElementById('almLogBody');
+  if(!list.length){
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--isa-text-dim);font-family:var(--font-mono)">Sin alarmas en el rango</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = list.map(a => {
+    const inicio  = new Date(a.inicio_en).toLocaleString('es-EC',{hour12:false});
+    const fin     = a.fin_en ? new Date(a.fin_en).toLocaleString('es-EC',{hour12:false}) : '—';
+    const durMs   = a.fin_en ? new Date(a.fin_en)-new Date(a.inicio_en) : null;
+    const dur     = durMs ? `${Math.floor(durMs/60000)}m ${Math.floor((durMs%60000)/1000)}s` : 'Activa';
+    const pBadge  = a.prioridad==='P1' ? `<span class="badge-p1">P1</span>` : `<span class="badge-p2">P2</span>`;
+    const estBadge= a.activa ? `<span class="badge-p1">ACTIVA</span>` : `<span class="badge-ok">RESUELTA</span>`;
+    return `
+      <tr class="${a.activa?a.prioridad.toLowerCase():'resuelta'}">
+        <td>${a.variable_nombre}</td>
+        <td>${a.medidor_nombre}</td>
+        <td style="font-family:var(--font-mono)">${parseFloat(a.valor).toFixed(3)} ${a.unidad||''}</td>
+        <td style="font-family:var(--font-mono);font-weight:700">${a.tipo}</td>
+        <td>${pBadge}</td>
+        <td style="font-family:var(--font-mono);font-size:10px">${inicio}</td>
+        <td style="font-family:var(--font-mono);font-size:10px">${fin}</td>
+        <td style="font-family:var(--font-mono)">${dur}</td>
+      </tr>`;
+  }).join('');
+}
+
+// Init
+resetFiltro();
+cargarVariables();
+</script>
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAINTRONIC — Configuración Medidores</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{
+  --isa-bg:#B4B4B4;--isa-bg-widget:#C8C8C8;--isa-border:#787878;
+  --isa-text:#1A1A1A;--isa-text-2:#3A3A3A;--isa-text-dim:#606060;
+  --ok:#2A5C2A;--ok-bg:#44AA44;
+  --p1:#CC0000;--p1-bg:#FF4444;
+  --p2:#CC6600;--p2-bg:#FF8C00;
+  --font-mono:'IBM Plex Mono',monospace;--font-sans:'IBM Plex Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--isa-bg);color:var(--isa-text);font-family:var(--font-sans);font-size:13px;min-height:100vh;}
+.titlebar{background:#2A2A2A;color:#E0E0E0;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:36px;border-bottom:2px solid #000;font-family:var(--font-mono);font-size:12px;}
+.titlebar-id{font-weight:600;letter-spacing:1px;color:#F0F0F0;}
+.titlebar-links{display:flex;align-items:center;gap:12px;}
+.titlebar-link{font-family:var(--font-mono);font-size:10px;color:#A0A0A0;text-decoration:none;padding:2px 8px;border:1px solid #444;}
+.titlebar-link:hover{background:#3A3A3A;color:#D0D0D0;}
+.titlebar-link.active{background:#2A5C2A;color:#D0FFD0;border-color:#2A5C2A;}
+.sys-clock{font-family:var(--font-mono);font-size:13px;color:#D0D0D0;}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:6px;padding:6px 6px 28px;max-width:1500px;margin:0 auto;}
+.panel{background:var(--isa-bg-widget);border:1px solid var(--isa-border);border-top:3px solid var(--isa-border);}
+.panel-header{background:#787878;color:#F0F0F0;padding:4px 10px;display:flex;align-items:center;justify-content:space-between;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.5px;border-bottom:1px solid #606060;}
+.panel-id{color:#D0D0D0;}.panel-desc{color:#B0B0B0;font-weight:400;}
+.panel-body{padding:10px;}
+.form-group{margin-bottom:8px;}
+.form-label{display:block;font-family:var(--font-mono);font-size:9px;color:var(--isa-text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;}
+.form-input{width:100%;background:#1E1E1E;border:1px solid #505050;color:#D8D8D8;padding:7px 10px;font-family:var(--font-mono);font-size:12px;outline:none;transition:border-color 0.15s;}
+.form-input:focus{border-color:#A0A0A0;}
+.form-select{width:100%;background:#1E1E1E;border:1px solid #505050;color:#D8D8D8;padding:7px 10px;font-family:var(--font-mono);font-size:12px;outline:none;}
+.btn{background:#3A3A3A;border:1px solid #555;color:#D0D0D0;padding:6px 14px;font-family:var(--font-mono);font-size:10px;font-weight:600;cursor:pointer;letter-spacing:0.5px;transition:background 0.15s;}
+.btn:hover{background:#555;}
+.btn.primary{background:#2A5C2A;border-color:#1A4A1A;color:#D0FFD0;}
+.btn.primary:hover{background:#3A7A3A;}
+.btn.danger{background:#5C2A2A;border-color:#4A1A1A;color:#FFD0D0;}
+.btn.danger:hover{background:#7A3A3A;}
+.btn.warn{background:#5C4A00;border-color:#4A3A00;color:#FFE0A0;}
+.btn.warn:hover{background:#7A6A00;}
+.medidor-item{background:#2A2A2A;border:1px solid #505050;padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:border-color 0.15s;display:flex;align-items:center;justify-content:space-between;}
+.medidor-item:hover{border-color:#A0A0A0;}
+.medidor-item.active{border-color:#44AA44;}
+.medidor-name{font-family:var(--font-mono);font-size:12px;font-weight:600;color:#D8D8D8;}
+.medidor-sub{font-family:var(--font-mono);font-size:9px;color:#707070;margin-top:2px;}
+.medidor-badge{font-family:var(--font-mono);font-size:9px;padding:2px 6px;border:1px solid;border-radius:2px;}
+.medidor-badge.on{color:#44AA44;border-color:#44AA44;}
+.medidor-badge.off{color:#888;border-color:#888;}
+.var-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:11px;}
+.var-table th{background:#505050;color:#C0C0C0;padding:5px 8px;text-align:left;font-size:9px;letter-spacing:0.3px;border-right:1px solid #606060;}
+.var-table td{padding:5px 8px;border-bottom:1px solid #A0A0A0;border-right:1px solid #A8A8A8;color:#3A3A3A;vertical-align:middle;}
+.var-table td:last-child{border-right:none;}
+.var-table tr:hover td{background:rgba(0,0,0,0.05);}
+.tag-activo{color:var(--ok);font-weight:700;font-size:9px;}
+.tag-inactivo{color:#888;font-weight:700;font-size:9px;}
+.tag-alarma{color:var(--p2);font-weight:700;font-size:9px;}
+.tabs{display:flex;border-bottom:1px solid var(--isa-border);background:#ABABAB;}
+.tab{font-family:var(--font-mono);font-size:10px;font-weight:600;padding:6px 14px;cursor:pointer;color:var(--isa-text-dim);letter-spacing:0.5px;text-transform:uppercase;border-right:1px solid var(--isa-border);transition:background 0.15s;}
+.tab:hover{background:#B8B8B8;}
+.tab.active{background:#2A2A2A;color:#F0F0F0;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.monitor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;padding:10px;}
+.monitor-card{background:#1E1E1E;border:1px solid #505050;padding:10px;}
+.monitor-card.alarma-p1{border-color:var(--p1);animation:blink-card 1s step-end infinite;}
+.monitor-card.alarma-p2{border-color:var(--p2);}
+@keyframes blink-card{0%,100%{border-color:var(--p1)}50%{border-color:#880000}}
+.mc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.mc-name{font-family:var(--font-mono);font-size:9px;color:#707070;text-transform:uppercase;}
+.mc-med{font-family:var(--font-mono);font-size:8px;color:#505050;}
+.mc-val{font-family:var(--font-mono);font-size:30px;font-weight:600;color:#D8D8D8;line-height:1;text-align:center;}
+.mc-val.p1{color:var(--p1-bg);}
+.mc-val.p2{color:var(--p2-bg);}
+.mc-unit{font-family:var(--font-mono);font-size:10px;color:#606060;text-align:center;margin-top:2px;}
+.mc-chart{height:60px;margin-top:8px;}
+.mc-time{font-family:var(--font-mono);font-size:8px;color:#505050;margin-top:4px;text-align:right;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:200;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.open{display:flex;}
+.modal{background:#C8C8C8;border:2px solid #505050;border-top:4px solid #404040;width:100%;max-width:500px;animation:modalIn 0.2s ease;}
+@keyframes modalIn{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-titlebar{background:#2A2A2A;color:#E0E0E0;display:flex;align-items:center;justify-content:space-between;padding:6px 12px;font-family:var(--font-mono);font-size:12px;font-weight:600;}
+.modal-close{background:#505050;border:1px solid #707070;color:#D0D0D0;width:24px;height:24px;cursor:pointer;font-family:var(--font-mono);font-size:14px;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{background:#707070;}
+.modal-body{padding:14px;}
+.limits-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.limit-box{background:#1E1E1E;border:1px solid #505050;padding:10px;}
+.limit-label{font-family:var(--font-mono);font-size:9px;margin-bottom:4px;}
+.limit-p1{color:var(--p1-bg);}
+.limit-p2{color:var(--p2-bg);}
+.alarm-banner{display:none;background:var(--p1);color:#fff;padding:4px 16px;font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:1px;align-items:center;justify-content:space-between;border-bottom:2px solid #880000;animation:blink-banner 1s step-end infinite;}
+.alarm-banner.active{display:flex;}
+@keyframes blink-banner{0%,100%{background:var(--p1)}50%{background:#880000}}
+.toast{position:fixed;bottom:30px;right:20px;background:#2A2A2A;color:#D0D0D0;padding:8px 16px;font-family:var(--font-mono);font-size:11px;border:1px solid #505050;transform:translateY(80px);transition:transform 0.3s;z-index:999;}
+.toast.show{transform:translateY(0);}
+.statusbar{position:fixed;bottom:0;left:0;right:0;background:#1A1A1A;color:#909090;display:flex;align-items:center;padding:0 16px;height:22px;font-family:var(--font-mono);font-size:10px;gap:24px;border-top:1px solid #333;z-index:50;}
+@media(max-width:900px){.layout{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="titlebar">
+  <span class="titlebar-id">MAINTRONIC / CFG-MEDIDORES</span>
+  <div class="titlebar-links">
+    <a href="/medidores/" class="titlebar-link active">CONFIGURACIÓN</a>
+    <a href="/medidores/historico.html" class="titlebar-link">HISTÓRICO</a>
+  </div>
+  <span class="sys-clock" id="clock">00:00:00</span>
+</div>
+
+<div class="alarm-banner" id="alarmBanner">
+  <span>⚠ ALARMAS ACTIVAS EN MEDIDORES</span>
+  <span id="bannerCount"></span>
+</div>
+
+<div class="layout">
+  <div>
+    <div class="panel">
+      <div class="panel-header">
+        <div><span class="panel-id">MEDIDORES</span><span class="panel-desc"> · RS-485</span></div>
+        <button class="btn" onclick="showAddMedidor()">+ NUEVO</button>
+      </div>
+      <div class="panel-body">
+        <div id="formMedidor" style="display:none;background:#1E1E1E;border:1px solid #505050;padding:10px;margin-bottom:10px">
+          <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="inp-nombre" placeholder="Ej: Schneider PM2100"></div>
+          <div class="form-group"><label class="form-label">Slave ID</label><input class="form-input" id="inp-slave" type="number" value="1"></div>
+          <div class="form-group"><label class="form-label">Descripción</label><input class="form-input" id="inp-desc" placeholder="Tablero principal"></div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button class="btn primary" onclick="guardarMedidor()">GUARDAR</button>
+            <button class="btn" onclick="cancelarMedidor()">CANCELAR</button>
+          </div>
+        </div>
+        <div id="listaMedidores"><div style="font-family:var(--font-mono);font-size:11px;color:var(--isa-text-dim);text-align:center;padding:20px">Sin medidores</div></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:6px">
+      <div class="panel-header"><span class="panel-id">RS-485</span><span class="panel-desc"> · CONFIG GLOBAL</span></div>
+      <div class="panel-body" style="font-family:var(--font-mono);font-size:10px;color:var(--isa-text-dim);line-height:2">
+        <div>BAUDRATE: <strong style="color:#D8D8D8">9600</strong></div>
+        <div>PARIDAD: <strong style="color:#D8D8D8">EVEN (E)</strong></div>
+        <div>STOP BITS: <strong style="color:#D8D8D8">1</strong></div>
+        <div>DATA BITS: <strong style="color:#D8D8D8">8</strong></div>
+        <div style="margin-top:8px;padding:6px;background:#1E1E1E;border:1px solid #505050;font-size:9px;line-height:1.8">
+          <div style="color:#D8D8D8;margin-bottom:4px">TIPO DE REGISTRO:</div>
+          <div><span style="color:var(--ok-bg)">Holding (03)</span> — Schneider y mayoría de medidores</div>
+          <div><span style="color:var(--p2-bg)">Input (04)</span> — Selec MFM376 y medidores con registros 3xxxx</div>
+          <div style="margin-top:4px;color:#606060">Para Selec: registro = dirección - 30000</div>
+          <div style="color:#606060">Ej: dirección 30000 → registro 0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('variables')" id="tab-variables">VARIABLES</div>
+      <div class="tab" onclick="switchTab('monitor')" id="tab-monitor">MONITOR EN VIVO</div>
+    </div>
+
+    <div class="tab-content active" id="content-variables">
+      <div style="padding:6px 10px;background:#ABABAB;border-bottom:1px solid var(--isa-border);display:flex;align-items:center;justify-content:space-between">
+        <span style="font-family:var(--font-mono);font-size:11px;color:var(--isa-text-dim)" id="medidorSeleccionado">Selecciona un medidor</span>
+        <button class="btn primary" id="btnAddVar" onclick="showAddVariable()" style="display:none">+ VARIABLE</button>
+      </div>
+      <div id="formVariable" style="display:none;background:#1E1E1E;border-bottom:1px solid #505050;padding:10px">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr auto;gap:6px;align-items:end">
+          <div><label class="form-label">Nombre</label><input class="form-input" id="var-nombre" placeholder="Voltaje V1N"></div>
+          <div><label class="form-label">Registro</label><input class="form-input" id="var-registro" type="number" placeholder="0"></div>
+          <div><label class="form-label">Tipo dato</label><select class="form-select" id="var-tipo"><option value="float32">Float32</option><option value="int16">Int16</option></select></div>
+          <div><label class="form-label">Tipo reg.</label><select class="form-select" id="var-tipo-reg"><option value="holding">Holding (03)</option><option value="input">Input (04)</option></select></div>
+          <div><label class="form-label">Unidad</label><input class="form-input" id="var-unidad" placeholder="V"></div>
+          <div style="display:flex;gap:4px"><button class="btn primary" onclick="guardarVariable()">OK</button><button class="btn" onclick="cancelarVariable()">✕</button></div>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="var-table">
+          <thead><tr><th>NOMBRE</th><th>REGISTRO</th><th>TIPO DATO</th><th>TIPO REG.</th><th>UNIDAD</th><th>ALARMA</th><th>ESTADO</th><th>ACCIONES</th></tr></thead>
+          <tbody id="tablaVariables">
+            <tr><td colspan="8" style="text-align:center;padding:20px;color:var(--isa-text-dim);font-family:var(--font-mono)">Selecciona un medidor</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-content" id="content-monitor">
+      <div style="padding:6px 10px;background:#ABABAB;border-bottom:1px solid var(--isa-border);font-family:var(--font-mono);font-size:10px;color:var(--isa-text-dim);display:flex;justify-content:space-between;align-items:center">
+        <span>LECTURAS EN TIEMPO REAL</span>
+        <span id="monitorCount">0 variables</span>
+      </div>
+      <div class="monitor-grid" id="monitorGrid">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;font-family:var(--font-mono);font-size:11px;color:var(--isa-text-dim)">Sin variables activas</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="statusbar">
+  <span>CFG-MEDIDORES · ISA-101.01-2015</span>
+  <span style="margin-left:auto" id="sb-clock">--:--:--</span>
+</div>
+
+<div class="modal-overlay" id="modalAlarma" onclick="closeAlarmaModal(event)">
+  <div class="modal">
+    <div class="modal-titlebar">
+      <div><span style="color:#F0F0F0;font-weight:600">CONFIGURAR ALARMA</span><span style="color:#A0A0A0;font-size:11px;margin-left:10px" id="modalAlarmaVar">—</span></div>
+      <button class="modal-close" onclick="closeAlarmaModalBtn()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--isa-text-dim);margin-bottom:10px">
+        Define los límites. P1 si supera HIHI/LOLO · P2 si supera HI/LO. Deja vacío para no usar ese límite.
+      </div>
+      <div class="limits-grid">
+        <div class="limit-box"><div class="limit-label limit-p1">HI-HI — P1 CRÍTICA</div><input class="form-input" id="alm-hihi" type="number" step="0.01" placeholder="Vacío = sin límite"></div>
+        <div class="limit-box"><div class="limit-label limit-p1">LO-LO — P1 CRÍTICA</div><input class="form-input" id="alm-lolo" type="number" step="0.01" placeholder="Vacío = sin límite"></div>
+        <div class="limit-box"><div class="limit-label limit-p2">HI — P2 ALTA</div><input class="form-input" id="alm-hi" type="number" step="0.01" placeholder="Vacío = sin límite"></div>
+        <div class="limit-box"><div class="limit-label limit-p2">LO — P2 ALTA</div><input class="form-input" id="alm-lo" type="number" step="0.01" placeholder="Vacío = sin límite"></div>
+      </div>
+      <div style="display:flex;gap:6px;justify-content:flex-end">
+        <button class="btn danger" onclick="limpiarAlarma()">LIMPIAR</button>
+        <button class="btn primary" onclick="guardarAlarma()">GUARDAR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let medidorActivo = null;
+let alarmaVarId   = null;
+const monitorCharts = {};
+
+function updateClock() {
+  const t = new Date().toLocaleTimeString('es-EC',{hour12:false});
+  document.getElementById('clock').textContent    = t;
+  document.getElementById('sb-clock').textContent = t;
+}
+setInterval(updateClock,1000); updateClock();
+
+function showToast(msg, ok=true) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.borderColor = ok ? '#44AA44' : '#CC0000';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function switchTab(tab) {
+  ['variables','monitor'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('content-'+t).classList.toggle('active', t===tab);
+  });
+  if(tab==='monitor') cargarMonitor();
+}
+
+// ── MEDIDORES ──
+function showAddMedidor() { document.getElementById('formMedidor').style.display='block'; document.getElementById('inp-nombre').focus(); }
+function cancelarMedidor() {
+  document.getElementById('formMedidor').style.display='none';
+  ['inp-nombre','inp-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('inp-slave').value='1';
+}
+async function guardarMedidor() {
+  const nombre=document.getElementById('inp-nombre').value.trim();
+  const slave_id=parseInt(document.getElementById('inp-slave').value);
+  const desc=document.getElementById('inp-desc').value.trim();
+  if(!nombre){showToast('Ingresa un nombre',false);return;}
+  const res=await fetch('/api/medidores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,slave_id,descripcion:desc})});
+  const d=await res.json();
+  if(d.ok){showToast('Medidor guardado');cancelarMedidor();cargarMedidores();}
+  else showToast('Error: '+d.error,false);
+}
+async function cargarMedidores() {
+  const res=await fetch('/api/medidores');
+  const list=await res.json();
+  const el=document.getElementById('listaMedidores');
+  if(!list.length){el.innerHTML='<div style="font-family:var(--font-mono);font-size:11px;color:var(--isa-text-dim);text-align:center;padding:20px">Sin medidores</div>';return;}
+  el.innerHTML=list.map(m=>`
+    <div class="medidor-item ${medidorActivo?.id===m.id?'active':''}" onclick="seleccionarMedidor(${m.id})">
+      <div>
+        <div class="medidor-name">${m.nombre}</div>
+        <div class="medidor-sub">Slave ID: ${m.slave_id} · ${m.descripcion||'Sin descripción'}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <span class="medidor-badge ${m.activo?'on':'off'}">${m.activo?'ACTIVO':'INACTIVO'}</span>
+        <button class="btn danger" style="padding:2px 6px;font-size:8px" onclick="event.stopPropagation();eliminarMedidor(${m.id})">✕</button>
+      </div>
+    </div>`).join('');
+}
+async function seleccionarMedidor(id) {
+  const res=await fetch('/api/medidores');
+  const list=await res.json();
+  medidorActivo=list.find(m=>m.id===id);
+  cargarMedidores();
+  cargarVariables();
+  document.getElementById('medidorSeleccionado').textContent=`${medidorActivo.nombre} (Slave ${medidorActivo.slave_id})`;
+  document.getElementById('btnAddVar').style.display='block';
+}
+async function eliminarMedidor(id) {
+  if(!confirm('¿Eliminar este medidor y todas sus variables?'))return;
+  await fetch('/api/medidores/'+id,{method:'DELETE'});
+  if(medidorActivo?.id===id){medidorActivo=null;limpiarVariables();}
+  cargarMedidores();
+  showToast('Medidor eliminado');
+}
+
+// ── VARIABLES ──
+function showAddVariable() { document.getElementById('formVariable').style.display='block'; document.getElementById('var-nombre').focus(); }
+function cancelarVariable() {
+  document.getElementById('formVariable').style.display='none';
+  ['var-nombre','var-unidad'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('var-registro').value='';
+}
+async function guardarVariable() {
+  if(!medidorActivo)return;
+  const nombre       = document.getElementById('var-nombre').value.trim();
+  const registroVal  = document.getElementById('var-registro').value;
+  const registro     = parseInt(registroVal);
+  const tipo         = document.getElementById('var-tipo').value;
+  const tipo_registro= document.getElementById('var-tipo-reg').value;
+  const unidad       = document.getElementById('var-unidad').value.trim();
+  if(!nombre || registroVal==='' || isNaN(registro)){showToast('Completa nombre y registro',false);return;}
+  const res=await fetch(`/api/medidores/${medidorActivo.id}/variables`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({nombre,registro,tipo,unidad,tipo_registro})
+  });
+  const d=await res.json();
+  if(d.ok){showToast('Variable guardada');cancelarVariable();cargarVariables();}
+  else showToast('Error: '+d.error,false);
+}
+async function cargarVariables() {
+  if(!medidorActivo)return;
+  const res=await fetch(`/api/medidores/${medidorActivo.id}/variables`);
+  const list=await res.json();
+  const tbody=document.getElementById('tablaVariables');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--isa-text-dim);font-family:var(--font-mono)">Sin variables</td></tr>';return;}
+  const alarmas=await Promise.all(list.map(v=>fetch(`/api/medidores/variables/${v.id}/alarma`).then(r=>r.json())));
+  tbody.innerHTML=list.map((v,i)=>{
+    const alm=alarmas[i];
+    const tieneAlarma=alm&&(alm.hi||alm.hihi||alm.lo||alm.lolo);
+    const trColor=v.tipo_registro==='input'?'color:var(--p2-bg)':'color:#44AA44';
+    return `
+    <tr>
+      <td>${v.nombre}</td>
+      <td style="font-family:var(--font-mono)">${v.registro}</td>
+      <td style="font-family:var(--font-mono)">${v.tipo}</td>
+      <td style="font-family:var(--font-mono);${trColor}">${v.tipo_registro||'holding'}</td>
+      <td style="font-family:var(--font-mono)">${v.unidad||'—'}</td>
+      <td><span class="${tieneAlarma?'tag-alarma':'tag-inactivo'}">${tieneAlarma?'CONFIG':'SIN CONFIG'}</span></td>
+      <td><span class="${v.activo?'tag-activo':'tag-inactivo'}">${v.activo?'ACTIVA':'INACTIVA'}</span></td>
+      <td style="display:flex;gap:3px">
+        <button class="btn warn" style="padding:2px 6px;font-size:9px" onclick="abrirAlarmaModal(${v.id},'${v.nombre}')">ALM</button>
+        <button class="btn" style="padding:2px 8px;font-size:9px" onclick="toggleVariable(${v.id},${v.activo})">${v.activo?'DESACT':'ACTIV'}</button>
+        <button class="btn danger" style="padding:2px 6px;font-size:9px" onclick="eliminarVariable(${v.id})">✕</button>
+      </td>
+    </tr>`}).join('');
+}
+async function toggleVariable(id,activo) {
+  await fetch(`/api/medidores/variables/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({activo:activo?0:1})});
+  cargarVariables();
+  showToast(activo?'Variable desactivada':'Variable activada');
+}
+async function eliminarVariable(id) {
+  if(!confirm('¿Eliminar esta variable?'))return;
+  await fetch(`/api/medidores/variables/${id}`,{method:'DELETE'});
+  cargarVariables();
+  showToast('Variable eliminada');
+}
+function limpiarVariables() {
+  document.getElementById('tablaVariables').innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--isa-text-dim);font-family:var(--font-mono)">Selecciona un medidor</td></tr>';
+  document.getElementById('medidorSeleccionado').textContent='Selecciona un medidor';
+  document.getElementById('btnAddVar').style.display='none';
+}
+
+// ── MODAL ALARMA ──
+async function abrirAlarmaModal(varId,varNombre) {
+  alarmaVarId=varId;
+  document.getElementById('modalAlarmaVar').textContent=varNombre;
+  const res=await fetch(`/api/medidores/variables/${varId}/alarma`);
+  const cfg=await res.json();
+  document.getElementById('alm-hihi').value=cfg?.hihi??'';
+  document.getElementById('alm-hi').value=cfg?.hi??'';
+  document.getElementById('alm-lo').value=cfg?.lo??'';
+  document.getElementById('alm-lolo').value=cfg?.lolo??'';
+  document.getElementById('modalAlarma').classList.add('open');
+}
+function closeAlarmaModal(e){if(e.target===document.getElementById('modalAlarma'))closeAlarmaModalBtn();}
+function closeAlarmaModalBtn(){document.getElementById('modalAlarma').classList.remove('open');alarmaVarId=null;}
+async function guardarAlarma() {
+  if(!alarmaVarId)return;
+  const hihi=document.getElementById('alm-hihi').value;
+  const hi=document.getElementById('alm-hi').value;
+  const lo=document.getElementById('alm-lo').value;
+  const lolo=document.getElementById('alm-lolo').value;
+  const res=await fetch(`/api/medidores/variables/${alarmaVarId}/alarma`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({hihi:hihi!==''?parseFloat(hihi):null,hi:hi!==''?parseFloat(hi):null,lo:lo!==''?parseFloat(lo):null,lolo:lolo!==''?parseFloat(lolo):null})
+  });
+  const d=await res.json();
+  if(d.ok){showToast('Alarma configurada');closeAlarmaModalBtn();cargarVariables();}
+  else showToast('Error: '+d.error,false);
+}
+async function limpiarAlarma() {
+  if(!alarmaVarId)return;
+  await fetch(`/api/medidores/variables/${alarmaVarId}/alarma`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hihi:null,hi:null,lo:null,lolo:null})});
+  showToast('Alarma eliminada');closeAlarmaModalBtn();cargarVariables();
+}
+
+// ── MONITOR ──
+async function cargarMonitor() {
+  const [resLect,resAlm]=await Promise.all([fetch('/api/medidores/lecturas/ultimo'),fetch('/api/medidores/alarmas/log/activas')]);
+  const list=await resLect.json();
+  const alms=await resAlm.json();
+  document.getElementById('monitorCount').textContent=`${list.length} variable${list.length!==1?'s':''}`;
+  const banner=document.getElementById('alarmBanner');
+  if(alms.length>0){banner.classList.add('active');document.getElementById('bannerCount').textContent=`${alms.length} ALARMA(S) ACTIVA(S)`;}
+  else banner.classList.remove('active');
+  const grid=document.getElementById('monitorGrid');
+  if(!list.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;font-family:var(--font-mono);font-size:11px;color:var(--isa-text-dim)">Sin variables activas</div>';return;}
+  const almMap={};
+  alms.forEach(a=>{almMap[a.variable_id]=a;});
+  list.forEach(v=>{
+    const val=v.valor!==null?parseFloat(v.valor).toFixed(v.tipo==='int16'?0:3):'--.-';
+    const t=v.registrado_en?new Date(v.registrado_en).toLocaleTimeString('es-EC',{hour12:false}):'--:--';
+    const alm=almMap[v.id];
+    const almClass=alm?(alm.prioridad==='P1'?'alarma-p1':'alarma-p2'):'';
+    const valClass=alm?(alm.prioridad==='P1'?'p1':'p2'):'';
+    let card=document.getElementById(`mc-${v.id}`);
+    if(!card){
+      card=document.createElement('div');
+      card.id=`mc-${v.id}`;
+      card.className=`monitor-card ${almClass}`;
+      card.innerHTML=`
+        <div class="mc-header"><span class="mc-name">${v.nombre}</span><span class="mc-med">${v.medidor_nombre}</span></div>
+        <div class="mc-val ${valClass}" id="mcv-${v.id}">${val}</div>
+        <div class="mc-unit">${v.unidad||'—'}</div>
+        <div class="mc-chart"><canvas id="mcc-${v.id}"></canvas></div>
+        <div class="mc-time" id="mct-${v.id}">${t}</div>`;
+      grid.appendChild(card);
+      const ctx=document.getElementById(`mcc-${v.id}`).getContext('2d');
+      monitorCharts[v.id]=new Chart(ctx,{type:'line',data:{labels:[],datasets:[{data:[],borderColor:'#888',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
+    } else {
+      card.className=`monitor-card ${almClass}`;
+      document.getElementById(`mcv-${v.id}`).textContent=val;
+      document.getElementById(`mcv-${v.id}`).className=`mc-val ${valClass}`;
+      document.getElementById(`mct-${v.id}`).textContent=t;
+    }
+    const ch=monitorCharts[v.id];
+    if(ch&&v.valor!==null){ch.data.labels.push('');ch.data.datasets[0].data.push(parseFloat(v.valor));if(ch.data.labels.length>20){ch.data.labels.shift();ch.data.datasets[0].data.shift();}ch.update('none');}
+  });
+}
+
+setInterval(()=>{if(document.getElementById('content-monitor').classList.contains('active'))cargarMonitor();},3000);
+cargarMedidores();
+</script>
+</body>
+</html>
