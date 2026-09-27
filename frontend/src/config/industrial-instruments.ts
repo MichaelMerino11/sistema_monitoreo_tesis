@@ -20,7 +20,18 @@ export interface IndustrialInstrument {
   unit: string
   valueKey: IndustrialValueKey
   group: IndustrialInstrumentGroup
+
   decimals?: number
+
+  min: number
+  max: number
+
+  lolo?: number
+  lo?: number
+  hi?: number
+  hihi?: number
+
+  alarmEnabled: boolean
 }
 
 export const industrialInstruments: IndustrialInstrument[] = [
@@ -31,6 +42,13 @@ export const industrialInstruments: IndustrialInstrument[] = [
     valueKey: 'voltajeL1',
     group: 'voltage',
     decimals: 1,
+    min: 0,
+    max: 300,
+    lolo: 180,
+    lo: 200,
+    hi: 240,
+    hihi: 250,
+    alarmEnabled: true,
   },
   {
     tag: 'VT-L2',
@@ -39,6 +57,13 @@ export const industrialInstruments: IndustrialInstrument[] = [
     valueKey: 'voltajeL2',
     group: 'voltage',
     decimals: 1,
+    min: 0,
+    max: 300,
+    lolo: 180,
+    lo: 200,
+    hi: 240,
+    hihi: 250,
+    alarmEnabled: true,
   },
   {
     tag: 'VT-L3',
@@ -47,6 +72,13 @@ export const industrialInstruments: IndustrialInstrument[] = [
     valueKey: 'voltajeL3',
     group: 'voltage',
     decimals: 1,
+    min: 0,
+    max: 300,
+    lolo: 180,
+    lo: 200,
+    hi: 240,
+    hihi: 250,
+    alarmEnabled: true,
   },
 
   {
@@ -56,6 +88,13 @@ export const industrialInstruments: IndustrialInstrument[] = [
     valueKey: 'corrienteL1',
     group: 'current',
     decimals: 2,
+    min: 0,
+    max: 100,
+    lolo: 0,
+    lo: 1,
+    hi: 80,
+    hihi: 90,
+    alarmEnabled: true,
   },
   {
     tag: 'IT-L2',
@@ -64,6 +103,13 @@ export const industrialInstruments: IndustrialInstrument[] = [
     valueKey: 'corrienteL2',
     group: 'current',
     decimals: 2,
+    min: 0,
+    max: 100,
+    lolo: 0,
+    lo: 1,
+    hi: 80,
+    hihi: 90,
+    alarmEnabled: true,
   },
   {
     tag: 'IT-L3',
@@ -72,6 +118,13 @@ export const industrialInstruments: IndustrialInstrument[] = [
     valueKey: 'corrienteL3',
     group: 'current',
     decimals: 2,
+    min: 0,
+    max: 100,
+    lolo: 0,
+    lo: 1,
+    hi: 80,
+    hihi: 90,
+    alarmEnabled: true,
   },
 
   {
@@ -81,6 +134,9 @@ export const industrialInstruments: IndustrialInstrument[] = [
     valueKey: 'potenciaActiva',
     group: 'power',
     decimals: 2,
+    min: 0,
+    max: 100,
+    alarmEnabled: false,
   },
   {
     tag: 'PT-REA',
@@ -89,6 +145,9 @@ export const industrialInstruments: IndustrialInstrument[] = [
     valueKey: 'potenciaReactiva',
     group: 'power',
     decimals: 2,
+    min: 0,
+    max: 100,
+    alarmEnabled: false,
   },
   {
     tag: 'PT-APR',
@@ -97,6 +156,9 @@ export const industrialInstruments: IndustrialInstrument[] = [
     valueKey: 'potenciaAparente',
     group: 'power',
     decimals: 2,
+    min: 0,
+    max: 100,
+    alarmEnabled: false,
   },
 
   {
@@ -106,6 +168,9 @@ export const industrialInstruments: IndustrialInstrument[] = [
     valueKey: 'factorPotencia',
     group: 'summary',
     decimals: 3,
+    min: 0,
+    max: 1,
+    alarmEnabled: false,
   },
   {
     tag: 'FT-001',
@@ -114,6 +179,13 @@ export const industrialInstruments: IndustrialInstrument[] = [
     valueKey: 'frecuencia',
     group: 'summary',
     decimals: 2,
+    min: 55,
+    max: 65,
+    lolo: 58,
+    lo: 59,
+    hi: 61,
+    hihi: 62,
+    alarmEnabled: true,
   },
   {
     tag: 'ET-IND',
@@ -122,5 +194,8 @@ export const industrialInstruments: IndustrialInstrument[] = [
     valueKey: 'energiaKwh',
     group: 'summary',
     decimals: 2,
+    min: 0,
+    max: 1000,
+    alarmEnabled: false,
   },
 ]
