@@ -37,3 +37,5 @@ export interface SolarMeasurement {
 
   registradoEn: string
 }
+
+export type SolarHistoryRange = '1h' | '6h' | '24h' | '7d'

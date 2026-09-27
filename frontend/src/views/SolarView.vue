@@ -3,8 +3,13 @@ import { onMounted } from 'vue'
 
 import SolarOverview from '@/components/solar/SolarOverview.vue'
 import { useSolarStore } from '@/stores/solar.store'
+import { ref } from 'vue'
+
+import SolarDetailModal from '@/components/solar/SolarDetailModal.vue'
+import type { SolarInstrument } from '@/config/solar-instruments'
 
 const solarStore = useSolarStore()
+const selectedInstrument = ref<SolarInstrument | null>(null)
 
 onMounted(() => {
   solarStore.fetchLatest(2)
@@ -42,7 +47,7 @@ onMounted(() => {
     </div>
 
     <template v-else>
-      <SolarOverview :measurement="solarStore.measurement" />
+      <SolarOverview :measurement="solarStore.measurement" @select="selectedInstrument = $event" />
 
       <div class="measurement-info">
         <span>
@@ -56,6 +61,12 @@ onMounted(() => {
         </span>
       </div>
     </template>
+    <SolarDetailModal
+      v-if="selectedInstrument && solarStore.measurement"
+      :instrument="selectedInstrument"
+      :measurement="solarStore.measurement"
+      @close="selectedInstrument = null"
+    />
   </main>
 </template>
 

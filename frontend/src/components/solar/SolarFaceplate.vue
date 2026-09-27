@@ -15,13 +15,23 @@ const position = computed(() => getSolarPosition(props.value, props.instrument))
 
 const decimals = computed(() => props.instrument.decimals ?? 2)
 
+const emit = defineEmits<{
+  select: [instrument: SolarInstrument]
+}>()
+
 function zonePosition(value: number) {
   return getSolarPosition(value, props.instrument)
 }
 </script>
 
 <template>
-  <article class="faceplate">
+  <article
+    class="faceplate"
+    role="button"
+    tabindex="0"
+    @click="emit('select', instrument)"
+    @keydown.enter="emit('select', instrument)"
+  >
     <header class="faceplate-header">
       <span>{{ instrument.tag }}</span>
 
@@ -220,6 +230,23 @@ function zonePosition(value: number) {
   background: #ffffff;
 
   transform: translateX(-50%);
+}
+
+.faceplate {
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.faceplate:hover {
+  border-color: #303030;
+  background: #d0d0d0;
+}
+
+.faceplate:focus-visible {
+  outline: 2px solid #303030;
+  outline-offset: 2px;
 }
 
 .faceplate-footer {

@@ -24,6 +24,24 @@ function normalizeSolarMeasurement(data: SolarMeasurementApi): SolarMeasurement 
   }
 }
 
+function formatDate(date: Date): string {
+  const year = date.getFullYear()
+
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
+function nextDay(date: Date): Date {
+  const result = new Date(date)
+
+  result.setDate(result.getDate() + 1)
+
+  return result
+}
+
 export async function getLatestSolarMeasurement(
   dispositivoId = 2,
 ): Promise<SolarMeasurement | null> {
@@ -40,4 +58,45 @@ export async function getLatestSolarMeasurement(
   }
 
   return normalizeSolarMeasurement(data)
+}
+
+export async function getSolarHistory(
+  dispositivoId: number,
+  from: Date,
+  to: Date,
+): Promise<SolarMeasurement[]> {
+  /*
+   * El endpoint existente trabaja correctamente
+   * con fechas YYYY-MM-DD.
+   *
+   * Consultamos hasta el día siguiente y luego
+   * filtramos exactamente por timestamp en Vue.
+   */
+  const desde = formatDate(from)
+  const hasta = formatDate(nextDay(to))
+
+  const params = new URLSearchParams({
+    dispositivo_id: String(dispositivoId),
+    desde,
+    hasta,
+  })
+
+  const response = await fetch(`${API_BASE_URL}/api/solar/historico?${params.toString()}`)
+
+  if (!response.ok) {
+    throw new Error(`Error consultando histórico solar: HTTP ${response.status}`)
+  }
+
+  const data = (await response.json()) as SolarMeasurementApi[]
+
+  const measurements = data.map(normalizeSolarMeasurement)
+
+  const fromTimestamp = from.getTime()
+  const toTimestamp = to.getTime()
+
+  return measurements.filter((measurement) => {
+    const timestamp = new Date(measurement.registradoEn).getTime()
+
+    return timestamp >= fromTimestamp && timestamp <= toTimestamp
+  })
 }

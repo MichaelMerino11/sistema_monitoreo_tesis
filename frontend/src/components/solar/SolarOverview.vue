@@ -3,6 +3,11 @@ import SolarFaceplate from '@/components/solar/SolarFaceplate.vue'
 import { solarInstruments } from '@/config/solar-instruments'
 
 import type { SolarMeasurement } from '@/types/solar'
+import type { SolarInstrument } from '@/config/solar-instruments'
+
+const emit = defineEmits<{
+  select: [instrument: SolarInstrument]
+}>()
 
 defineProps<{
   measurement: SolarMeasurement
@@ -16,6 +21,7 @@ defineProps<{
       :key="instrument.tag"
       :instrument="instrument"
       :value="measurement[instrument.valueKey]"
+      @select="emit('select', $event)"
     />
   </section>
 </template>
