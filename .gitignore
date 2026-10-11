@@ -25,4 +25,7 @@ Thumbs.db
 *.log
 
 # Coverage
-coverage/
+coverage/node_modules/
+.env
+gateway.conf
+*.sql
