@@ -1,6 +1,8 @@
 Maiki IP: 192.168.100.190
 Michelle IP: 192.168.18.15
 
+===================================================== DESARROLLO =======================================
+
 Ejectuar server: npm start
 
 Dashboard principal: http://localhost:3000
@@ -17,5 +19,13 @@ Probar desde el celular: debe estar en la misma WiFi que la computadora y usa la
 http://192.168.100.190:3000
 http://192.168.18.15:3000
 
-
 POR SI SE NECESITA CAMBIAR: sed -i 's/192.168.18.15/192.168.100.190/g' ./dashboard/mobile.html
+
+================================================= PRODUCCIÓN ==============================================
+
+Vista general:	https://sistemamonitoreotesis-production.up.railway.app/
+Solar:	https://sistemamonitoreotesis-production.up.railway.app/solar/
+Industrial:	https://sistemamonitoreotesis-production.up.railway.app/industrial/
+Configuración de medidores:	https://sistemamonitoreotesis-production.up.railway.app/medidores/
+Histórico:	https://sistemamonitoreotesis-production.up.railway.app/medidores/historico.html
+Alarmas:	https://sistemamonitoreotesis-production.up.railway.app/alarmas/
