@@ -7,7 +7,7 @@
     const style = document.createElement('style');
     style.textContent = `
     .gw-wrap{display:flex;align-items:center;gap:12px;}
-    .gw-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.5px;
+    .gw-badge{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:0.5px;
       padding:3px 10px;border:1px solid #555;background:#2A2A2A;color:#A0A0A0;
       display:inline-flex;align-items:center;gap:6px;cursor:default;user-select:none;white-space:nowrap;}
     .gw-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:#707070;}
@@ -16,7 +16,7 @@
     .gw-badge.gw-off{background:#CC0000;border-color:#880000;color:#FFFFFF;}
     .gw-badge.gw-off::before{background:#FFFFFF;}
     .gw-badge.gw-flotante{position:fixed;top:6px;right:120px;z-index:300;}
-    @media(max-width:600px){.gw-badge{font-size:9px;padding:2px 6px;}}
+    @media(max-width:600px){.gw-badge{font-size:11px;padding:2px 6px;}}
   `;
     document.head.appendChild(style);
 

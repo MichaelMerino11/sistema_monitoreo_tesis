@@ -46,7 +46,7 @@
         background: var(--isa-bg);
         color: var(--isa-text);
         font-family: var(--font-sans);
-        font-size: 13px;
+        font-size: 14px;
         min-height: 100vh;
       }
 
@@ -61,7 +61,7 @@
         height: 36px;
         border-bottom: 2px solid #000;
         font-family: var(--font-mono);
-        font-size: 12px;
+        font-size: 13px;
       }
       .titlebar-left {
         display: flex;
@@ -75,18 +75,29 @@
       }
       .titlebar-desc {
         color: #a0a0a0;
-        font-size: 11px;
+        font-size: 13px;
       }
       .titlebar-right {
         display: flex;
         align-items: center;
         gap: 20px;
       }
+      .hist-link {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: #e0e0e0;
+        text-decoration: none;
+        padding: 2px 8px;
+        border: 1px solid #555;
+      }
+      .hist-link:hover {
+        background: #3a3a3a;
+      }
       .node-pill {
         display: flex;
         align-items: center;
         gap: 6px;
-        font-size: 11px;
+        font-size: 13px;
         color: #a0a0a0;
       }
       .node-dot {
@@ -116,7 +127,7 @@
       }
       .sys-clock {
         font-family: var(--font-mono);
-        font-size: 13px;
+        font-size: 14px;
         color: #d0d0d0;
         letter-spacing: 1px;
       }
@@ -128,7 +139,7 @@
         color: #fff;
         padding: 4px 16px;
         font-family: var(--font-mono);
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 600;
         letter-spacing: 1px;
         align-items: center;
@@ -174,7 +185,7 @@
         align-items: center;
         justify-content: space-between;
         font-family: var(--font-mono);
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 600;
         letter-spacing: 0.5px;
         border-bottom: 1px solid #606060;
@@ -198,7 +209,7 @@
       }
       .fp-tag {
         font-family: var(--font-mono);
-        font-size: 9px;
+        font-size: 12px;
         color: #707070;
         letter-spacing: 1px;
         text-transform: uppercase;
@@ -235,14 +246,14 @@
       }
       .fp-unit {
         font-family: var(--font-mono);
-        font-size: 12px;
+        font-size: 13px;
         color: #606060;
         text-align: center;
         margin-top: 2px;
       }
       .fp-state {
         font-family: var(--font-mono);
-        font-size: 9px;
+        font-size: 12px;
         text-align: center;
         margin-top: 6px;
         text-transform: uppercase;
@@ -257,7 +268,7 @@
         display: flex;
         justify-content: space-between;
         font-family: var(--font-mono);
-        font-size: 8px;
+        font-size: 12px;
         color: #707070;
         margin-bottom: 2px;
         text-transform: uppercase;
@@ -297,7 +308,7 @@
         display: flex;
         justify-content: space-between;
         font-family: var(--font-mono);
-        font-size: 7px;
+        font-size: 12px;
         color: #606060;
         margin-top: 1px;
       }
@@ -329,7 +340,7 @@
       }
       .eb-tag {
         font-family: var(--font-mono);
-        font-size: 9px;
+        font-size: 12px;
         color: #707070;
         letter-spacing: 0.5px;
         text-transform: uppercase;
@@ -344,7 +355,7 @@
       }
       .eb-unit {
         font-family: var(--font-mono);
-        font-size: 12px;
+        font-size: 13px;
         color: #606060;
         margin-top: 2px;
       }
@@ -366,7 +377,7 @@
         display: flex;
         justify-content: space-between;
         font-family: var(--font-mono);
-        font-size: 8px;
+        font-size: 12px;
         color: #606060;
         margin-top: 2px;
       }
@@ -390,7 +401,7 @@
       }
       .chart-tag {
         font-family: var(--font-mono);
-        font-size: 9px;
+        font-size: 12px;
         color: #707070;
         text-transform: uppercase;
         letter-spacing: 0.3px;
@@ -456,7 +467,7 @@
 
       .alm-pri {
         font-family: var(--font-mono);
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 700;
         text-align: center;
         margin-top: 1px;
@@ -471,19 +482,19 @@
         color: #5a5a00;
       }
       .alm-type {
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 700;
         color: var(--isa-text);
         text-transform: uppercase;
       }
       .alm-desc {
-        font-size: 10px;
+        font-size: 12px;
         color: var(--isa-text-2);
         margin-top: 1px;
       }
       .alm-time {
         font-family: var(--font-mono);
-        font-size: 9px;
+        font-size: 12px;
         color: var(--isa-text-dim);
         margin-top: 2px;
       }
@@ -493,7 +504,7 @@
         color: #d0d0d0;
         padding: 2px 5px;
         font-family: var(--font-mono);
-        font-size: 9px;
+        font-size: 12px;
         font-weight: 600;
         cursor: pointer;
       }
@@ -504,7 +515,7 @@
         padding: 28px 12px;
         text-align: center;
         font-family: var(--font-mono);
-        font-size: 11px;
+        font-size: 13px;
         color: var(--isa-text-dim);
       }
 
@@ -522,7 +533,7 @@
       .faceplate.clickable:hover .fp-tag::after {
         content: " [+]";
         color: #909090;
-        font-size: 8px;
+        font-size: 12px;
       }
 
       /* ── MODAL OVERLAY ── */
@@ -570,7 +581,7 @@
         justify-content: space-between;
         padding: 6px 12px;
         font-family: var(--font-mono);
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 600;
         letter-spacing: 0.5px;
         position: sticky;
@@ -583,7 +594,7 @@
       .modal-desc {
         color: #a0a0a0;
         font-weight: 400;
-        font-size: 11px;
+        font-size: 13px;
         margin-left: 12px;
       }
       .modal-close {
@@ -615,7 +626,7 @@
       }
       .modal-section-title {
         font-family: var(--font-mono);
-        font-size: 10px;
+        font-size: 12px;
         font-weight: 600;
         color: #606060;
         text-transform: uppercase;
@@ -661,7 +672,7 @@
       }
       .modal-pv-state {
         font-family: var(--font-mono);
-        font-size: 11px;
+        font-size: 13px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         margin-top: 8px;
@@ -689,7 +700,7 @@
       }
       .modal-stat-lbl {
         font-family: var(--font-mono);
-        font-size: 9px;
+        font-size: 12px;
         color: #707070;
         text-transform: uppercase;
         margin-top: 3px;
@@ -701,14 +712,14 @@
         width: 100%;
         border-collapse: collapse;
         font-family: var(--font-mono);
-        font-size: 10px;
+        font-size: 12px;
       }
       .modal-limits th {
         background: #505050;
         color: #c0c0c0;
         padding: 4px 8px;
         text-align: left;
-        font-size: 9px;
+        font-size: 12px;
         letter-spacing: 0.3px;
         border-right: 1px solid #606060;
       }
@@ -743,7 +754,7 @@
         background: #ababab;
         border: 1px solid #989898;
         font-family: var(--font-mono);
-        font-size: 10px;
+        font-size: 12px;
       }
       .modal-meta-key {
         color: #505050;
@@ -761,7 +772,7 @@
         display: flex;
         justify-content: space-between;
         font-family: var(--font-mono);
-        font-size: 9px;
+        font-size: 12px;
         color: #707070;
         margin-bottom: 3px;
       }
@@ -796,7 +807,7 @@
         padding: 0 16px;
         height: 22px;
         font-family: var(--font-mono);
-        font-size: 10px;
+        font-size: 12px;
         gap: 24px;
         border-top: 1px solid #333;
         z-index: 50;
@@ -853,8 +864,25 @@
           grid-template-columns: 1fr;
         }
       }
+    
+      /* Etiqueta de datos simulados (temporal, hasta instalar el medidor solar) */
+      .sim-badge {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 700;
+        color: #ffd24d;
+        background: #3a2e00;
+        border: 1px solid #e0a800;
+        padding: 1px 8px;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+      }
+      .sim-badge[hidden] {
+        display: none;
+      }
     </style>
-  </head>
+  <script src="/legible.js" defer></script>
+</head>
   <body>
     <!-- ── TITLE BAR ── -->
     <div class="titlebar">
@@ -863,6 +891,8 @@
         <span class="titlebar-desc">PLANTA FOTOVOLTAICA — MONITOREO L2</span>
       </div>
       <div class="titlebar-right">
+        <a class="hist-link" href="/medidores/historico.html?campo=potencia_entrada&horas=24">HISTÓRICO</a>
+        <span class="sim-badge" id="simBadge" hidden>DATOS SIMULADOS</span>
         <div class="node-pill">
           <div class="node-dot" id="serverDot"></div>
           <span id="serverStatus">SRV: --</span>
@@ -894,7 +924,7 @@
           <div
             style="
               font-family: var(--font-mono);
-              font-size: 9px;
+              font-size: 12px;
               color: var(--isa-text-dim);
               margin-bottom: 6px;
               text-transform: uppercase;
@@ -915,7 +945,7 @@
           </div>
           <div class="pbar-wrap">
             <div class="pbar-lbl">
-              <span>0V</span><span>RANGO</span><span>100V</span>
+              <span>0V</span><span>RANGO</span><span>25V</span>
             </div>
             <div class="pbar-outer">
               <div class="pbar-zones">
@@ -931,7 +961,7 @@
           <div
             style="
               font-family: var(--font-mono);
-              font-size: 9px;
+              font-size: 12px;
               color: var(--isa-text-dim);
               margin: 10px 0 6px;
               text-transform: uppercase;
@@ -955,7 +985,7 @@
           <div
             style="
               font-family: var(--font-mono);
-              font-size: 9px;
+              font-size: 12px;
               color: var(--isa-text-dim);
               margin: 10px 0 6px;
               text-transform: uppercase;
@@ -990,7 +1020,7 @@
           <div
             style="
               font-family: var(--font-mono);
-              font-size: 9px;
+              font-size: 12px;
               color: var(--isa-text-dim);
               margin-bottom: 6px;
               text-transform: uppercase;
@@ -1011,7 +1041,7 @@
           </div>
           <div class="pbar-wrap">
             <div class="pbar-lbl">
-              <span>0A</span><span>RANGO</span><span>20A</span>
+              <span>0A</span><span>RANGO</span><span>13A</span>
             </div>
             <div class="pbar-outer">
               <div class="pbar-zones">
@@ -1027,7 +1057,7 @@
           <div
             style="
               font-family: var(--font-mono);
-              font-size: 9px;
+              font-size: 12px;
               color: var(--isa-text-dim);
               margin: 10px 0 6px;
               text-transform: uppercase;
@@ -1051,7 +1081,7 @@
           <div
             style="
               font-family: var(--font-mono);
-              font-size: 9px;
+              font-size: 12px;
               color: var(--isa-text-dim);
               margin: 10px 0 6px;
               text-transform: uppercase;
@@ -1086,7 +1116,7 @@
           <div
             style="
               font-family: var(--font-mono);
-              font-size: 9px;
+              font-size: 12px;
               color: var(--isa-text-dim);
               margin-bottom: 6px;
               text-transform: uppercase;
@@ -1110,7 +1140,7 @@
           <div
             style="
               font-family: var(--font-mono);
-              font-size: 9px;
+              font-size: 12px;
               color: var(--isa-text-dim);
               margin: 10px 0 6px;
               text-transform: uppercase;
@@ -1134,7 +1164,7 @@
           <div
             style="
               font-family: var(--font-mono);
-              font-size: 9px;
+              font-size: 12px;
               color: var(--isa-text-dim);
               margin: 10px 0 6px;
               text-transform: uppercase;
@@ -1173,7 +1203,7 @@
             <span class="panel-id">ALM-SOLR</span
             ><span class="panel-desc"> · ALARMAS</span>
           </div>
-          <span id="almCount" style="font-size: 10px; color: #d0d0d0"></span>
+          <span id="almCount" style="font-size: 12px; color: #d0d0d0"></span>
         </div>
         <div class="alarm-list" id="almList">
           <div class="no-alarms">■ SIN ALARMAS ACTIVAS</div>
@@ -1191,7 +1221,7 @@
             id="lastSolar"
             style="
               font-family: var(--font-mono);
-              font-size: 10px;
+              font-size: 12px;
               color: #d0d0d0;
             "
             >SIN DATOS</span
@@ -1582,8 +1612,8 @@
                 y: {
                   grid: { color: "#333" },
                   ticks: {
-                    font: { family: "IBM Plex Mono", size: 9 },
-                    color: "#707070",
+                    font: { family: "IBM Plex Mono", size: 12 },
+                    color: "#B8B8B8",
                   },
                 },
               },
@@ -1734,7 +1764,7 @@
       setInterval(updateClock, 1000);
       updateClock();
 
-      Chart.defaults.color = "#707070";
+      Chart.defaults.color = "#B8B8B8";
       Chart.defaults.borderColor = "#404040";
 
       function mkChart(id, datasets) {
@@ -1761,8 +1791,8 @@
               y: {
                 grid: { color: "#333" },
                 ticks: {
-                  font: { family: "IBM Plex Mono", size: 9 },
-                  color: "#707070",
+                  font: { family: "IBM Plex Mono", size: 12 },
+                  color: "#B8B8B8",
                 },
               },
             },
@@ -1861,11 +1891,14 @@
         let cls = "",
           stateText = "NORMAL",
           stateColor = "var(--ok-bg)";
-        if (p <= loLim || p >= hiLim) {
+        // loLim = null: la variable no tiene alarma por valor bajo (ej. corriente 0 de noche es normal)
+        // Banda de pre-alarma P2: 10 % del rango antes de cada límite
+        const banda = 0.1 * (hiLim - (loLim ?? min));
+        if ((loLim !== null && p <= loLim) || p >= hiLim) {
           cls = "p1";
           stateText = "ALARMA P1";
           stateColor = "var(--p1-bg)";
-        } else if (p <= loLim * 1.5 || p >= hiLim * 0.9) {
+        } else if ((loLim !== null && p <= loLim + banda) || p >= hiLim - banda) {
           cls = "p2";
           stateText = "ALARMA P2";
           stateColor = "var(--p2-bg)";
@@ -1907,6 +1940,7 @@
           const d = await res.json();
           setServerOnline(true);
           if (!d) return;
+          document.getElementById("simBadge").hidden = !d.simulado;
 
           const vp = parseFloat(d.voltaje_panel) || 0;
           const vb = parseFloat(d.voltaje_bateria) || 0;
@@ -1919,14 +1953,14 @@
           const kwh = parseFloat(d.energia_kwh) || 0;
 
           // Faceplates
-          setFP("vpVal", "vpState", "vpInd", vp, 0, 25, 0.5, 23);
+          setFP("vpVal", "vpState", "vpInd", vp, 0, 25, null, 23);
           setFP("vbVal", "vbState", null, vb, 0, 16, 10.5, 15.0);
           setFP("viVal", "viState", null, vi, 0, 135, 100, 130);
-          setFP("ipVal", "ipState", "ipInd", ip, 0, 13, 0.5, 11.62);
-          setFP("ibVal", "ibState", null, ib, 0, 22, 0.5, 20);
-          setFP("iiVal", "iiState", null, ii, 0, 15, 0.5, 13.5);
-          setFP("peVal", "peState", null, pe, 0, 220, 5, 206);
-          setFP("psVal", "psState", null, ps, 0, 1700, 5, 1600);
+          setFP("ipVal", "ipState", "ipInd", ip, 0, 13, null, 11.62);
+          setFP("ibVal", "ibState", null, ib, 0, 22, null, 20);
+          setFP("iiVal", "iiState", null, ii, 0, 15, null, 13.5);
+          setFP("peVal", "peState", null, pe, 0, 220, null, 206);
+          setFP("psVal", "psState", null, ps, 0, 1700, null, 1600);
 
           // kWh
           document.getElementById("kwhVal").textContent = fmt(kwh, 3);
@@ -2033,7 +2067,7 @@
           ${
             !isAck
               ? `<button class="alm-ack" onclick="ackAlarm(${a.id})">ACK</button>`
-              : `<span style="font-size:9px;color:#888;font-family:var(--font-mono)">ACK</span>`
+              : `<span style="font-size:12px;color:#888;font-family:var(--font-mono)">ACK</span>`
           }
         </div>`;
             })

@@ -63,7 +63,7 @@
         background: var(--isa-bg);
         color: var(--isa-text);
         font-family: var(--font-sans);
-        font-size: 13px;
+        font-size: 14px;
         min-height: 100vh;
         user-select: none;
       }
@@ -79,7 +79,7 @@
         height: 36px;
         border-bottom: 2px solid #000;
         font-family: var(--font-mono);
-        font-size: 12px;
+        font-size: 13px;
       }
 
       .titlebar-left {
@@ -96,7 +96,7 @@
 
       .titlebar-desc {
         color: #a0a0a0;
-        font-size: 11px;
+        font-size: 13px;
       }
 
       .titlebar-right {
@@ -107,7 +107,7 @@
 
       .sys-clock {
         font-family: var(--font-mono);
-        font-size: 13px;
+        font-size: 14px;
         color: #d0d0d0;
         letter-spacing: 1px;
       }
@@ -116,7 +116,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        font-size: 11px;
+        font-size: 13px;
         color: #a0a0a0;
       }
 
@@ -143,7 +143,7 @@
         color: #fff;
         padding: 4px 16px;
         font-family: var(--font-mono);
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 600;
         letter-spacing: 1px;
         align-items: center;
@@ -191,7 +191,7 @@
         align-items: center;
         justify-content: space-between;
         font-family: var(--font-mono);
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 600;
         letter-spacing: 0.5px;
         border-bottom: 1px solid #606060;
@@ -206,7 +206,7 @@
       }
 
       .panel-status {
-        font-size: 10px;
+        font-size: 12px;
         padding: 1px 6px;
         border: 1px solid;
         border-radius: 2px;
@@ -241,7 +241,7 @@
 
       .pv-tag {
         font-family: var(--font-mono);
-        font-size: 10px;
+        font-size: 12px;
         color: #888;
         letter-spacing: 0.5px;
         margin-bottom: 4px;
@@ -281,13 +281,13 @@
 
       .pv-unit {
         font-family: var(--font-mono);
-        font-size: 13px;
+        font-size: 14px;
         color: #888;
         margin-left: 4px;
       }
 
       .pv-desc {
-        font-size: 10px;
+        font-size: 12px;
         color: #707070;
         margin-top: 4px;
         text-transform: uppercase;
@@ -349,7 +349,7 @@
         display: flex;
         justify-content: space-between;
         font-family: var(--font-mono);
-        font-size: 9px;
+        font-size: 12px;
         color: #707070;
         margin-top: 2px;
       }
@@ -372,7 +372,7 @@
 
       .chart-label {
         font-family: var(--font-mono);
-        font-size: 10px;
+        font-size: 12px;
         color: #707070;
         margin-bottom: 4px;
         text-transform: uppercase;
@@ -403,12 +403,12 @@
       }
 
       .solar-pv-unit {
-        font-size: 10px;
+        font-size: 12px;
         color: #707070;
         font-family: var(--font-mono);
       }
       .solar-pv-tag {
-        font-size: 9px;
+        font-size: 12px;
         color: #606060;
         font-family: var(--font-mono);
         margin-top: 3px;
@@ -422,7 +422,7 @@
       }
       .energy-label {
         font-family: var(--font-mono);
-        font-size: 10px;
+        font-size: 12px;
         color: #707070;
         text-transform: uppercase;
         letter-spacing: 0.3px;
@@ -514,7 +514,7 @@
 
       .alarm-priority {
         font-family: var(--font-mono);
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 700;
         width: 24px;
         text-align: center;
@@ -525,19 +525,19 @@
         min-width: 0;
       }
       .alarm-type {
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 700;
         color: #1a1a1a;
         text-transform: uppercase;
       }
       .alarm-desc {
-        font-size: 10px;
+        font-size: 12px;
         color: #3a3a3a;
         margin-top: 1px;
       }
       .alarm-time {
         font-family: var(--font-mono);
-        font-size: 9px;
+        font-size: 12px;
         color: #3a3a3a;
         white-space: nowrap;
       }
@@ -547,7 +547,7 @@
         color: #d0d0d0;
         border: 1px solid #555;
         padding: 2px 6px;
-        font-size: 9px;
+        font-size: 12px;
         font-family: var(--font-mono);
         font-weight: 600;
         cursor: pointer;
@@ -562,7 +562,7 @@
         padding: 24px 12px;
         text-align: center;
         font-family: var(--font-mono);
-        font-size: 11px;
+        font-size: 13px;
         color: #707070;
       }
       .no-alarms-icon {
@@ -606,7 +606,7 @@
       }
 
       .summary-label {
-        font-size: 10px;
+        font-size: 12px;
         color: var(--isa-text-dim);
         text-transform: uppercase;
         letter-spacing: 0.3px;
@@ -639,7 +639,7 @@
         padding: 0 16px;
         height: 22px;
         font-family: var(--font-mono);
-        font-size: 10px;
+        font-size: 12px;
         gap: 24px;
         border-top: 1px solid #333;
         z-index: 50;
@@ -690,8 +690,25 @@
           grid-template-columns: repeat(3, 1fr);
         }
       }
+    
+      /* Etiqueta de datos simulados (temporal, hasta instalar el medidor solar) */
+      .sim-badge {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 700;
+        color: #ffd24d;
+        background: #3a2e00;
+        border: 1px solid #e0a800;
+        padding: 1px 8px;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+      }
+      .sim-badge[hidden] {
+        display: none;
+      }
     </style>
-  </head>
+  <script src="/legible.js" defer></script>
+</head>
   <body>
     <!-- ── TITLE BAR ── -->
     <div class="titlebar">
@@ -791,7 +808,7 @@
           <div
             style="
               font-family: var(--font-mono);
-              font-size: 10px;
+              font-size: 12px;
               color: #707070;
               text-align: right;
             "
@@ -809,7 +826,10 @@
             <span class="panel-id">TAG: SOLR-001</span>
             <span class="panel-desc"> · PLANTA FOTOVOLTAICA</span>
           </div>
-          <span class="panel-status offline" id="solarStatus">OFFLINE</span>
+          <div style="display: flex; gap: 6px; align-items: center">
+            <span class="sim-badge" id="solarSim" hidden>DATOS SIMULADOS</span>
+            <span class="panel-status offline" id="solarStatus">OFFLINE</span>
+          </div>
         </div>
         <div class="panel-body">
           <div class="solar-grid">
@@ -871,7 +891,7 @@
           <div
             style="
               font-family: var(--font-mono);
-              font-size: 10px;
+              font-size: 12px;
               color: #707070;
               text-align: right;
               margin-top: 4px;
@@ -890,7 +910,7 @@
             <span class="panel-id">ALM-CONSOLE</span>
             <span class="panel-desc"> · ALARMAS</span>
           </div>
-          <span id="alarmaCount" style="font-size: 10px; color: #d0d0d0"></span>
+          <span id="alarmaCount" style="font-size: 12px; color: #d0d0d0"></span>
         </div>
         <div class="panel-body" style="padding: 0">
           <div class="alarm-list" id="alarmasList">
@@ -1007,7 +1027,7 @@
       updateClock();
 
       // ── CHARTS ──
-      Chart.defaults.color = "#707070";
+      Chart.defaults.color = "#B8B8B8";
       Chart.defaults.borderColor = "#404040";
 
       function makeChart(id, color) {
@@ -1037,8 +1057,8 @@
               y: {
                 grid: { color: "#333" },
                 ticks: {
-                  font: { family: "IBM Plex Mono", size: 9 },
-                  color: "#707070",
+                  font: { family: "IBM Plex Mono", size: 12 },
+                  color: "#B8B8B8",
                 },
               },
             },
@@ -1165,6 +1185,7 @@
           );
           const d = await res.json();
           if (!d) return;
+          document.getElementById("solarSim").hidden = !d.simulado;
 
           document.getElementById("valVP").textContent = fmt(d.voltaje_panel);
           document.getElementById("valVB").textContent = fmt(d.voltaje_bateria);
@@ -1260,7 +1281,7 @@
             <div class="alarm-desc">${a.descripcion || a.dispositivo || "—"}</div>
             <div class="alarm-time">${t}</div>
           </div>
-          ${!isAck ? `<button class="alarm-ack-btn" onclick="ackAlarm(${a.id})">ACK</button>` : '<span style="font-size:9px;color:#555;font-family:var(--font-mono)">ACK</span>'}
+          ${!isAck ? `<button class="alarm-ack-btn" onclick="ackAlarm(${a.id})">ACK</button>` : '<span style="font-size:12px;color:#555;font-family:var(--font-mono)">ACK</span>'}
         </div>`;
             })
             .join("");
