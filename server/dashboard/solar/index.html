@@ -865,13 +865,6 @@
         }
       }
 
-      /* Etiqueta de datos simulados (temporal, hasta instalar el medidor solar) */
-      .sim-badge {
-        display: none !important;
-      }
-      .sim-badge[hidden] {
-        display: none;
-      }
     </style>
     <script src="/legible.js" defer></script>
   </head>
@@ -888,7 +881,6 @@
           href="/medidores/historico.html?campo=potencia_entrada&horas=24"
           >HISTÓRICO</a
         >
-        <span class="sim-badge" id="simBadge" hidden>DATOS SIMULADOS</span>
         <div class="node-pill">
           <div class="node-dot" id="serverDot"></div>
           <span id="serverStatus">SRV: --</span>
@@ -1939,7 +1931,6 @@
           const d = await res.json();
           setServerOnline(true);
           if (!d) return;
-          document.getElementById("simBadge").hidden = !d.simulado;
 
           const vp = parseFloat(d.voltaje_panel) || 0;
           const vb = parseFloat(d.voltaje_bateria) || 0;

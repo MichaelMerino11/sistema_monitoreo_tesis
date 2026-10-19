@@ -690,14 +690,6 @@
           grid-template-columns: repeat(3, 1fr);
         }
       }
-
-      /* Etiqueta de datos simulados (temporal, hasta instalar el medidor solar) */
-      .sim-badge {
-        display: none !important;
-      }
-      .sim-badge[hidden] {
-        display: none;
-      }
     </style>
     <script src="/legible.js" defer></script>
   </head>
@@ -819,7 +811,6 @@
             <span class="panel-desc"> · PLANTA FOTOVOLTAICA</span>
           </div>
           <div style="display: flex; gap: 6px; align-items: center">
-            <span class="sim-badge" id="solarSim" hidden>DATOS SIMULADOS</span>
             <span class="panel-status offline" id="solarStatus">OFFLINE</span>
           </div>
         </div>
@@ -1186,13 +1177,11 @@
           if (!d) return;
           if (Date.now() - new Date(d.registrado_en).getTime() > 60000) {
             setNodeStatus("solarStatus", "sum-solar", "ind-solar", false);
-            document.getElementById("solarSim").hidden = true;
             document.getElementById("lastSolar").textContent =
               "SIN DATOS RECIENTES";
             return;
           }
-          document.getElementById("solarSim").hidden = !d.simulado;
-
+          // Etiqueta de simulación eliminada
           document.getElementById("valVP").textContent = fmt(d.voltaje_panel);
           document.getElementById("valVB").textContent = fmt(d.voltaje_bateria);
           document.getElementById("valVI").textContent = fmt(
