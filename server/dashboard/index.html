@@ -1,1310 +1,562 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MAINTRONIC — Dashboard ISA-101</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      /*
-  ANSI/ISA-101.01-2015 COMPLIANCE
-  ─────────────────────────────────
-  • Fondo gris neutro Level 1: #B4B4B4
-  • Elementos en reposo: gris oscuro desaturado
-  • Alarma P1 (Crítica):  fondo ROJO    #CC0000, parpadeo
-  • Alarma P2 (Alta):     fondo NARANJA #CC6600, parpadeo
-  • Alarma P3 (Media):    fondo AMARILLO #CCCC00
-  • Estado normal:        sin color llamativo
-  • Colores decorativos:  prohibidos en estado normal
-  • ACK requerido en alarmas activas
-*/
-
-      :root {
-        /* ISA-101 Palette */
-        --isa-bg: #b4b4b4;
-        --isa-bg-panel: #a0a0a0;
-        --isa-bg-widget: #c8c8c8;
-        --isa-border: #787878;
-        --isa-border-lt: #909090;
-        --isa-text: #1a1a1a;
-        --isa-text-2: #3a3a3a;
-        --isa-text-dim: #606060;
-
-        /* ISA-101 Estados */
-        --isa-normal: #3a3a3a;
-        --isa-ok: #2a5c2a; /* verde solo para OK explícito */
-        --isa-ok-bg: #d4ead4;
-        --isa-p3: #7a7a00; /* amarillo desaturado — advertencia */
-        --isa-p3-bg: #e8e800;
-        --isa-p2: #cc6600; /* naranja — alarma alta */
-        --isa-p2-bg: #ffb347;
-        --isa-p1: #cc0000; /* rojo — crítica */
-        --isa-p1-bg: #ff4444;
-        --isa-offline: #555555;
-
-        /* Tipografía ISA */
-        --font-mono: "IBM Plex Mono", monospace;
-        --font-sans: "IBM Plex Sans", sans-serif;
-
-        --radius-sm: 3px;
-        --radius: 5px;
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        background: var(--isa-bg);
-        color: var(--isa-text);
-        font-family: var(--font-sans);
-        font-size: 14px;
-        min-height: 100vh;
-        user-select: none;
-      }
-
-      /* ── TITLE BAR (Level 1 Header) ── */
-      .titlebar {
-        background: #2a2a2a;
-        color: #e0e0e0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 16px;
-        height: 36px;
-        border-bottom: 2px solid #000;
-        font-family: var(--font-mono);
-        font-size: 13px;
-      }
-
-      .titlebar-left {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-
-      .titlebar-id {
-        font-weight: 600;
-        letter-spacing: 1px;
-        color: #f0f0f0;
-      }
-
-      .titlebar-desc {
-        color: #a0a0a0;
-        font-size: 13px;
-      }
-
-      .titlebar-right {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-      }
-
-      .sys-clock {
-        font-family: var(--font-mono);
-        font-size: 14px;
-        color: #d0d0d0;
-        letter-spacing: 1px;
-      }
-
-      .server-indicator {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 13px;
-        color: #a0a0a0;
-      }
-
-      .server-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #2a2a2a;
-        border: 1px solid #555;
-      }
-      .server-dot.ok {
-        background: #44aa44;
-        border-color: #22aa22;
-      }
-      .server-dot.fault {
-        background: #cc0000;
-        border-color: #aa0000;
-      }
-
-      /* ── ALARM BANNER ── */
-      .alarm-banner {
-        display: none;
-        background: var(--isa-p1);
-        color: #fff;
-        padding: 4px 16px;
-        font-family: var(--font-mono);
-        font-size: 13px;
-        font-weight: 600;
-        letter-spacing: 1px;
-        align-items: center;
-        justify-content: space-between;
-        animation: blink-banner 1s step-end infinite;
-        border-bottom: 2px solid #880000;
-      }
-      .alarm-banner.active {
-        display: flex;
-      }
-
-      @keyframes blink-banner {
-        0%,
-        100% {
-          background: var(--isa-p1);
-        }
-        50% {
-          background: #880000;
-        }
-      }
-
-      /* ── MAIN LAYOUT ── */
-      .layout {
-        display: grid;
-        grid-template-columns: 1fr 1fr 260px;
-        grid-template-rows: auto auto auto;
-        gap: 6px;
-        padding: 6px;
-        max-width: 1600px;
-        margin: 0 auto;
-      }
-
-      /* ── PANEL BASE ── */
-      .panel {
-        background: var(--isa-bg-widget);
-        border: 1px solid var(--isa-border);
-        border-top: 3px solid var(--isa-border);
-      }
-
-      .panel-header {
-        background: #787878;
-        color: #f0f0f0;
-        padding: 4px 10px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-family: var(--font-mono);
-        font-size: 13px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        border-bottom: 1px solid #606060;
-      }
-
-      .panel-id {
-        color: #d0d0d0;
-      }
-      .panel-desc {
-        color: #b0b0b0;
-        font-weight: 400;
-      }
-
-      .panel-status {
-        font-size: 12px;
-        padding: 1px 6px;
-        border: 1px solid;
-        border-radius: 2px;
-      }
-      .panel-status.online {
-        color: #44aa44;
-        border-color: #44aa44;
-      }
-      .panel-status.offline {
-        color: #888;
-        border-color: #888;
-      }
-
-      .panel-body {
-        padding: 12px;
-      }
-
-      /* ── PROCESS VARIABLE DISPLAY (PV) ── */
-      .pv-group {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        margin-bottom: 10px;
-      }
-
-      .pv-block {
-        background: #2a2a2a;
-        border: 1px solid #505050;
-        padding: 10px 12px;
-        position: relative;
-      }
-
-      .pv-tag {
-        font-family: var(--font-mono);
-        font-size: 12px;
-        color: #888;
-        letter-spacing: 0.5px;
-        margin-bottom: 4px;
-        text-transform: uppercase;
-      }
-
-      .pv-value {
-        font-family: var(--font-mono);
-        font-size: 36px;
-        font-weight: 600;
-        color: #e8e8e8;
-        line-height: 1;
-        letter-spacing: -1px;
-      }
-
-      .pv-value.alarm-p1 {
-        color: var(--isa-p1-bg);
-        animation: blink-val 0.8s step-end infinite;
-      }
-      .pv-value.alarm-p2 {
-        color: var(--isa-p2-bg);
-        animation: blink-val 1.2s step-end infinite;
-      }
-      .pv-value.alarm-p3 {
-        color: var(--isa-p3-bg);
-      }
-
-      @keyframes blink-val {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.3;
-        }
-      }
-
-      .pv-unit {
-        font-family: var(--font-mono);
-        font-size: 14px;
-        color: #888;
-        margin-left: 4px;
-      }
-
-      .pv-desc {
-        font-size: 12px;
-        color: #707070;
-        margin-top: 4px;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-      }
-
-      /* ── RANGE BAR (ISA-101 Process Variable Bar) ── */
-      .range-bar-wrap {
-        margin-top: 6px;
-        position: relative;
-      }
-
-      .range-bar-track {
-        height: 8px;
-        background: #404040;
-        border: 1px solid #555;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .range-bar-zones {
-        position: absolute;
-        inset: 0;
-        display: flex;
-      }
-
-      .zone-lo-lo {
-        background: #cc0000;
-        opacity: 0.7;
-      }
-      .zone-lo {
-        background: #cc6600;
-        opacity: 0.7;
-      }
-      .zone-normal {
-        background: #2a5c2a;
-        opacity: 0.5;
-      }
-      .zone-hi {
-        background: #cc6600;
-        opacity: 0.7;
-      }
-      .zone-hi-hi {
-        background: #cc0000;
-        opacity: 0.7;
-      }
-
-      .range-bar-fill {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        background: #d8d8d8;
-        transition: width 0.5s ease;
-        border-right: 2px solid #fff;
-      }
-
-      .range-labels {
-        display: flex;
-        justify-content: space-between;
-        font-family: var(--font-mono);
-        font-size: 12px;
-        color: #707070;
-        margin-top: 2px;
-      }
-
-      /* ── CHART ── */
-      .chart-panel {
-        grid-column: 1;
-      }
-      .chart-panel-2 {
-        grid-column: 2;
-      }
-
-      .chart-wrap {
-        height: 110px;
-        position: relative;
-        background: #1e1e1e;
-        border: 1px solid #444;
-        margin-top: 8px;
-      }
-
-      .chart-label {
-        font-family: var(--font-mono);
-        font-size: 12px;
-        color: #707070;
-        margin-bottom: 4px;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-      }
-
-      /* ── SOLAR GRID ── */
-      .solar-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-        margin-bottom: 8px;
-      }
-
-      .solar-pv {
-        background: #2a2a2a;
-        border: 1px solid #505050;
-        padding: 8px;
-        text-align: center;
-      }
-
-      .solar-pv-val {
-        font-family: var(--font-mono);
-        font-size: 20px;
-        font-weight: 600;
-        color: #d8d8d8;
-        line-height: 1;
-      }
-
-      .solar-pv-unit {
-        font-size: 12px;
-        color: #707070;
-        font-family: var(--font-mono);
-      }
-      .solar-pv-tag {
-        font-size: 12px;
-        color: #606060;
-        font-family: var(--font-mono);
-        margin-top: 3px;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-      }
-
-      /* ── ENERGY BAR ── */
-      .energy-section {
-        margin-top: 8px;
-      }
-      .energy-label {
-        font-family: var(--font-mono);
-        font-size: 12px;
-        color: #707070;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 3px;
-      }
-      .energy-track {
-        height: 10px;
-        background: #2a2a2a;
-        border: 1px solid #505050;
-        position: relative;
-      }
-      .energy-fill {
-        height: 100%;
-        background: #606060;
-        transition: width 1s ease;
-      }
-      .energy-fill.good {
-        background: #2a5c2a;
-      }
-
-      /* ── ALARM PANEL ── */
-      .alarm-panel {
-        grid-column: 3;
-        grid-row: 1 / 4;
-      }
-
-      .alarm-list {
-        max-height: 480px;
-        overflow-y: auto;
-      }
-
-      .alarm-list::-webkit-scrollbar {
-        width: 6px;
-      }
-      .alarm-list::-webkit-scrollbar-track {
-        background: #909090;
-      }
-      .alarm-list::-webkit-scrollbar-thumb {
-        background: #505050;
-      }
-
-      .alarm-row {
-        border-bottom: 1px solid #a0a0a0;
-        padding: 7px 8px;
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        gap: 6px;
-        align-items: start;
-        animation: slideIn 0.3s ease;
-      }
-
-      @keyframes slideIn {
-        from {
-          transform: translateX(8px);
-          opacity: 0;
-        }
-        to {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-
-      .alarm-row.p1 {
-        background: #ff4444;
-        animation: blink-row 1s step-end infinite;
-      }
-      .alarm-row.p2 {
-        background: #ffb347;
-      }
-      .alarm-row.p3 {
-        background: #e8e800;
-      }
-      .alarm-row.ack {
-        background: #909090;
-        opacity: 0.7;
-      }
-
-      @keyframes blink-row {
-        0%,
-        100% {
-          background: #ff4444;
-        }
-        50% {
-          background: #cc0000;
-        }
-      }
-
-      .alarm-priority {
-        font-family: var(--font-mono);
-        font-size: 13px;
-        font-weight: 700;
-        width: 24px;
-        text-align: center;
-        color: #1a1a1a;
-      }
-
-      .alarm-content {
-        min-width: 0;
-      }
-      .alarm-type {
-        font-size: 13px;
-        font-weight: 700;
-        color: #1a1a1a;
-        text-transform: uppercase;
-      }
-      .alarm-desc {
-        font-size: 12px;
-        color: #3a3a3a;
-        margin-top: 1px;
-      }
-      .alarm-time {
-        font-family: var(--font-mono);
-        font-size: 12px;
-        color: #3a3a3a;
-        white-space: nowrap;
-      }
-
-      .alarm-ack-btn {
-        background: #3a3a3a;
-        color: #d0d0d0;
-        border: 1px solid #555;
-        padding: 2px 6px;
-        font-size: 12px;
-        font-family: var(--font-mono);
-        font-weight: 600;
-        cursor: pointer;
-        letter-spacing: 0.5px;
-        transition: background 0.15s;
-      }
-      .alarm-ack-btn:hover {
-        background: #555;
-      }
-
-      .no-alarms {
-        padding: 24px 12px;
-        text-align: center;
-        font-family: var(--font-mono);
-        font-size: 13px;
-        color: #707070;
-      }
-      .no-alarms-icon {
-        font-size: 24px;
-        margin-bottom: 6px;
-        display: block;
-      }
-
-      /* ── SUMMARY ROW ── */
-      .summary-row {
-        grid-column: 1 / 3;
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 6px;
-      }
-
-      .summary-box {
-        background: var(--isa-bg-widget);
-        border: 1px solid var(--isa-border);
-        padding: 8px 12px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .summary-indicator {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        border: 1px solid #505050;
-        flex-shrink: 0;
-      }
-      .summary-indicator.on {
-        background: #44aa44;
-      }
-      .summary-indicator.off {
-        background: #cc0000;
-      }
-      .summary-indicator.warn {
-        background: #cccc00;
-      }
-
-      .summary-label {
-        font-size: 12px;
-        color: var(--isa-text-dim);
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-      }
-      .summary-value {
-        font-family: var(--font-mono);
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--isa-text);
-      }
-
-      /* ── CHART GRID ROW ── */
-      .charts-row {
-        grid-column: 1 / 3;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 6px;
-      }
-
-      /* ── STATUS BAR ── */
-      .statusbar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: #1a1a1a;
-        color: #909090;
-        display: flex;
-        align-items: center;
-        padding: 0 16px;
-        height: 22px;
-        font-family: var(--font-mono);
-        font-size: 12px;
-        gap: 24px;
-        border-top: 1px solid #333;
-        z-index: 50;
-      }
-
-      .statusbar-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .statusbar-item.ok {
-        color: #44aa44;
-      }
-      .statusbar-item.err {
-        color: #cc0000;
-      }
-
-      /* ── RESPONSIVE ── */
-      @media (max-width: 1200px) {
-        .layout {
-          grid-template-columns: 1fr 1fr;
-        }
-        .alarm-panel {
-          grid-column: 1/3;
-          grid-row: auto;
-        }
-        .summary-row {
-          grid-column: 1/3;
-        }
-        .charts-row {
-          grid-column: 1/3;
-        }
-      }
-
-      @media (max-width: 700px) {
-        .layout {
-          grid-template-columns: 1fr;
-        }
-        .alarm-panel,
-        .summary-row,
-        .charts-row {
-          grid-column: 1;
-        }
-        .pv-group {
-          grid-template-columns: 1fr 1fr;
-        }
-        .solar-grid {
-          grid-template-columns: repeat(3, 1fr);
-        }
-      }
-    </style>
-    <script src="/legible.js" defer></script>
-  </head>
-  <body>
-    <!-- ── TITLE BAR ── -->
-    <div class="titlebar">
-      <div class="titlebar-left">
-        <span class="titlebar-id">MAINTRONIC / HMI-L1-001</span>
-        <span class="titlebar-desc"
-          >SISTEMA DE MONITOREO INDUSTRIAL — VISTA GENERAL</span
-        >
-      </div>
-      <div class="titlebar-right">
-        <div class="server-indicator">
-          <div class="server-dot" id="serverDot"></div>
-          <span id="serverStatus">CONECTANDO</span>
-        </div>
-        <div class="sys-clock" id="clock">00:00:00</div>
-      </div>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAINTRONIC — Sistema de monitoreo</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+/* Misma paleta ISA-101 que la app móvil */
+:root{
+  --bg:#B4B4B4; --card:#C8C8C8; --borde:#999999;
+  --texto:#1A1A1A; --texto2:#444444;
+  --barra:#0D1B4B; --barra2:#1a1a2e; --acento:#00D4FF;
+  --p1:#CC0000; --p1-bg:#FFE0E0; --p2:#CC6600; --p2-bg:#FFF0E0; --ok:#1E6B1E;
+  --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--texto);font-family:var(--sans);font-size:15px;min-height:100vh;}
+button{font:inherit;}
+
+/* ── Barra superior ── */
+.top{background:var(--barra);color:#fff;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;}
+.top h1{font-family:var(--mono);font-size:18px;font-weight:700;letter-spacing:1px;}
+.top .sub{font-family:var(--mono);font-size:14px;color:#C8D0E8;}
+.top .der{margin-left:auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.pill{font-family:var(--mono);font-size:13px;display:flex;align-items:center;gap:6px;color:#E8ECF8;}
+.dot{width:10px;height:10px;border-radius:50%;background:#777;}
+.dot.ok{background:#3CCB3C;} .dot.mal{background:#FF4444;}
+.reloj{font-family:var(--mono);font-size:16px;font-weight:600;}
+.lnk{font-family:var(--mono);font-size:13px;color:#fff;text-decoration:none;border:1px solid #5A6A9A;padding:4px 10px;border-radius:3px;}
+.lnk:hover{background:#1E2E6A;}
+
+.wrap{max-width:1400px;margin:0 auto;padding:14px 16px 40px;}
+.seccion{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--texto2);letter-spacing:1px;margin:6px 2px 8px;}
+
+/* ── Resumen ── */
+.resumen{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin-bottom:18px;}
+.tile{background:var(--card);border:1px solid var(--borde);border-left:6px solid var(--barra2);border-radius:4px;padding:14px 16px;cursor:pointer;text-align:left;color:inherit;}
+.tile:hover{border-color:#666;}
+.tile:focus-visible,.tab:focus-visible,.chip:focus-visible,.fp:focus-visible{outline:3px solid var(--barra);outline-offset:2px;}
+.tile .t{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--texto2);letter-spacing:.5px;display:flex;justify-content:space-between;gap:8px;align-items:center;}
+.tile .v{font-family:var(--mono);font-size:34px;font-weight:700;margin-top:6px;line-height:1.1;}
+.tile .v small{font-size:16px;font-weight:500;color:var(--texto2);margin-left:6px;}
+.tile .d{font-size:14px;color:var(--texto2);margin-top:6px;line-height:1.45;}
+.tile.alarma{border-left-color:var(--p1);background:var(--p1-bg);}
+.tile.aviso{border-left-color:var(--p2);}
+.tile.ok{border-left-color:var(--ok);}
+.sim{font-family:var(--mono);font-size:12px;font-weight:700;color:#5A4500;background:#FFE680;border:1px solid #C9A400;padding:1px 6px;border-radius:3px;white-space:nowrap;}
+
+/* ── Pestañas y chips ── */
+.tabs{display:flex;gap:4px;border-bottom:3px solid var(--barra2);flex-wrap:wrap;}
+.tab{background:#A4A4A4;border:none;color:var(--texto);padding:10px 20px;font-family:var(--mono);font-size:15px;font-weight:700;cursor:pointer;border-radius:4px 4px 0 0;letter-spacing:.5px;}
+.tab:hover{background:#999;}
+.tab.activa{background:var(--barra2);color:#fff;}
+.panel{background:#BEBEBE;border:1px solid var(--borde);border-top:none;padding:14px;min-height:300px;}
+.barra-panel{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.estado{font-family:var(--mono);font-size:14px;color:var(--texto);}
+.estado.aviso{color:#8A4500;} .estado.error{color:var(--p1);}
+.chips{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{background:var(--card);border:1px solid var(--borde);color:var(--texto);padding:8px 14px;font-family:var(--mono);font-size:14px;cursor:pointer;border-radius:4px;}
+.chip:hover{border-color:#555;}
+.chip.activo{background:var(--barra2);border-color:var(--barra2);color:#fff;font-weight:700;}
+.ayuda{font-family:var(--mono);font-size:13px;color:var(--texto2);margin-top:12px;text-align:center;}
+.grupo{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--texto2);letter-spacing:1px;margin:14px 0 6px;}
+.grupo:first-child{margin-top:0;}
+
+/* ── Tarjetas (igual que la app) ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;}
+.fp{background:var(--card);border:1px solid var(--borde);border-radius:4px;padding:12px 14px;cursor:pointer;text-align:left;color:inherit;width:100%;}
+.fp:hover{border-color:#555;}
+.fp.p1{background:var(--p1-bg);} .fp.p2{background:var(--p2-bg);}
+.fp .tag{font-family:var(--mono);font-size:13px;color:var(--texto2);letter-spacing:.5px;}
+.fp .nom{font-size:16px;margin-top:2px;}
+.fp .val{font-family:var(--mono);font-size:30px;font-weight:700;margin-top:6px;}
+.fp .val small{font-size:15px;font-weight:500;color:var(--texto2);margin-left:6px;}
+.fp.p1 .val{color:var(--p1);} .fp.p2 .val{color:var(--p2);}
+.fp.apagado .val{color:#666;}
+.fp .barra{height:7px;background:#999;border-radius:4px;margin-top:10px;overflow:hidden;}
+.fp .barra i{display:block;height:100%;background:var(--barra2);border-radius:4px;}
+.fp.p1 .barra i{background:var(--p1);} .fp.p2 .barra i{background:var(--p2);}
+.fp .esc{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--texto2);margin-top:4px;}
+.fp .est{font-family:var(--mono);font-size:12px;font-weight:700;}
+
+/* ── Alarmas ── */
+.alm{background:var(--card);border:1px solid var(--borde);border-left:5px solid;border-radius:4px;padding:12px 14px;margin-bottom:8px;}
+.alm.p1{border-left-color:var(--p1);background:var(--p1-bg);} .alm.p2{border-left-color:var(--p2);background:var(--p2-bg);}
+.alm .a1{font-family:var(--mono);font-size:14px;font-weight:700;}
+.alm.p1 .a1{color:var(--p1);} .alm.p2 .a1{color:var(--p2);}
+.alm .a2{font-size:16px;font-weight:600;margin-top:4px;}
+.alm .a3{font-size:14px;color:var(--texto2);margin-top:2px;}
+.vacio{text-align:center;padding:40px 20px;font-family:var(--mono);font-size:15px;color:var(--texto2);}
+.vacio b{display:block;font-size:40px;color:var(--ok);}
+
+/* ── Histórico ── */
+.hist-card{background:var(--card);border:1px solid var(--borde);border-radius:4px;padding:12px;margin-top:12px;}
+.hist-card h3{font-family:var(--mono);font-size:15px;margin-bottom:8px;}
+.chart{height:320px;position:relative;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+.stat{background:var(--card);border:1px solid var(--borde);border-radius:4px;padding:10px 12px;}
+.stat .l{font-family:var(--mono);font-size:12px;color:var(--texto2);}
+.stat .n{font-family:var(--mono);font-size:22px;font-weight:700;margin-top:2px;}
+.leyenda{font-family:var(--mono);font-size:13px;color:var(--texto2);margin-top:8px;display:flex;gap:16px;flex-wrap:wrap;}
+.leyenda i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:6px;background:var(--barra2);}
+.leyenda i.banda{height:10px;background:#8E8E8E;}
+.leyenda i.lim{background:repeating-linear-gradient(90deg,var(--p2) 0 5px,transparent 5px 9px);}
+.oculto{display:none !important;}
+
+.pie{text-align:center;font-family:var(--mono);font-size:12px;color:var(--texto2);margin-top:20px;}
+@media(max-width:700px){
+  .top{padding:10px 12px;} .top .sub{display:none;}
+  .wrap{padding:10px 10px 30px;}
+  .tab{padding:9px 12px;font-size:14px;}
+  .stats{grid-template-columns:1fr 1fr;}
+  .grid{grid-template-columns:1fr 1fr;} .fp .val{font-size:24px;}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>MAINTRONIC</h1>
+  <span class="sub">Sistema de monitoreo industrial y fotovoltaico</span>
+  <div class="der">
+    <span class="pill"><span class="dot" id="dotSrv"></span><span id="txtSrv">Servidor</span></span>
+    <span class="pill"><span class="dot" id="dotTk"></span><span id="txtTk">Tinkerboard</span></span>
+    <span class="reloj" id="reloj">--:--:--</span>
+    <a class="lnk" href="/medidores/">CONFIGURACIÓN</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="seccion">RESUMEN</div>
+  <div class="resumen">
+    <button class="tile" id="tSolar" data-ir="solar">
+      <div class="t"><span>SISTEMA FOTOVOLTAICO</span><span class="sim oculto" id="simTile">DATOS SIMULADOS</span></div>
+      <div class="v" id="rsSolar">--<small>W</small></div>
+      <div class="d" id="rsSolarD">Potencia generada por los paneles</div>
+    </button>
+    <button class="tile" id="tInd" data-ir="industrial">
+      <div class="t"><span>PLANTA INDUSTRIAL</span></div>
+      <div class="v" id="rsInd">--<small>V</small></div>
+      <div class="d" id="rsIndD">Medidores RS-485</div>
+    </button>
+    <button class="tile" id="tAlm" data-ir="alarmas">
+      <div class="t"><span>ALARMAS ACTIVAS</span></div>
+      <div class="v" id="rsAlm">--</div>
+      <div class="d" id="rsAlmD">—</div>
+    </button>
+    <button class="tile" id="tCon" data-ir="industrial">
+      <div class="t"><span>CONEXIÓN</span></div>
+      <div class="v" id="rsCon" style="font-size:24px">--</div>
+      <div class="d" id="rsConD">—</div>
+    </button>
+  </div>
+
+  <div class="seccion">DETALLE</div>
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="solar">SOLAR</button>
+    <button class="tab" role="tab" data-tab="industrial">INDUSTRIAL</button>
+    <button class="tab" role="tab" data-tab="alarmas">ALARMAS</button>
+    <button class="tab" role="tab" data-tab="historico">HISTÓRICO</button>
+  </nav>
+
+  <!-- SOLAR -->
+  <section class="panel" id="p-solar">
+    <div class="barra-panel">
+      <span class="estado" id="solEstado">Cargando…</span>
+      <span class="sim oculto" id="simPanel">DATOS SIMULADOS</span>
     </div>
+    <div class="chips" id="solChips"></div>
+    <div id="solCards" style="margin-top:12px"></div>
+    <div class="ayuda">Toca una tarjeta para ver su histórico</div>
+  </section>
 
-    <!-- ── ALARM BANNER ── -->
-    <div class="alarm-banner" id="alarmBanner">
-      <span>⚠ ALARMAS ACTIVAS — REQUIEREN ATENCIÓN DEL OPERADOR</span>
-      <span id="bannerCount"></span>
+  <!-- INDUSTRIAL -->
+  <section class="panel" id="p-industrial">
+    <div class="chips" id="indChips"></div>
+    <div id="indCards" style="margin-top:12px"></div>
+    <div class="ayuda">Toca una tarjeta para ver su histórico</div>
+  </section>
+
+  <!-- ALARMAS -->
+  <section class="panel" id="p-alarmas">
+    <div id="almLista"></div>
+  </section>
+
+  <!-- HISTÓRICO -->
+  <section class="panel" id="p-historico">
+    <div id="histVars"></div>
+    <div class="grupo">PERIODO</div>
+    <div class="chips" id="histPeriodos"></div>
+    <div class="hist-card">
+      <h3 id="histTitulo">Selecciona una variable</h3>
+      <div class="chart"><canvas id="histChart" aria-label="Gráfica histórica"></canvas></div>
+      <div class="leyenda"><span><i></i>Promedio</span><span><i class="banda"></i>Mínimo – máximo</span><span id="leyLim"><i class="lim"></i>Límites de alarma</span></div>
     </div>
-
-    <div class="layout" style="padding-bottom: 28px">
-      <!-- ── PANEL CALDERO ── -->
-      <div class="panel" style="grid-column: 1; grid-row: 1">
-        <div class="panel-header">
-          <div>
-            <span class="panel-id">TAG: CALD-001</span>
-            <span class="panel-desc"> · CALDERO INDUSTRIAL</span>
-          </div>
-          <span class="panel-status offline" id="calderoStatus">OFFLINE</span>
-        </div>
-        <div class="panel-body">
-          <div class="pv-group">
-            <!-- Temperatura -->
-            <div class="pv-block">
-              <div class="pv-tag">TT-001 · TEMPERATURA</div>
-              <div>
-                <span class="pv-value" id="valTemp">--.-</span>
-                <span class="pv-unit">°C</span>
-              </div>
-              <div class="pv-desc">Temperatura proceso caldero</div>
-              <div class="range-bar-wrap">
-                <div class="range-bar-track">
-                  <div class="range-bar-zones">
-                    <div class="zone-lo-lo" style="width: 10%"></div>
-                    <div class="zone-lo" style="width: 10%"></div>
-                    <div class="zone-normal" style="width: 60%"></div>
-                    <div class="zone-hi" style="width: 10%"></div>
-                    <div class="zone-hi-hi" style="width: 10%"></div>
-                  </div>
-                  <div
-                    class="range-bar-fill"
-                    id="barTemp"
-                    style="width: 0%"
-                  ></div>
-                </div>
-                <div class="range-labels">
-                  <span>0°C</span><span>LOЛО</span><span>NORMAL</span
-                  ><span>HIHI</span><span>200°C</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Nivel -->
-            <div class="pv-block">
-              <div class="pv-tag">LT-001 · NIVEL</div>
-              <div>
-                <span class="pv-value" id="valNivel">--.-</span>
-                <span class="pv-unit">cm</span>
-              </div>
-              <div class="pv-desc">Nivel agua en caldera</div>
-              <div class="range-bar-wrap">
-                <div class="range-bar-track">
-                  <div class="range-bar-zones">
-                    <div class="zone-lo-lo" style="width: 10%"></div>
-                    <div class="zone-lo" style="width: 15%"></div>
-                    <div class="zone-normal" style="width: 50%"></div>
-                    <div class="zone-hi" style="width: 15%"></div>
-                    <div class="zone-hi-hi" style="width: 10%"></div>
-                  </div>
-                  <div
-                    class="range-bar-fill"
-                    id="barNivel"
-                    style="width: 0%"
-                  ></div>
-                </div>
-                <div class="range-labels">
-                  <span>0cm</span><span>LOLO</span><span>NORMAL</span
-                  ><span>HIHI</span><span>100cm</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            style="
-              font-family: var(--font-mono);
-              font-size: 12px;
-              color: #707070;
-              text-align: right;
-            "
-            id="lastCaldero"
-          >
-            SIN DATOS
-          </div>
-        </div>
-      </div>
-
-      <!-- ── PANEL SOLAR ── -->
-      <div class="panel" style="grid-column: 2; grid-row: 1">
-        <div class="panel-header">
-          <div>
-            <span class="panel-id">TAG: SOLR-001</span>
-            <span class="panel-desc"> · PLANTA FOTOVOLTAICA</span>
-          </div>
-          <div style="display: flex; gap: 6px; align-items: center">
-            <span class="panel-status offline" id="solarStatus">OFFLINE</span>
-          </div>
-        </div>
-        <div class="panel-body">
-          <div class="solar-grid">
-            <div class="solar-pv">
-              <div class="solar-pv-val" id="valVP">--.-</div>
-              <div class="solar-pv-unit">V</div>
-              <div class="solar-pv-tag">VT-P · Panel</div>
-            </div>
-            <div class="solar-pv">
-              <div class="solar-pv-val" id="valVB">--.-</div>
-              <div class="solar-pv-unit">V</div>
-              <div class="solar-pv-tag">VT-B · Batería</div>
-            </div>
-            <div class="solar-pv">
-              <div class="solar-pv-val" id="valVI">--.-</div>
-              <div class="solar-pv-unit">V</div>
-              <div class="solar-pv-tag">VT-I · Inversor</div>
-            </div>
-            <div class="solar-pv">
-              <div class="solar-pv-val" id="valIP">--.-</div>
-              <div class="solar-pv-unit">A</div>
-              <div class="solar-pv-tag">IT-P · Panel</div>
-            </div>
-            <div class="solar-pv">
-              <div class="solar-pv-val" id="valIB">--.-</div>
-              <div class="solar-pv-unit">A</div>
-              <div class="solar-pv-tag">IT-B · Batería</div>
-            </div>
-            <div class="solar-pv">
-              <div class="solar-pv-val" id="valII">--.-</div>
-              <div class="solar-pv-unit">A</div>
-              <div class="solar-pv-tag">IT-I · Inversor</div>
-            </div>
-            <div class="solar-pv">
-              <div class="solar-pv-val" id="valPE">--.-</div>
-              <div class="solar-pv-unit">W</div>
-              <div class="solar-pv-tag">PT-ENT · Entrada</div>
-            </div>
-            <div class="solar-pv">
-              <div class="solar-pv-val" id="valPS">--.-</div>
-              <div class="solar-pv-unit">W</div>
-              <div class="solar-pv-tag">PT-SAL · Salida</div>
-            </div>
-            <div class="solar-pv">
-              <div class="solar-pv-val" id="valKwh">--.-</div>
-              <div class="solar-pv-unit">kWh</div>
-              <div class="solar-pv-tag">ET-DIA · Hoy</div>
-            </div>
-          </div>
-          <div class="energy-section">
-            <div class="energy-label">
-              <span>ET-DIA · ENERGÍA ACUMULADA HOY</span>
-              <span id="pctKwh">0.0%</span>
-            </div>
-            <div class="energy-track">
-              <div class="energy-fill" id="barKwh" style="width: 0%"></div>
-            </div>
-          </div>
-          <div
-            style="
-              font-family: var(--font-mono);
-              font-size: 12px;
-              color: #707070;
-              text-align: right;
-              margin-top: 4px;
-            "
-            id="lastSolar"
-          >
-            SIN DATOS
-          </div>
-        </div>
-      </div>
-
-      <!-- ── ALARM PANEL ── -->
-      <div class="panel alarm-panel">
-        <div class="panel-header">
-          <div>
-            <span class="panel-id">ALM-CONSOLE</span>
-            <span class="panel-desc"> · ALARMAS</span>
-          </div>
-          <span id="alarmaCount" style="font-size: 12px; color: #d0d0d0"></span>
-        </div>
-        <div class="panel-body" style="padding: 0">
-          <div class="alarm-list" id="alarmasList">
-            <div class="no-alarms">
-              <span class="no-alarms-icon">■</span>
-              SISTEMA SIN ALARMAS ACTIVAS
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── SUMMARY ROW ── -->
-      <div class="summary-row">
-        <div class="summary-box">
-          <div class="summary-indicator off" id="ind-caldero"></div>
-          <div>
-            <div class="summary-label">CALD-001 · Estado</div>
-            <div class="summary-value" id="sum-caldero">OFFLINE</div>
-          </div>
-        </div>
-        <div class="summary-box">
-          <div class="summary-indicator off" id="ind-solar"></div>
-          <div>
-            <div class="summary-label">SOLR-001 · Estado</div>
-            <div class="summary-value" id="sum-solar">OFFLINE</div>
-          </div>
-        </div>
-        <div class="summary-box">
-          <div class="summary-indicator warn" id="ind-alarmas"></div>
-          <div>
-            <div class="summary-label">ALM · Alarmas Activas</div>
-            <div class="summary-value" id="sum-alarmas">0</div>
-          </div>
-        </div>
-        <div class="summary-box">
-          <div class="summary-indicator off" id="ind-server"></div>
-          <div>
-            <div class="summary-label">SRV · Servidor</div>
-            <div class="summary-value" id="sum-server">OFFLINE</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── TREND CHARTS ── -->
-      <div class="charts-row">
-        <div class="panel">
-          <div class="panel-header">
-            <span class="panel-id">TREND-TT001</span>
-            <span class="panel-desc"> · TENDENCIA TEMPERATURA</span>
-          </div>
-          <div class="panel-body">
-            <div class="chart-wrap"><canvas id="chartTemp"></canvas></div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-header">
-            <span class="panel-id">TREND-LT001</span>
-            <span class="panel-desc"> · TENDENCIA NIVEL</span>
-          </div>
-          <div class="panel-body">
-            <div class="chart-wrap"><canvas id="chartNivel"></canvas></div>
-          </div>
-        </div>
-      </div>
+    <div class="stats">
+      <div class="stat"><div class="l">MÍNIMO</div><div class="n" id="stMin">—</div></div>
+      <div class="stat"><div class="l">MÁXIMO</div><div class="n" id="stMax">—</div></div>
+      <div class="stat"><div class="l">PROMEDIO</div><div class="n" id="stAvg">—</div></div>
+      <div class="stat"><div class="l">LECTURAS</div><div class="n" id="stN">—</div></div>
     </div>
+    <div class="grupo" id="histAlmTit">ALARMAS DEL PERIODO</div>
+    <div id="histAlm"></div>
+  </section>
 
-    <!-- ── STATUS BAR ── -->
-    <div class="statusbar">
-      <div class="statusbar-item" id="sb-server">SRV: --</div>
-      <div class="statusbar-item">REFRESH: 3s</div>
-      <div class="statusbar-item">NORM: ISA-101.01-2015</div>
-      <div class="statusbar-item" id="sb-time">--:--:--</div>
-      <div class="statusbar-item" style="margin-left: auto">
-        HMI-L1-001 · MAINTRONIC v1.0
-      </div>
-    </div>
+  <div class="pie">ANSI/ISA-101.01-2015 · MAINTRONIC · UDLA 2026</div>
+</main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-    <script>
-      const API = "/api";
-      const REFRESH_MS = 3000;
-      const DISP_CALDERO = 1;
-      const DISP_SOLAR = 2;
-      const MAX_PUNTOS = 20;
+<script>
+// ═════════ Utilidades ═════════
+const $ = id => document.getElementById(id);
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function num(x) { if (x === null || x === undefined || x === '') return null; const n = Number(x); return Number.isFinite(n) ? n : null; }
+function fmt(v, d = 2) { return v === null || v === undefined ? '—' : Number(v).toFixed(d); }
+async function getJSON(url) { const r = await fetch(url, { cache: 'no-store' }); if (!r.ok) throw new Error(r.status); return r.json(); }
+function hora() { return new Date().toLocaleTimeString('es-EC', { hour12: false }); }
+setInterval(() => $('reloj').textContent = hora(), 1000); $('reloj').textContent = hora();
 
-      // Límites ISA-101 para barras de proceso
-      const TEMP_RANGE = {
-        min: 0,
-        max: 200,
-        loло: 10,
-        lo: 20,
-        hi: 160,
-        hihi: 180,
-      };
-      const NIVEL_RANGE = {
-        min: 0,
-        max: 100,
-        lolo: 10,
-        lo: 15,
-        hi: 80,
-        hihi: 90,
-      };
+// ═════════ Estado ═════════
+const SOLAR_ID = 2;
+const SOLAR_GRUPOS = [
+  { id: 'voltajes', nombre: 'Voltajes', items: [
+    { tag: 'VT-P', nom: 'V Panel', campo: 'voltaje_panel', u: 'V DC', min: 0, max: 25 },
+    { tag: 'VT-B', nom: 'V Batería', campo: 'voltaje_bateria', u: 'V DC', min: 0, max: 16 },
+    { tag: 'VT-I', nom: 'V Inversor', campo: 'voltaje_inversor', u: 'V DC', min: 0, max: 16 } ] },
+  { id: 'corrientes', nombre: 'Corrientes', items: [
+    { tag: 'IT-P', nom: 'I Panel', campo: 'corriente_panel', u: 'A DC', min: 0, max: 13 },
+    { tag: 'IT-B', nom: 'I Batería', campo: 'corriente_bateria', u: 'A DC', min: -22, max: 22 },
+    { tag: 'IT-I', nom: 'I Inversor', campo: 'corriente_inversor', u: 'A DC', min: 0, max: 30 } ] },
+  { id: 'potencias', nombre: 'Potencias y energía', items: [
+    { tag: 'PT-ENT', nom: 'P Entrada', campo: 'potencia_entrada', u: 'W', min: 0, max: 220 },
+    { tag: 'PT-SAL', nom: 'P Salida', campo: 'potencia_salida', u: 'W', min: 0, max: 1700 },
+    { tag: 'ET-DIA', nom: 'Energía Hoy', campo: 'energia_kwh', u: 'kWh', min: 0, max: 10 } ] },
+];
+const SOLAR_VARS = SOLAR_GRUPOS.flatMap(g => g.items);
 
-      // ACK store
-      const ackedAlarms = new Set();
+const st = {
+  tab: 'solar', solGrupo: 'todos', indMedidor: 'todos',
+  solar: null, solarFresco: false, solarUltReg: null, solarUltCambio: 0,
+  lecturas: [], vars: [], slaves: {}, alarmCfg: {}, alarmas: [], gw: null, srvOk: null,
+  histSel: null, histHoras: 1, chart: null,
+};
 
-      // ── RELOJ ──
-      function updateClock() {
-        const t = new Date().toLocaleTimeString("es-EC", { hour12: false });
-        document.getElementById("clock").textContent = t;
-        document.getElementById("sb-time").textContent = t;
-      }
-      setInterval(updateClock, 1000);
-      updateClock();
+// ═════════ Navegación por pestañas (con #enlace) ═════════
+function irA(tab, sel) {
+  st.tab = tab;
+  if (sel) st.histSel = sel;
+  document.querySelectorAll('.tab').forEach(b => { const a = b.dataset.tab === tab; b.classList.toggle('activa', a); b.setAttribute('aria-selected', a); });
+  ['solar', 'industrial', 'alarmas', 'historico'].forEach(t => $('p-' + t).classList.toggle('oculto', t !== tab));
+  const hash = tab === 'historico' && st.histSel ? `#historico:${st.histSel}` : `#${tab}`;
+  if (location.hash !== hash) history.replaceState(null, '', hash);
+  pintar();
+  if (tab === 'historico') cargarHistorico();
+}
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => irA(b.dataset.tab)));
+document.querySelectorAll('.tile').forEach(b => b.addEventListener('click', () => { irA(b.dataset.ir); $('p-' + b.dataset.ir).scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
 
-      // ── CHARTS ──
-      Chart.defaults.color = "#B8B8B8";
-      Chart.defaults.borderColor = "#404040";
+// ═════════ Datos ═════════
+async function cargarConfig() {
+  try {
+    const vars = await getJSON('/api/medidores/variables/activas');
+    st.vars = Array.isArray(vars) ? vars : [];
+    st.slaves = {}; st.vars.forEach(v => st.slaves[v.id] = v.slave_id);
+    const cfgs = await Promise.all(st.vars.map(v => getJSON(`/api/medidores/variables/${v.id}/alarma`).catch(() => null)));
+    st.alarmCfg = {}; st.vars.forEach((v, i) => st.alarmCfg[v.id] = cfgs[i]);
+  } catch {}
+}
 
-      function makeChart(id, color) {
-        return new Chart(document.getElementById(id), {
-          type: "line",
-          data: {
-            labels: [],
-            datasets: [
-              {
-                data: [],
-                borderColor: color,
-                backgroundColor: "transparent",
-                borderWidth: 1.5,
-                pointRadius: 0,
-                tension: 0.3,
-                fill: false,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: { duration: 300 },
-            plugins: { legend: { display: false } },
-            scales: {
-              x: { display: false },
-              y: {
-                grid: { color: "#333" },
-                ticks: {
-                  font: { family: "IBM Plex Mono", size: 12 },
-                  color: "#B8B8B8",
-                },
-              },
-            },
-          },
-        });
-      }
+async function refrescar() {
+  const [rS, rL, rA, rG] = await Promise.allSettled([
+    getJSON(`/api/solar/ultimo?dispositivo_id=${SOLAR_ID}`),
+    getJSON('/api/medidores/lecturas/ultimo'),
+    getJSON('/api/medidores/alarmas/log/activas'),
+    getJSON('/api/gateway/estado'),
+  ]);
+  st.srvOk = [rS, rL, rA, rG].some(r => r.status === 'fulfilled');
+  if (rS.status === 'fulfilled') {
+    const d = rS.value;
+    if (d?.registrado_en && d.registrado_en !== st.solarUltReg) { st.solarUltReg = d.registrado_en; st.solarUltCambio = Date.now(); }
+    st.solar = d;
+    st.solarFresco = !!d && Date.now() - st.solarUltCambio < 15000;
+  }
+  if (rL.status === 'fulfilled' && Array.isArray(rL.value)) st.lecturas = rL.value;
+  if (rA.status === 'fulfilled' && Array.isArray(rA.value)) st.alarmas = rA.value;
+  st.gw = rG.status === 'fulfilled' ? rG.value : null;
+  pintar();
+}
 
-      const chartTemp = makeChart("chartTemp", "#D8D8D8");
-      const chartNivel = makeChart("chartNivel", "#D8D8D8");
+// ═════════ Industrial: calidad, rangos y etiquetas (misma lógica que la app) ═════════
+function rangoBase(nombre, unidad) {
+  const n = nombre.toLowerCase(), u = (unidad || '').toLowerCase();
+  if (u === 'v' || n.includes('voltaje')) return { min: 0, max: 150, u: 'V' };
+  if (u === 'a' || n.includes('corriente') || n.includes('current')) return { min: 0, max: 50, u: 'A' };
+  if (u === 'hz' || n.includes('frecuencia')) return { min: 55, max: 65, u: 'Hz' };
+  if (n.includes('factor') || n.includes('fp')) return { min: 0, max: 1, u: 'cos φ' };
+  if (['kw', 'kvar', 'kva'].includes(u) || n.includes('potencia')) return { min: 0, max: 100, u: unidad || 'kW' };
+  if (u === 'kwh' || n.includes('energ')) return { min: 0, max: 1000, u: 'kWh' };
+  return { min: 0, max: 100, u: unidad || '' };
+}
+function prefijo(nombre, unidad) {
+  const n = nombre.toLowerCase(), u = (unidad || '').toLowerCase();
+  if (u === 'hz' || n.includes('frecuencia')) return 'FT';
+  if (n.includes('factor') || n.includes('fp')) return 'FP';
+  if (u === 'kwh' || n.includes('energ')) return 'ET';
+  if (['kw', 'kvar', 'kva'].includes(u) || n.includes('potencia')) return 'PT';
+  if (u === 'a' || n.includes('corriente') || n.includes('current')) return 'IT';
+  if (u === 'v' || n.includes('voltaje')) return 'VT';
+  return 'XT';
+}
+function calidad(l) {
+  const gw = st.gw;
+  const e = gw?.bus?.medidores?.[String(st.slaves[l.id])];
+  if (gw?.conectada && e && (e.detectando || !e.verificado)) return 'verificando';
+  if ((gw?.fallidas || []).map(Number).includes(l.id)) return 'sin_respuesta';
+  const offset = gw?.ahora ? new Date(gw.ahora).getTime() - Date.now() : 0;
+  const ts = l.registrado_en ? new Date(l.registrado_en).getTime() : NaN;
+  const reciente = Number.isFinite(ts) && (Date.now() + offset - ts) / 1000 <= 30;
+  if (!gw?.conectada || !reciente || num(l.valor) === null) return 'sin_datos';
+  return 'ok';
+}
+function porMedidor() {
+  const g = {};
+  [...st.lecturas].sort((a, b) => a.id - b.id).forEach(l => (g[l.medidor_nombre || 'Sin nombre'] = g[l.medidor_nombre || 'Sin nombre'] || []).push(l));
+  return g;
+}
+function estadoMedidor(vars) {
+  const gw = st.gw, e = gw?.bus?.medidores?.[String(st.slaves[vars[0]?.id])];
+  const fall = new Set((gw?.fallidas || []).map(Number));
+  const ok = vars.filter(v => !fall.has(v.id)).length;
+  if (!gw) return { c: '', t: 'Consultando…' };
+  if (!gw.conectada) return { c: 'error', t: 'Tinkerboard desconectada' };
+  if (!e) return { c: '', t: 'Esperando primera lectura…' };
+  if (e.detectando) return { c: 'aviso', t: `No responde a ${e.baud} bps · buscando velocidad` };
+  if (!e.verificado) return { c: '', t: `Verificando a ${e.baud} bps…` };
+  return { c: ok === vars.length ? '' : ok ? 'aviso' : 'error', t: `Responde a ${e.baud} bps · ${ok}/${vars.length} variables` };
+}
 
-      function pushPoint(chart, val) {
-        const t = new Date().toLocaleTimeString("es-EC", { hour12: false });
-        chart.data.labels.push(t);
-        chart.data.datasets[0].data.push(val);
-        if (chart.data.labels.length > MAX_PUNTOS) {
-          chart.data.labels.shift();
-          chart.data.datasets[0].data.shift();
-        }
-        chart.update();
-      }
+// ═════════ Tarjeta común ═════════
+function tarjeta({ tag, nom, valor, u, min, max, alarma, aviso, sel }) {
+  const con = valor !== null;
+  const v = con ? valor : 0;
+  const pct = max > min ? Math.min(100, Math.max(0, ((v - min) / (max - min)) * 100)) : 0;
+  const cls = !con ? 'apagado' : alarma || '';
+  const est = !con ? (aviso || 'SIN DATOS') : alarma === 'p1' ? 'ALARMA P1' : alarma === 'p2' ? 'ALARMA P2' : '';
+  const colEst = alarma === 'p1' ? 'var(--p1)' : alarma === 'p2' ? 'var(--p2)' : 'var(--texto2)';
+  return `<button class="fp ${cls}" data-sel="${esc(sel)}" aria-label="${esc(nom)}: ${con ? v.toFixed(2) : 'sin datos'} ${esc(u)}. Ver histórico">
+    <div class="tag">${esc(tag)}</div>
+    <div class="nom">${esc(nom)}</div>
+    <div class="val">${con ? v.toFixed(2) : '0.00'}<small>${esc(u)}</small></div>
+    <div class="barra"><i style="width:${con ? pct : 0}%"></i></div>
+    <div class="esc"><span>${min}</span><span class="est" style="color:${colEst}">${est}</span><span>${max}</span></div>
+  </button>`;
+}
+function enlazarTarjetas(cont) {
+  cont.querySelectorAll('.fp').forEach(b => b.addEventListener('click', () => { irA('historico', b.dataset.sel); $('p-historico').scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
+}
+function chipsHTML(lista, activo, attr) {
+  return lista.map(c => `<button class="chip ${c.id === activo ? 'activo' : ''}" data-${attr}="${esc(c.id)}" aria-pressed="${c.id === activo}">${esc(c.nombre)}</button>`).join('');
+}
 
-      // ── HELPERS ──
-      function fmt(val, dec = 1) {
-        if (val === null || val === undefined) return "--.-";
-        return parseFloat(val).toFixed(dec);
-      }
+// ═════════ Pintar ═════════
+function pintar() {
+  pintarCabecera(); pintarResumen();
+  if (st.tab === 'solar') pintarSolar();
+  if (st.tab === 'industrial') pintarIndustrial();
+  if (st.tab === 'alarmas') pintarAlarmas();
+  if (st.tab === 'historico') pintarHistVars();
+}
 
-      function pct(val, min, max) {
-        return Math.min(
-          100,
-          Math.max(0, ((val - min) / (max - min)) * 100),
-        ).toFixed(1);
-      }
+function pintarCabecera() {
+  $('dotSrv').className = 'dot ' + (st.srvOk === null ? '' : st.srvOk ? 'ok' : 'mal');
+  $('txtSrv').textContent = st.srvOk === false ? 'Servidor sin conexión' : 'Servidor en línea';
+  const tk = st.gw?.conectada;
+  $('dotTk').className = 'dot ' + (st.gw ? (tk ? 'ok' : 'mal') : '');
+  $('txtTk').textContent = tk ? 'Tinkerboard conectada' : 'Tinkerboard desconectada';
+}
 
-      function alarmClass(val, range) {
-        if (val <= range.min || val >= range.max) return "alarm-p1";
-        if (val < range.lo || val > range.hi) return "alarm-p2";
-        if (val < range.lo || val > range.hi) return "alarm-p3";
-        return "";
-      }
+function pintarResumen() {
+  // Solar
+  const s = st.solar, fresco = st.solarFresco;
+  const sim = !!s?.simulado && fresco;
+  $('simTile').classList.toggle('oculto', !sim);
+  if (fresco) {
+    const pe = num(s.potencia_entrada), vb = num(s.voltaje_bateria), ib = num(s.corriente_bateria), e = num(s.energia_kwh);
+    $('rsSolar').innerHTML = `${fmt(pe, 1)}<small>W</small>`;
+    const bat = ib === null ? '' : ib >= 0 ? 'cargando' : 'descargando';
+    $('rsSolarD').innerHTML = `Batería ${fmt(vb, 2)} V · ${bat}<br>Energía de hoy ${fmt(e, 3)} kWh`;
+    $('tSolar').className = 'tile ok';
+  } else {
+    $('rsSolar').innerHTML = `--<small>W</small>`;
+    $('rsSolarD').textContent = 'Sin datos recientes del sistema solar';
+    $('tSolar').className = 'tile aviso';
+  }
+  // Industrial: primer voltaje con datos y frecuencia
+  const ok = st.lecturas.filter(l => calidad(l) === 'ok');
+  const volt = ok.find(l => prefijo(l.nombre, l.unidad) === 'VT');
+  const frec = ok.find(l => prefijo(l.nombre, l.unidad) === 'FT');
+  const grupos = porMedidor(); const nMed = Object.keys(grupos).length;
+  const medOk = Object.values(grupos).filter(v => v.some(l => calidad(l) === 'ok')).length;
+  $('rsInd').innerHTML = volt ? `${fmt(num(volt.valor), 1)}<small>${esc(volt.unidad || 'V')}</small>` : `--<small>V</small>`;
+  $('rsIndD').innerHTML = `${volt ? esc(volt.nombre) + ' · ' : ''}${frec ? 'Frecuencia ' + fmt(num(frec.valor), 2) + ' Hz<br>' : ''}${medOk} de ${nMed} medidores con lecturas`;
+  $('tInd').className = 'tile ' + (nMed && medOk === nMed ? 'ok' : 'aviso');
+  // Alarmas
+  const p1 = st.alarmas.filter(a => a.prioridad === 'P1').length, p2 = st.alarmas.length - p1;
+  $('rsAlm').textContent = st.alarmas.length;
+  $('rsAlmD').textContent = st.alarmas.length ? `${p1} críticas (P1) · ${p2} altas (P2)` : 'Todos los parámetros en rango normal';
+  $('tAlm').className = 'tile ' + (p1 ? 'alarma' : p2 ? 'aviso' : 'ok');
+  // Conexión
+  const tk = st.gw?.conectada;
+  $('rsCon').textContent = st.srvOk === false ? 'SIN SERVIDOR' : tk ? 'EN LÍNEA' : 'DESCONECTADA';
+  $('rsConD').innerHTML = `Servidor: ${st.srvOk === false ? 'sin conexión' : 'en línea'}<br>Tinkerboard: ${tk ? 'conectada' : 'desconectada'} · ${hora()}`;
+  $('tCon').className = 'tile ' + (st.srvOk && tk ? 'ok' : 'alarma');
+}
 
-      function setServer(online) {
-        const dot = document.getElementById("serverDot");
-        const text = document.getElementById("serverStatus");
-        const ind = document.getElementById("ind-server");
-        const sum = document.getElementById("sum-server");
-        const sb = document.getElementById("sb-server");
+function pintarSolar() {
+  const s = st.solar, fresco = st.solarFresco;
+  $('solEstado').textContent = !s ? 'Sin datos del sistema solar' : fresco ? `● En línea · ${hora()}` : '● Sin datos recientes';
+  $('solEstado').className = 'estado ' + (fresco ? '' : 'aviso');
+  $('simPanel').classList.toggle('oculto', !(s?.simulado && fresco));
+  $('solChips').innerHTML = chipsHTML([{ id: 'todos', nombre: 'Todas' }, ...SOLAR_GRUPOS], st.solGrupo, 'g');
+  $('solChips').querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => { st.solGrupo = b.dataset.g; pintarSolar(); }));
+  const grupos = SOLAR_GRUPOS.filter(g => st.solGrupo === 'todos' || g.id === st.solGrupo);
+  $('solCards').innerHTML = grupos.map(g => `
+    <div class="grupo">${esc(g.nombre).toUpperCase()}</div>
+    <div class="grid">${g.items.map(it => tarjeta({ ...it, valor: fresco ? num(s?.[it.campo]) : null, sel: 's:' + it.campo })).join('')}</div>`).join('');
+  enlazarTarjetas($('solCards'));
+}
 
-        dot.className = "server-dot " + (online ? "ok" : "fault");
-        text.textContent = online ? "EN LÍNEA" : "FALLO";
-        ind.className = "summary-indicator " + (online ? "on" : "off");
-        sum.textContent = online ? "EN LÍNEA" : "OFFLINE";
-        sb.textContent = "SRV: " + (online ? "OK" : "FAULT");
-        sb.className = "statusbar-item " + (online ? "ok" : "err");
-      }
+function pintarIndustrial() {
+  const grupos = porMedidor();
+  const nombres = Object.keys(grupos);
+  if (st.indMedidor !== 'todos' && !grupos[st.indMedidor]) st.indMedidor = 'todos';
+  $('indChips').innerHTML = chipsHTML([{ id: 'todos', nombre: 'Todos los medidores' }, ...nombres.map(n => ({ id: n, nombre: n }))], st.indMedidor, 'm');
+  $('indChips').querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => { st.indMedidor = b.dataset.m; pintarIndustrial(); }));
+  if (!nombres.length) { $('indCards').innerHTML = '<div class="vacio">Sin variables configuradas. Agrégalas en CONFIGURACIÓN.</div>'; return; }
+  const alarmaVar = {}; st.alarmas.forEach(a => alarmaVar[a.variable_id] = a.prioridad === 'P1' ? 'p1' : 'p2');
+  const AVISO = { sin_datos: 'SIN DATOS', sin_respuesta: 'SIN RESPUESTA', verificando: 'VERIFICANDO…' };
+  $('indCards').innerHTML = nombres.filter(n => st.indMedidor === 'todos' || n === st.indMedidor).map(n => {
+    const vars = grupos[n], slave = st.slaves[vars[0].id], em = estadoMedidor(vars);
+    return `<div class="grupo">${esc(n).toUpperCase()} · ID ${slave ?? '—'}</div>
+      <div class="estado ${em.c}" style="margin-bottom:8px">${esc(em.t)}</div>
+      <div class="grid">${vars.map((l, i) => {
+        const c = calidad(l), base = rangoBase(l.nombre, l.unidad), cfg = st.alarmCfg[l.id] || {};
+        let min = num(cfg.lolo) ?? num(cfg.lo) ?? base.min, max = num(cfg.hihi) ?? num(cfg.hi) ?? base.max;
+        if (!(max > min)) { min = base.min; max = base.max; }
+        return tarjeta({ tag: `${prefijo(l.nombre, l.unidad)}-${slave ? slave * 100 + i + 1 : i + 1}`, nom: l.nombre,
+          valor: c === 'ok' ? (num(l.valor) ?? 0) : null, u: l.unidad || base.u, min, max,
+          alarma: c === 'ok' ? alarmaVar[l.id] || null : null, aviso: AVISO[c], sel: 'm:' + l.id });
+      }).join('')}</div>`;
+  }).join('');
+  enlazarTarjetas($('indCards'));
+}
 
-      function setNodeStatus(elId, sumId, indId, online) {
-        document.getElementById(elId).className =
-          "panel-status " + (online ? "online" : "offline");
-        document.getElementById(elId).textContent = online
-          ? "ONLINE"
-          : "OFFLINE";
-        document.getElementById(indId).className =
-          "summary-indicator " + (online ? "on" : "off");
-        document.getElementById(sumId).textContent = online
-          ? "EN LÍNEA"
-          : "OFFLINE";
-      }
+function pintarAlarmas() {
+  const TIPO = { HIHI: 'MUY ALTO', HI: 'ALTO', LO: 'BAJO', LOLO: 'MUY BAJO' };
+  if (!st.alarmas.length) { $('almLista').innerHTML = '<div class="vacio"><b>✓</b>SIN ALARMAS ACTIVAS<br>Todos los parámetros dentro del rango normal</div>'; return; }
+  const orden = [...st.alarmas].sort((a, b) => (a.prioridad > b.prioridad ? 1 : -1));
+  $('almLista').innerHTML = orden.map(a => {
+    const c = a.prioridad === 'P1' ? 'p1' : 'p2';
+    const h = a.inicio_en ? new Date(a.inicio_en).toLocaleTimeString('es-EC', { hour12: false }) : '';
+    return `<div class="alm ${c}"><div class="a1">${esc(a.prioridad)} · ${esc(TIPO[a.tipo] || a.tipo)} · desde ${h}</div>
+      <div class="a2">${esc(a.variable_nombre || a.nombre || '—')}</div>
+      <div class="a3">${esc(a.medidor_nombre || '')} · Valor: ${fmt(num(a.valor))} ${esc(a.unidad || '')}</div></div>`;
+  }).join('');
+}
 
-      // ── FETCH CALDERO ──
-      let lastCaldero = 0;
-      async function fetchCaldero() {
-        try {
-          const res = await fetch(
-            `${API}/caldero/ultimo?dispositivo_id=${DISP_CALDERO}`,
-          );
-          const d = await res.json();
-          setServer(true);
-          if (!d) return;
-          // Datos viejos (más de 60 s): el caldero no está enviando
-          if (Date.now() - new Date(d.registrado_en).getTime() > 60000) {
-            setNodeStatus("calderoStatus", "sum-caldero", "ind-caldero", false);
-            document.getElementById("lastCaldero").textContent =
-              "SIN DATOS RECIENTES";
-            return;
-          }
+// ═════════ Histórico ═════════
+const PERIODOS = [{ id: '1', nombre: '1 hora' }, { id: '6', nombre: '6 horas' }, { id: '24', nombre: '24 horas' }, { id: '168', nombre: '7 días' }];
+function infoSel(sel) {
+  if (!sel) return null;
+  if (sel.startsWith('s:')) { const v = SOLAR_VARS.find(x => x.campo === sel.slice(2)); return v && { nombre: v.nom, unidad: v.u, origen: 'Sistema fotovoltaico', solar: true }; }
+  const v = st.vars.find(x => 'm:' + x.id === sel); return v && { nombre: v.nombre, unidad: v.unidad || '', origen: v.medidor_nombre, solar: false };
+}
+function pintarHistVars() {
+  if (!st.histSel) st.histSel = st.vars[0] ? 'm:' + st.vars[0].id : 's:potencia_entrada';
+  const g = {}; st.vars.forEach(v => (g[v.medidor_nombre] = g[v.medidor_nombre] || []).push(v));
+  let html = Object.entries(g).map(([m, vs]) => `<div class="grupo">${esc(m).toUpperCase()}</div><div class="chips">${vs.map(v => `<button class="chip ${st.histSel === 'm:' + v.id ? 'activo' : ''}" data-sel="m:${v.id}">${esc(v.nombre)}</button>`).join('')}</div>`).join('');
+  html += `<div class="grupo">SISTEMA FOTOVOLTAICO</div><div class="chips">${SOLAR_VARS.map(v => `<button class="chip ${st.histSel === 's:' + v.campo ? 'activo' : ''}" data-sel="s:${v.campo}">${esc(v.nom)}</button>`).join('')}</div>`;
+  $('histVars').innerHTML = html;
+  $('histVars').querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => irA('historico', b.dataset.sel)));
+  $('histPeriodos').innerHTML = chipsHTML(PERIODOS, String(st.histHoras), 'h');
+  $('histPeriodos').querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => { st.histHoras = Number(b.dataset.h); pintarHistVars(); cargarHistorico(); }));
+}
+function etiqueta(iso) {
+  const d = new Date(iso), h = d.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', hour12: false });
+  return st.histHoras > 24 ? d.toLocaleDateString('es-EC', { day: '2-digit', month: '2-digit' }) + ' ' + h : h;
+}
+async function cargarHistorico() {
+  pintarHistVars();
+  const sel = st.histSel, info = infoSel(sel);
+  if (!info) return;
+  $('histTitulo').textContent = `${info.nombre} — ${info.origen} (${info.unidad || '—'})`;
+  const id = sel.slice(2);
+  let puntos = [], cfg = null, eventos = [];
+  try {
+    const [rS, rC, rE] = await Promise.all([
+      getJSON(info.solar ? `/api/solar/serie?dispositivo_id=${SOLAR_ID}&campo=${id}&horas=${st.histHoras}&puntos=150` : `/api/medidores/variables/${id}/serie?horas=${st.histHoras}&puntos=150`),
+      info.solar ? null : getJSON(`/api/medidores/variables/${id}/alarma`).catch(() => null),
+      info.solar ? [] : getJSON(`/api/medidores/alarmas/log/historico?variable_id=${id}&horas=${st.histHoras}`).catch(() => []),
+    ]);
+    puntos = Array.isArray(rS?.puntos) ? rS.puntos : []; cfg = rC; eventos = Array.isArray(rE) ? rE : [];
+  } catch {}
+  if (sel !== st.histSel) return; // el usuario cambió de variable mientras cargaba
 
-          const temp = parseFloat(d.temperatura) || 0;
-          const nivel = parseFloat(d.nivel) || 0;
+  const d = puntos.map(p => ({ t: p.t, avg: num(p.promedio), min: num(p.minimo), max: num(p.maximo), n: Number(p.n) || 0 })).filter(p => p.avg !== null);
+  const total = d.reduce((s, p) => s + p.n, 0), suma = d.reduce((s, p) => s + p.avg * p.n, 0);
+  $('stMin').textContent = d.length ? fmt(Math.min(...d.map(p => p.min))) : '—';
+  $('stMax').textContent = d.length ? fmt(Math.max(...d.map(p => p.max))) : '—';
+  $('stAvg').textContent = total ? fmt(suma / total) : '—';
+  $('stN').textContent = total || '0';
 
-          // Valores
-          const tempEl = document.getElementById("valTemp");
-          const nivelEl = document.getElementById("valNivel");
-          tempEl.textContent = fmt(temp);
-          nivelEl.textContent = fmt(nivel);
+  const lim = [['hihi', '#CC0000'], ['hi', '#CC6600'], ['lo', '#CC6600'], ['lolo', '#CC0000']].map(([k, c]) => ({ k, c, v: num(cfg?.[k]) })).filter(l => l.v !== null);
+  $('leyLim').classList.toggle('oculto', !lim.length);
+  if (st.chart) { st.chart.destroy(); st.chart = null; }
+  st.chart = new Chart($('histChart'), {
+    type: 'line',
+    data: { labels: d.map(p => etiqueta(p.t)), datasets: [
+      { label: 'Máximo', data: d.map(p => p.max), borderWidth: 0, pointRadius: 0, fill: '+1', backgroundColor: 'rgba(80,80,80,0.22)' },
+      { label: 'Mínimo', data: d.map(p => p.min), borderWidth: 0, pointRadius: 0, fill: false },
+      { label: 'Promedio', data: d.map(p => p.avg), borderColor: '#1a1a2e', borderWidth: 2, pointRadius: d.length < 40 ? 3 : 0, pointBackgroundColor: '#1a1a2e', tension: 0.25, fill: false },
+      ...lim.map(l => ({ label: l.k.toUpperCase(), data: d.map(() => l.v), borderColor: l.c, borderWidth: 1.5, borderDash: [6, 4], pointRadius: 0, fill: false })),
+    ] },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, tooltip: {
+        filter: i => ['Promedio', 'Mínimo', 'Máximo'].includes(i.dataset.label),
+        callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y?.toFixed(2)} ${info.unidad || ''}` } } },
+      scales: {
+        x: { grid: { color: 'rgba(0,0,0,0.08)' }, ticks: { color: '#333', font: { family: 'IBM Plex Mono', size: 12 }, maxTicksLimit: 8 } },
+        y: { grid: { color: 'rgba(0,0,0,0.12)' }, ticks: { color: '#333', font: { family: 'IBM Plex Mono', size: 12 } } },
+      },
+    },
+  });
+  if (!d.length) $('histTitulo').textContent += ' · sin lecturas en este periodo';
 
-          // Clase de alarma ISA
-          tempEl.className = "pv-value " + alarmClass(temp, TEMP_RANGE);
-          nivelEl.className = "pv-value " + alarmClass(nivel, NIVEL_RANGE);
+  $('histAlmTit').classList.toggle('oculto', info.solar);
+  const TIPO = { HIHI: 'MUY ALTO', HI: 'ALTO', LO: 'BAJO', LOLO: 'MUY BAJO' };
+  $('histAlm').innerHTML = info.solar ? '' : !eventos.length ? '<div class="estado">Sin alarmas en este periodo</div>'
+    : eventos.map(a => {
+        const c = a.prioridad === 'P1' ? 'p1' : 'p2';
+        const ini = new Date(a.inicio_en).toLocaleString('es-EC', { hour12: false });
+        const fin = a.activa ? 'ACTIVA' : a.fin_en ? new Date(a.fin_en).toLocaleString('es-EC', { hour12: false }) : '—';
+        return `<div class="alm ${c}"><div class="a1">${esc(a.prioridad)} · ${esc(TIPO[a.tipo] || a.tipo)} · ${fmt(num(a.valor))} ${esc(a.unidad || info.unidad)}</div><div class="a3">${ini} → ${fin}</div></div>`;
+      }).join('');
+}
 
-          // Barras de proceso
-          document.getElementById("barTemp").style.width =
-            pct(temp, 0, 200) + "%";
-          document.getElementById("barNivel").style.width =
-            pct(nivel, 0, 100) + "%";
-
-          // Timestamp
-          const t = new Date(d.registrado_en).toLocaleTimeString("es-EC", {
-            hour12: false,
-          });
-          document.getElementById("lastCaldero").textContent =
-            `ÚLT. LECTURA: ${t}`;
-
-          // Trends
-          pushPoint(chartTemp, temp);
-          pushPoint(chartNivel, nivel);
-
-          setNodeStatus("calderoStatus", "sum-caldero", "ind-caldero", true);
-          lastCaldero = Date.now();
-        } catch {
-          setServer(false);
-        }
-      }
-
-      // ── FETCH SOLAR ──
-      let lastSolar = 0;
-      async function fetchSolar() {
-        try {
-          const res = await fetch(
-            `${API}/solar/ultimo?dispositivo_id=${DISP_SOLAR}`,
-          );
-          const d = await res.json();
-          if (!d) return;
-          if (Date.now() - new Date(d.registrado_en).getTime() > 60000) {
-            setNodeStatus("solarStatus", "sum-solar", "ind-solar", false);
-            document.getElementById("lastSolar").textContent =
-              "SIN DATOS RECIENTES";
-            return;
-          }
-          // Etiqueta de simulación eliminada
-          document.getElementById("valVP").textContent = fmt(d.voltaje_panel);
-          document.getElementById("valVB").textContent = fmt(d.voltaje_bateria);
-          document.getElementById("valVI").textContent = fmt(
-            d.voltaje_inversor,
-          );
-          document.getElementById("valIP").textContent = fmt(d.corriente_panel);
-          document.getElementById("valIB").textContent = fmt(
-            d.corriente_bateria,
-          );
-          document.getElementById("valII").textContent = fmt(
-            d.corriente_inversor,
-          );
-          document.getElementById("valPE").textContent = fmt(
-            d.potencia_entrada,
-          );
-          document.getElementById("valPS").textContent = fmt(d.potencia_salida);
-          document.getElementById("valKwh").textContent = fmt(d.energia_kwh, 3);
-
-          const kwh = parseFloat(d.energia_kwh) || 0;
-          const p = Math.min(100, (kwh / 10) * 100);
-          document.getElementById("barKwh").style.width = p + "%";
-          document.getElementById("barKwh").className =
-            "energy-fill" + (p > 5 ? " good" : "");
-          document.getElementById("pctKwh").textContent = p.toFixed(1) + "%";
-
-          const t = new Date(d.registrado_en).toLocaleTimeString("es-EC", {
-            hour12: false,
-          });
-          document.getElementById("lastSolar").textContent =
-            `ÚLT. LECTURA: ${t}`;
-
-          setNodeStatus("solarStatus", "sum-solar", "ind-solar", true);
-          lastSolar = Date.now();
-        } catch (e) {
-          console.error("Vista general: error al actualizar", e);
-        }
-      }
-
-      // ── FETCH ALARMAS ──
-      async function fetchAlarmas() {
-        try {
-          const res = await fetch(`${API}/alarmas/activas`);
-          const alarmas = await res.json();
-          const list = document.getElementById("alarmasList");
-          const count = document.getElementById("alarmaCount");
-          const banner = document.getElementById("alarmBanner");
-          const sumAlm = document.getElementById("sum-alarmas");
-          const indAlm = document.getElementById("ind-alarmas");
-
-          const activas = alarmas.filter((a) => !ackedAlarms.has(a.id));
-
-          sumAlm.textContent = activas.length;
-          indAlm.className =
-            "summary-indicator " + (activas.length > 0 ? "off" : "on");
-
-          if (activas.length > 0) {
-            banner.classList.add("active");
-            document.getElementById("bannerCount").textContent =
-              `${activas.length} ALARMA(S) SIN ACK`;
-            count.textContent = `(${activas.length})`;
-          } else {
-            banner.classList.remove("active");
-            count.textContent = "";
-          }
-
-          if (!alarmas.length) {
-            list.innerHTML = `<div class="no-alarms"><span class="no-alarms-icon">■</span>SISTEMA SIN ALARMAS ACTIVAS</div>`;
-            return;
-          }
-
-          // Prioridad ISA: P1=EMERGENCIA/SOBRECARGA P2=FLUJO/NIVEL/TEMP P3=resto
-          function getP(tipo) {
-            if (["EMERGENCIA", "SOBRECARGA"].includes(tipo))
-              return { p: "P1", cls: "p1" };
-            if (["FLUJO", "NIVEL_CRITICO", "TEMP_CRITICA"].includes(tipo))
-              return { p: "P2", cls: "p2" };
-            return { p: "P3", cls: "p3" };
-          }
-
-          list.innerHTML = alarmas
-            .map((a) => {
-              const { p, cls } = getP(a.tipo);
-              const isAck = ackedAlarms.has(a.id);
-              const t = new Date(a.registrado_en).toLocaleTimeString("es-EC", {
-                hour12: false,
-              });
-              return `
-        <div class="alarm-row ${isAck ? "ack" : cls}" id="alm-${a.id}">
-          <div class="alarm-priority">${p}</div>
-          <div class="alarm-content">
-            <div class="alarm-type">${a.tipo.replace(/_/g, " ")}</div>
-            <div class="alarm-desc">${a.descripcion || a.dispositivo || "—"}</div>
-            <div class="alarm-time">${t}</div>
-          </div>
-          ${!isAck ? `<button class="alarm-ack-btn" onclick="ackAlarm(${a.id})">ACK</button>` : '<span style="font-size:12px;color:#555;font-family:var(--font-mono)">ACK</span>'}
-        </div>`;
-            })
-            .join("");
-        } catch (e) {
-          console.error("Vista general: error al actualizar", e);
-        }
-      }
-
-      function ackAlarm(id) {
-        ackedAlarms.add(id);
-        fetchAlarmas();
-      }
-
-      // ── WATCHDOG ──
-      setInterval(() => {
-        if (Date.now() - lastCaldero > 12000)
-          setNodeStatus("calderoStatus", "sum-caldero", "ind-caldero", false);
-        if (Date.now() - lastSolar > 12000)
-          setNodeStatus("solarStatus", "sum-solar", "ind-solar", false);
-      }, 3000);
-
-      // ── LOOP ──
-      async function refresh() {
-        await Promise.all([fetchCaldero(), fetchSolar(), fetchAlarmas()]);
-      }
-
-      refresh();
-      setInterval(refresh, REFRESH_MS);
-    </script>
-  </body>
+// ═════════ Inicio ═════════
+(function () {
+  const h = location.hash.slice(1);
+  const [tab, ...resto] = h.split(':');
+  const sel = resto.length ? resto.join(':') : null;
+  cargarConfig().then(() => { irA(['solar', 'industrial', 'alarmas', 'historico'].includes(tab) ? tab : 'solar', sel); refrescar(); });
+  setInterval(refrescar, 3000);
+  setInterval(cargarConfig, 30000);
+  setInterval(() => { if (st.tab === 'historico') cargarHistorico(); }, 30000);
+})();
+</script>
+</body>
 </html>
