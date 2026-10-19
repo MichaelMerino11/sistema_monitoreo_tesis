@@ -1,90 +1,117 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MAINTRONIC — Panel general</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/panel.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MAINTRONIC — Panel general</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/panel.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <header class="top">
+      <h1>MAINTRONIC</h1>
+      <span class="sub">Sistema de monitoreo industrial y fotovoltaico</span>
+      <nav class="vistas" aria-label="Vistas">
+        <a href="/" data-vista="general">GENERAL</a>
+        <a href="/solar/" data-vista="solar">SOLAR</a>
+        <a href="/industrial/" data-vista="industrial">INDUSTRIAL</a>
+      </nav>
+      <div class="der">
+        <span class="pill"
+          ><span class="dot" id="dotSrv"></span
+          ><span id="txtSrv">Servidor</span></span
+        >
+        <span class="pill"
+          ><span class="dot" id="dotTk"></span
+          ><span id="txtTk">Tinkerboard</span></span
+        >
+        <span class="reloj" id="reloj">--:--:--</span>
+        <a class="lnk" href="/medidores/">CONFIGURACIÓN</a>
+      </div>
+    </header>
 
-<header class="top">
-  <h1>MAINTRONIC</h1>
-  <span class="sub">Sistema de monitoreo industrial y fotovoltaico</span>
-  <nav class="vistas" aria-label="Vistas">
-    <a href="/" data-vista="general">GENERAL</a>
-    <a href="/solar/" data-vista="solar">SOLAR</a>
-    <a href="/industrial/" data-vista="industrial">INDUSTRIAL</a>
-  </nav>
-  <div class="der">
-    <span class="pill"><span class="dot" id="dotSrv"></span><span id="txtSrv">Servidor</span></span>
-    <span class="pill"><span class="dot" id="dotTk"></span><span id="txtTk">Tinkerboard</span></span>
-    <span class="reloj" id="reloj">--:--:--</span>
-    <a class="lnk" href="/medidores/">CONFIGURACIÓN</a>
-  </div>
-</header>
+    <main class="wrap">
+      <div class="seccion">RESUMEN</div>
+      <div class="resumen" id="resumen"></div>
 
-<main class="wrap">
-  <div class="seccion">RESUMEN</div>
-  <div class="resumen" id="resumen"></div>
+      <div class="seccion">DETALLE</div>
+      <nav class="tabs" role="tablist">
+        <button class="tab" role="tab" data-tab="solar">SOLAR</button>
+        <button class="tab" role="tab" data-tab="industrial">INDUSTRIAL</button>
+        <button class="tab" role="tab" data-tab="alarmas">ALARMAS</button>
+        <button class="tab" role="tab" data-tab="historico">HISTÓRICO</button>
+      </nav>
 
-  <div class="seccion">DETALLE</div>
-  <nav class="tabs" role="tablist">
-    <button class="tab" role="tab" data-tab="solar">SOLAR</button>
-    <button class="tab" role="tab" data-tab="industrial">INDUSTRIAL</button>
-    <button class="tab" role="tab" data-tab="alarmas">ALARMAS</button>
-    <button class="tab" role="tab" data-tab="historico">HISTÓRICO</button>
-  </nav>
+      <!-- SOLAR -->
+      <section class="panel" id="p-solar">
+        <div class="barra-panel">
+          <span class="estado" id="solEstado">Cargando…</span>
+        </div>
+        <div class="chips" id="solChips"></div>
+        <div id="solCards" style="margin-top: 12px"></div>
+        <div class="ayuda">Toca una tarjeta para ver su histórico</div>
+      </section>
 
-  <!-- SOLAR -->
-  <section class="panel" id="p-solar">
-    <div class="barra-panel">
-      <span class="estado" id="solEstado">Cargando…</span>
-      <span class="sim oculto" id="simPanel">DATOS SIMULADOS</span>
-    </div>
-    <div class="chips" id="solChips"></div>
-    <div id="solCards" style="margin-top:12px"></div>
-    <div class="ayuda">Toca una tarjeta para ver su histórico</div>
-  </section>
+      <!-- INDUSTRIAL -->
+      <section class="panel" id="p-industrial">
+        <div class="chips" id="indChips"></div>
+        <div id="indCards" style="margin-top: 12px"></div>
+        <div class="ayuda">Toca una tarjeta para ver su histórico</div>
+      </section>
 
-  <!-- INDUSTRIAL -->
-  <section class="panel" id="p-industrial">
-    <div class="chips" id="indChips"></div>
-    <div id="indCards" style="margin-top:12px"></div>
-    <div class="ayuda">Toca una tarjeta para ver su histórico</div>
-  </section>
+      <!-- ALARMAS -->
+      <section class="panel" id="p-alarmas">
+        <div id="almLista"></div>
+      </section>
 
-  <!-- ALARMAS -->
-  <section class="panel" id="p-alarmas">
-    <div id="almLista"></div>
-  </section>
+      <!-- HISTÓRICO -->
+      <section class="panel" id="p-historico">
+        <div id="histVars"></div>
+        <div class="grupo">PERIODO</div>
+        <div class="chips" id="histPeriodos"></div>
+        <div class="hist-card">
+          <h3 id="histTitulo">Selecciona una variable</h3>
+          <div class="chart">
+            <canvas id="histChart" aria-label="Gráfica histórica"></canvas>
+          </div>
+          <div class="leyenda">
+            <span><i></i>Promedio</span
+            ><span><i class="banda"></i>Mínimo – máximo</span
+            ><span id="leyLim"><i class="lim"></i>Límites de alarma</span>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat">
+            <div class="l">MÍNIMO</div>
+            <div class="n" id="stMin">—</div>
+          </div>
+          <div class="stat">
+            <div class="l">MÁXIMO</div>
+            <div class="n" id="stMax">—</div>
+          </div>
+          <div class="stat">
+            <div class="l">PROMEDIO</div>
+            <div class="n" id="stAvg">—</div>
+          </div>
+          <div class="stat">
+            <div class="l">LECTURAS</div>
+            <div class="n" id="stN">—</div>
+          </div>
+        </div>
+        <div class="grupo" id="histAlmTit">ALARMAS DEL PERIODO</div>
+        <div id="histAlm"></div>
+      </section>
 
-  <!-- HISTÓRICO -->
-  <section class="panel" id="p-historico">
-    <div id="histVars"></div>
-    <div class="grupo">PERIODO</div>
-    <div class="chips" id="histPeriodos"></div>
-    <div class="hist-card">
-      <h3 id="histTitulo">Selecciona una variable</h3>
-      <div class="chart"><canvas id="histChart" aria-label="Gráfica histórica"></canvas></div>
-      <div class="leyenda"><span><i></i>Promedio</span><span><i class="banda"></i>Mínimo – máximo</span><span id="leyLim"><i class="lim"></i>Límites de alarma</span></div>
-    </div>
-    <div class="stats">
-      <div class="stat"><div class="l">MÍNIMO</div><div class="n" id="stMin">—</div></div>
-      <div class="stat"><div class="l">MÁXIMO</div><div class="n" id="stMax">—</div></div>
-      <div class="stat"><div class="l">PROMEDIO</div><div class="n" id="stAvg">—</div></div>
-      <div class="stat"><div class="l">LECTURAS</div><div class="n" id="stN">—</div></div>
-    </div>
-    <div class="grupo" id="histAlmTit">ALARMAS DEL PERIODO</div>
-    <div id="histAlm"></div>
-  </section>
+      <div class="pie">ANSI/ISA-101.01-2015 · MAINTRONIC · UDLA 2026</div>
+    </main>
 
-  <div class="pie">ANSI/ISA-101.01-2015 · MAINTRONIC · UDLA 2026</div>
-</main>
-
-<script>window.VISTA = 'general';</script>
-<script src="/panel.js"></script>
-</body>
+    <script>
+      window.VISTA = "general";
+    </script>
+    <script src="/panel.js"></script>
+  </body>
 </html>
