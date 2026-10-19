@@ -864,25 +864,17 @@
           grid-template-columns: 1fr;
         }
       }
-    
+
       /* Etiqueta de datos simulados (temporal, hasta instalar el medidor solar) */
       .sim-badge {
-        font-family: var(--font-mono);
-        font-size: 12px;
-        font-weight: 700;
-        color: #ffd24d;
-        background: #3a2e00;
-        border: 1px solid #e0a800;
-        padding: 1px 8px;
-        letter-spacing: 0.5px;
-        white-space: nowrap;
+        display: none !important;
       }
       .sim-badge[hidden] {
         display: none;
       }
     </style>
-  <script src="/legible.js" defer></script>
-</head>
+    <script src="/legible.js" defer></script>
+  </head>
   <body>
     <!-- ── TITLE BAR ── -->
     <div class="titlebar">
@@ -891,7 +883,11 @@
         <span class="titlebar-desc">PLANTA FOTOVOLTAICA — MONITOREO L2</span>
       </div>
       <div class="titlebar-right">
-        <a class="hist-link" href="/medidores/historico.html?campo=potencia_entrada&horas=24">HISTÓRICO</a>
+        <a
+          class="hist-link"
+          href="/medidores/historico.html?campo=potencia_entrada&horas=24"
+          >HISTÓRICO</a
+        >
         <span class="sim-badge" id="simBadge" hidden>DATOS SIMULADOS</span>
         <div class="node-pill">
           <div class="node-dot" id="serverDot"></div>
@@ -1898,7 +1894,10 @@
           cls = "p1";
           stateText = "ALARMA P1";
           stateColor = "var(--p1-bg)";
-        } else if ((loLim !== null && p <= loLim + banda) || p >= hiLim - banda) {
+        } else if (
+          (loLim !== null && p <= loLim + banda) ||
+          p >= hiLim - banda
+        ) {
           cls = "p2";
           stateText = "ALARMA P2";
           stateColor = "var(--p2-bg)";
@@ -2003,7 +2002,7 @@
           setNodoOnline(true);
           lastData = Date.now();
         } catch (e) {
-          console.error('Solar: error al actualizar', e);
+          console.error("Solar: error al actualizar", e);
           setServerOnline(false);
         }
       }

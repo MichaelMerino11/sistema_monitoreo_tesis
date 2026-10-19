@@ -690,25 +690,17 @@
           grid-template-columns: repeat(3, 1fr);
         }
       }
-    
+
       /* Etiqueta de datos simulados (temporal, hasta instalar el medidor solar) */
       .sim-badge {
-        font-family: var(--font-mono);
-        font-size: 12px;
-        font-weight: 700;
-        color: #ffd24d;
-        background: #3a2e00;
-        border: 1px solid #e0a800;
-        padding: 1px 8px;
-        letter-spacing: 0.5px;
-        white-space: nowrap;
+        display: none !important;
       }
       .sim-badge[hidden] {
         display: none;
       }
     </style>
-  <script src="/legible.js" defer></script>
-</head>
+    <script src="/legible.js" defer></script>
+  </head>
   <body>
     <!-- ── TITLE BAR ── -->
     <div class="titlebar">
@@ -1141,7 +1133,8 @@
           // Datos viejos (más de 60 s): el caldero no está enviando
           if (Date.now() - new Date(d.registrado_en).getTime() > 60000) {
             setNodeStatus("calderoStatus", "sum-caldero", "ind-caldero", false);
-            document.getElementById("lastCaldero").textContent = "SIN DATOS RECIENTES";
+            document.getElementById("lastCaldero").textContent =
+              "SIN DATOS RECIENTES";
             return;
           }
 
@@ -1194,7 +1187,8 @@
           if (Date.now() - new Date(d.registrado_en).getTime() > 60000) {
             setNodeStatus("solarStatus", "sum-solar", "ind-solar", false);
             document.getElementById("solarSim").hidden = true;
-            document.getElementById("lastSolar").textContent = "SIN DATOS RECIENTES";
+            document.getElementById("lastSolar").textContent =
+              "SIN DATOS RECIENTES";
             return;
           }
           document.getElementById("solarSim").hidden = !d.simulado;
@@ -1233,7 +1227,7 @@
           setNodeStatus("solarStatus", "sum-solar", "ind-solar", true);
           lastSolar = Date.now();
         } catch (e) {
-          console.error('Vista general: error al actualizar', e);
+          console.error("Vista general: error al actualizar", e);
         }
       }
 
@@ -1298,7 +1292,7 @@
             })
             .join("");
         } catch (e) {
-          console.error('Vista general: error al actualizar', e);
+          console.error("Vista general: error al actualizar", e);
         }
       }
 
