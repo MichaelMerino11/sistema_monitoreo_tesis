@@ -880,1085 +880,247 @@
     }
   </style>
 <script src="/legible.js" defer></script>
+    <style>
+      /* Vista dinámica: una tarjeta por variable configurada en /medidores/ */
+      .ind-layout { display: grid; grid-template-columns: 1fr 320px; gap: 6px; padding: 6px 6px 32px; align-items: start; }
+      .ind-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+      .fp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+      .fp-celda { cursor: pointer; }
+      .med-estado { font-family: var(--font-mono); font-size: 13px; margin-bottom: 8px; color: #1a1a1a; }
+      .med-estado.aviso { color: #8a4500; }
+      .med-estado.error { color: #b00000; }
+      .ind-vacio { padding: 30px; text-align: center; font-family: var(--font-mono); font-size: 14px; color: #1a1a1a; }
+      .alm-item { background: #2a2a2a; border: 1px solid #505050; border-left: 4px solid; padding: 8px 10px; margin-bottom: 6px; font-family: var(--font-mono); }
+      .alm-item.p1 { border-left-color: var(--p1-bg); }
+      .alm-item.p2 { border-left-color: var(--p2-bg); }
+      .alm-item .t { font-size: 13px; font-weight: 600; }
+      .alm-item.p1 .t { color: var(--p1-bg); }
+      .alm-item.p2 .t { color: var(--p2-bg); }
+      .alm-item .d { font-size: 13px; color: #e0e0e0; margin-top: 2px; }
+      .alm-item .h { font-size: 12px; color: #b8b8b8; margin-top: 2px; }
+      @media (max-width: 900px) { .ind-layout { grid-template-columns: 1fr; } }
+    </style>
 </head>
 
 <body>
   <div class="titlebar">
     <div class="titlebar-left">
       <span class="titlebar-id">MAINTRONIC / IND-001</span>
-      <span class="titlebar-desc">PLANTA INDUSTRIAL — SCHNEIDER PM2100 — MONITOREO L2</span>
+      <span class="titlebar-desc">PLANTA INDUSTRIAL — MEDIDORES RS-485 — MONITOREO L2</span>
     </div>
     <div class="titlebar-right">
       <a class="hist-link" href="/medidores/historico.html">HISTÓRICO</a>
       <div class="node-pill">
         <div class="node-dot" id="serverDot"></div>
-        <span id="serverStatus">SRV: --</span>
-      </div>
-      <div class="node-pill">
-        <div class="node-dot" id="nodoDot"></div>
-        <span id="nodoStatus">NODO: OFFLINE</span>
+        <span id="serverStatus">SERVIDOR: --</span>
       </div>
       <span class="sys-clock" id="clock">00:00:00</span>
     </div>
   </div>
 
   <div class="alarm-banner" id="alarmBanner">
-    <span>⚠ ALARMA ACTIVA EN IND-001 — REQUIERE ATENCIÓN DEL OPERADOR</span>
+    <span>⚠ ALARMA CRÍTICA ACTIVA EN IND-001 — REQUIERE ATENCIÓN DEL OPERADOR</span>
     <span id="bannerTxt"></span>
   </div>
 
-  <div class="layout">
-    <!-- ── VOLTAJES ── -->
-    <div class="panel" style="grid-column: 1; grid-row: 1">
-      <div class="panel-header">
-        <div>
-          <span class="panel-id">VT-IND</span><span class="panel-desc"> · VOLTAJES DE LÍNEA</span>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div style="
-              font-family: var(--font-mono);
-              font-size: 12px;
-              color: var(--isa-text-dim);
-              margin-bottom: 6px;
-              text-transform: uppercase;
-            ">
-          VT-L1 · LÍNEA 1
-        </div>
-        <div class="faceplate" onclick="openModal('VT-L1')">
-          <div class="fp-tag">
-            <span>VT-L1 · VOLTAJE LÍNEA 1</span><span>V AC</span>
-          </div>
-          <div class="fp-val" id="vl1Val">--.-</div>
-          <div class="fp-unit">VOLTIOS — FASE 1</div>
-          <div class="fp-state" id="vl1State" style="color: #707070">
-            SIN DATOS
-          </div>
-        </div>
-        <div class="pbar-wrap">
-          <div class="pbar-lbl">
-            <span>0V</span><span>RANGO</span><span>250V</span>
-          </div>
-          <div class="pbar-outer">
-            <div class="pbar-zones">
-              <div class="z-lo" style="width: 10%"></div>
-              <div class="z-norm" style="width: 80%"></div>
-              <div class="z-hi" style="width: 10%"></div>
-            </div>
-            <div class="pbar-ind" id="vl1Ind" style="left: 0%"></div>
-          </div>
-        </div>
-        <div class="mini-chart"><canvas id="cVL1"></canvas></div>
-
-        <div style="
-              font-family: var(--font-mono);
-              font-size: 12px;
-              color: var(--isa-text-dim);
-              margin: 10px 0 6px;
-              text-transform: uppercase;
-            ">
-          VT-L2 · LÍNEA 2
-        </div>
-        <div class="faceplate" onclick="openModal('VT-L2')">
-          <div class="fp-tag">
-            <span>VT-L2 · VOLTAJE LÍNEA 2</span><span>V AC</span>
-          </div>
-          <div class="fp-val" id="vl2Val">--.-</div>
-          <div class="fp-unit">VOLTIOS — FASE 2</div>
-          <div class="fp-state" id="vl2State" style="color: #707070">
-            SIN DATOS
-          </div>
-        </div>
-        <div class="mini-chart"><canvas id="cVL2"></canvas></div>
-
-        <div style="
-              font-family: var(--font-mono);
-              font-size: 12px;
-              color: var(--isa-text-dim);
-              margin: 10px 0 6px;
-              text-transform: uppercase;
-            ">
-          VT-L3 · LÍNEA 3
-        </div>
-        <div class="faceplate" onclick="openModal('VT-L3')">
-          <div class="fp-tag">
-            <span>VT-L3 · VOLTAJE LÍNEA 3</span><span>V AC</span>
-          </div>
-          <div class="fp-val" id="vl3Val">--.-</div>
-          <div class="fp-unit">VOLTIOS — FASE 3</div>
-          <div class="fp-state" id="vl3State" style="color: #707070">
-            SIN DATOS
-          </div>
-        </div>
-        <div class="mini-chart"><canvas id="cVL3"></canvas></div>
-      </div>
+  <div class="ind-layout">
+    <div class="ind-col" id="medidores">
+      <div class="panel"><div class="ind-vacio">Cargando medidores…</div></div>
     </div>
-
-    <!-- ── CORRIENTES ── -->
-    <div class="panel" style="grid-column: 2; grid-row: 1">
-      <div class="panel-header">
-        <div>
-          <span class="panel-id">IT-IND</span><span class="panel-desc"> · CORRIENTES DE LÍNEA</span>
+    <div class="ind-col">
+      <div class="panel">
+        <div class="panel-header">
+          <div><span class="panel-id">ALM-IND</span><span class="panel-desc"> · ALARMAS ACTIVAS</span></div>
+          <span class="panel-desc" id="almCount"></span>
         </div>
-      </div>
-      <div class="panel-body">
-        <div style="
-              font-family: var(--font-mono);
-              font-size: 12px;
-              color: var(--isa-text-dim);
-              margin-bottom: 6px;
-              text-transform: uppercase;
-            ">
-          IT-L1 · LÍNEA 1
-        </div>
-        <div class="faceplate" onclick="openModal('IT-L1')">
-          <div class="fp-tag">
-            <span>IT-L1 · CORRIENTE LÍNEA 1</span><span>A AC</span>
-          </div>
-          <div class="fp-val" id="il1Val">--.-</div>
-          <div class="fp-unit">AMPERIOS — FASE 1</div>
-          <div class="fp-state" id="il1State" style="color: #707070">
-            SIN DATOS
-          </div>
-        </div>
-        <div class="pbar-wrap">
-          <div class="pbar-lbl">
-            <span>0A</span><span>RANGO</span><span>100A</span>
-          </div>
-          <div class="pbar-outer">
-            <div class="pbar-zones">
-              <div class="z-lo" style="width: 5%"></div>
-              <div class="z-norm" style="width: 85%"></div>
-              <div class="z-hi" style="width: 10%"></div>
-            </div>
-            <div class="pbar-ind" id="il1Ind" style="left: 0%"></div>
-          </div>
-        </div>
-        <div class="mini-chart"><canvas id="cIL1"></canvas></div>
-
-        <div style="
-              font-family: var(--font-mono);
-              font-size: 12px;
-              color: var(--isa-text-dim);
-              margin: 10px 0 6px;
-              text-transform: uppercase;
-            ">
-          IT-L2 · LÍNEA 2
-        </div>
-        <div class="faceplate" onclick="openModal('IT-L2')">
-          <div class="fp-tag">
-            <span>IT-L2 · CORRIENTE LÍNEA 2</span><span>A AC</span>
-          </div>
-          <div class="fp-val" id="il2Val">--.-</div>
-          <div class="fp-unit">AMPERIOS — FASE 2</div>
-          <div class="fp-state" id="il2State" style="color: #707070">
-            SIN DATOS
-          </div>
-        </div>
-        <div class="mini-chart"><canvas id="cIL2"></canvas></div>
-
-        <div style="
-              font-family: var(--font-mono);
-              font-size: 12px;
-              color: var(--isa-text-dim);
-              margin: 10px 0 6px;
-              text-transform: uppercase;
-            ">
-          IT-L3 · LÍNEA 3
-        </div>
-        <div class="faceplate" onclick="openModal('IT-L3')">
-          <div class="fp-tag">
-            <span>IT-L3 · CORRIENTE LÍNEA 3</span><span>A AC</span>
-          </div>
-          <div class="fp-val" id="il3Val">--.-</div>
-          <div class="fp-unit">AMPERIOS — FASE 3</div>
-          <div class="fp-state" id="il3State" style="color: #707070">
-            SIN DATOS
-          </div>
-        </div>
-        <div class="mini-chart"><canvas id="cIL3"></canvas></div>
-      </div>
-    </div>
-
-    <!-- ── POTENCIAS + FRECUENCIA + FP ── -->
-    <div class="panel" style="grid-column: 3; grid-row: 1">
-      <div class="panel-header">
-        <div>
-          <span class="panel-id">PT-IND</span><span class="panel-desc"> · POTENCIAS Y CALIDAD</span>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div style="
-              font-family: var(--font-mono);
-              font-size: 12px;
-              color: var(--isa-text-dim);
-              margin-bottom: 6px;
-              text-transform: uppercase;
-            ">
-          PT-ACT · POTENCIA ACTIVA
-        </div>
-        <div class="faceplate" onclick="openModal('PT-ACT')">
-          <div class="fp-tag">
-            <span>PT-ACT · POT. ACTIVA</span><span>kW</span>
-          </div>
-          <div class="fp-val" id="ptActVal">--.-</div>
-          <div class="fp-unit">KILOWATTS</div>
-          <div class="fp-state" id="ptActState" style="color: #707070">
-            SIN DATOS
-          </div>
-        </div>
-        <div class="mini-chart"><canvas id="cPTA"></canvas></div>
-
-        <div style="
-              font-family: var(--font-mono);
-              font-size: 12px;
-              color: var(--isa-text-dim);
-              margin: 10px 0 6px;
-              text-transform: uppercase;
-            ">
-          PT-REA · POTENCIA REACTIVA
-        </div>
-        <div class="faceplate" onclick="openModal('PT-REA')">
-          <div class="fp-tag">
-            <span>PT-REA · POT. REACTIVA</span><span>kVAR</span>
-          </div>
-          <div class="fp-val" id="ptReaVal">--.-</div>
-          <div class="fp-unit">KILOVARS</div>
-          <div class="fp-state" id="ptReaState" style="color: #707070">
-            SIN DATOS
-          </div>
-        </div>
-        <div class="mini-chart"><canvas id="cPTR"></canvas></div>
-
-        <div style="
-              font-family: var(--font-mono);
-              font-size: 12px;
-              color: var(--isa-text-dim);
-              margin: 10px 0 6px;
-              text-transform: uppercase;
-            ">
-          FT-001 · FRECUENCIA
-        </div>
-        <div class="faceplate" onclick="openModal('FT-001')">
-          <div class="fp-tag">
-            <span>FT-001 · FRECUENCIA RED</span><span>Hz</span>
-          </div>
-          <div class="fp-val" id="ftVal">--.-</div>
-          <div class="fp-unit">HERTZ</div>
-          <div class="fp-state" id="ftState" style="color: #707070">
-            SIN DATOS
-          </div>
-        </div>
-        <div class="mini-chart"><canvas id="cFT"></canvas></div>
-      </div>
-    </div>
-
-    <!-- ── ALARM PANEL ── -->
-    <div class="panel alarm-panel">
-      <div class="panel-header">
-        <div>
-          <span class="panel-id">ALM-IND</span><span class="panel-desc"> · ALARMAS</span>
-        </div>
-        <span id="almCount" style="font-size: 12px; color: #d0d0d0"></span>
-      </div>
-      <div class="alarm-list" id="almList">
-        <div class="no-alarms">■ SIN ALARMAS ACTIVAS</div>
-      </div>
-    </div>
-
-    <!-- ── SUMMARY ── -->
-    <div class="panel summary-panel">
-      <div class="panel-header">
-        <div>
-          <span class="panel-id">IND-SUMMARY</span><span class="panel-desc"> · RESUMEN ELÉCTRICO</span>
-        </div>
-        <span id="lastInd" style="
-              font-family: var(--font-mono);
-              font-size: 12px;
-              color: #d0d0d0;
-            ">SIN DATOS</span>
-      </div>
-      <div class="summary-grid">
-        <div class="summary-block">
-          <div class="sb-tag">PT-APR · POT. APARENTE</div>
-          <div class="sb-val" id="sumApr">--.-</div>
-          <div class="sb-unit">kVA</div>
-          <div class="sb-bar-bg">
-            <div class="sb-bar-fill" id="barApr" style="width: 0%"></div>
-          </div>
-        </div>
-        <div class="summary-block">
-          <div class="sb-tag">FP-001 · FACTOR POTENCIA</div>
-          <div class="sb-val" id="sumFP">--.-</div>
-          <div class="sb-unit">cos φ</div>
-          <div class="sb-bar-bg">
-            <div class="sb-bar-fill" id="barFP" style="width: 0%"></div>
-          </div>
-        </div>
-        <div class="summary-block">
-          <div class="sb-tag">ET-IND · ENERGÍA TOTAL</div>
-          <div class="sb-val" id="sumKwh">--.-</div>
-          <div class="sb-unit">kWh</div>
-          <div class="sb-bar-bg">
-            <div class="sb-bar-fill good" id="barKwh" style="width: 0%"></div>
-          </div>
-        </div>
-        <div class="summary-block">
-          <div class="sb-tag">FT-001 · FRECUENCIA</div>
-          <div class="sb-val" id="sumFt">--.-</div>
-          <div class="sb-unit">Hz</div>
-          <div class="sb-bar-bg">
-            <div class="sb-bar-fill" id="barFt" style="width: 0%"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── TRENDS ── -->
-    <div class="panel trend-panel">
-      <div class="panel-header">
-        <div>
-          <span class="panel-id">TREND-IND</span><span class="panel-desc"> · TENDENCIAS DE PROCESO</span>
-        </div>
-      </div>
-      <div class="charts-grid">
-        <div class="chart-block">
-          <div class="chart-tag">VT-L1 / VT-L2 / VT-L3 · VOLTAJES (V)</div>
-          <div class="chart-box"><canvas id="chartV"></canvas></div>
-        </div>
-        <div class="chart-block">
-          <div class="chart-tag">IT-L1 / IT-L2 / IT-L3 · CORRIENTES (A)</div>
-          <div class="chart-box"><canvas id="chartI"></canvas></div>
-        </div>
-        <div class="chart-block">
-          <div class="chart-tag">
-            PT-ACT / PT-REA / PT-APR · POTENCIAS (kW/kVAR/kVA)
-          </div>
-          <div class="chart-box"><canvas id="chartP"></canvas></div>
-        </div>
+        <div class="panel-body" id="almList"><div class="no-alarms">■ SIN ALARMAS ACTIVAS</div></div>
       </div>
     </div>
   </div>
 
-  <!-- ── STATUS BAR ── -->
   <div class="statusbar">
-    <span id="sb-srv">SRV: --</span>
-    <span id="sb-nodo">NODO: --</span>
+    <span id="sb-srv">SERVIDOR: --</span>
+    <span id="sb-nodo">TINKERBOARD: --</span>
     <span>IND-001 · L2</span>
     <span>ISA-101.01-2015</span>
-    <span>SCHNEIDER PM2100 · Modbus RS-485</span>
+    <span>Modbus RTU · RS-485</span>
     <span style="margin-left: auto" id="sb-clock">--:--:--</span>
   </div>
 
-  <!-- ── MODAL ── -->
-  <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
-    <div class="modal">
-      <div class="modal-titlebar">
-        <div>
-          <span style="color: #f0f0f0; font-weight: 600" id="modalTag">TAG</span>
-          <span style="
-                color: #a0a0a0;
-                font-weight: 400;
-                font-size: 13px;
-                margin-left: 12px;
-              " id="modalDesc">—</span>
-        </div>
-        <button class="modal-close" onclick="closeModalBtn()">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="modal-pv-block">
-          <div class="modal-pv-main">
-            <div class="modal-pv-val" id="modalPvVal">--.-</div>
-            <div class="modal-pv-unit" id="modalPvUnit">—</div>
-            <div class="modal-pv-state" id="modalPvState">SIN DATOS</div>
-          </div>
-          <div class="modal-stats">
-            <div class="modal-stat">
-              <div class="modal-stat-val" id="modalMin">--.-</div>
-              <div class="modal-stat-lbl">MÍNIMO</div>
-            </div>
-            <div class="modal-stat">
-              <div class="modal-stat-val" id="modalMax">--.-</div>
-              <div class="modal-stat-lbl">MÁXIMO</div>
-            </div>
-            <div class="modal-stat">
-              <div class="modal-stat-val" id="modalAvg">--.-</div>
-              <div class="modal-stat-lbl">PROMEDIO</div>
-            </div>
-            <div class="modal-stat">
-              <div class="modal-stat-val" id="modalExtra1">--.-</div>
-              <div class="modal-stat-lbl" id="modalExtra1Lbl">—</div>
-            </div>
-            <div class="modal-stat">
-              <div class="modal-stat-val" id="modalExtra2">--.-</div>
-              <div class="modal-stat-lbl" id="modalExtra2Lbl">—</div>
-            </div>
-            <div class="modal-stat">
-              <div class="modal-stat-val" id="modalSamples">0</div>
-              <div class="modal-stat-lbl">MUESTRAS</div>
-            </div>
-          </div>
-        </div>
-        <div class="modal-section">
-          <div class="modal-section-title">
-            TREND — TENDENCIA EN TIEMPO REAL
-          </div>
-          <div class="modal-chart-box"><canvas id="modalChart"></canvas></div>
-        </div>
-        <div class="modal-section" id="modalLimSection">
-          <div class="modal-section-title">LÍMITES DE PROCESO — ISA-101</div>
-          <table class="modal-limits">
-            <thead>
-              <tr>
-                <th>LÍMITE</th>
-                <th>VALOR</th>
-                <th>PRIORIDAD</th>
-                <th>ESTADO</th>
-              </tr>
-            </thead>
-            <tbody id="modalLimBody"></tbody>
-          </table>
-        </div>
-        <div class="modal-section">
-          <div class="modal-section-title">METADATOS DEL INSTRUMENTO</div>
-          <div class="modal-meta">
-            <div class="modal-meta-row">
-              <span class="modal-meta-key">TAG</span><span class="modal-meta-val" id="metaTag">—</span>
-            </div>
-            <div class="modal-meta-row">
-              <span class="modal-meta-key">MEDIDOR</span><span class="modal-meta-val">Schneider PM2100</span>
-            </div>
-            <div class="modal-meta-row">
-              <span class="modal-meta-key">PROTOCOLO</span><span class="modal-meta-val">Modbus RS-485</span>
-            </div>
-            <div class="modal-meta-row">
-              <span class="modal-meta-key">PLANTA</span><span class="modal-meta-val">IND-001</span>
-            </div>
-            <div class="modal-meta-row">
-              <span class="modal-meta-key">ÚLT. LECTURA</span><span class="modal-meta-val" id="metaTime">—</span>
-            </div>
-            <div class="modal-meta-row">
-              <span class="modal-meta-key">REFRESH</span><span class="modal-meta-val">3 SEG</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script src="/gateway-status.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <script>
-    const ID = 3;
-    const MAX = 20;
-    const ackedAlarms = new Set();
-    let lastData = 0;
-    let lastIndData = null;
+    // Lee las mismas variables que /medidores/ (lo que está configurado en la pestaña VARIABLES)
+    const UMBRAL_SIN_DATOS_S = 30;
+    let slaves = {};      // variable_id -> slave_id
+    let alarmCfg = {};    // variable_id -> {lolo, lo, hi, hihi}
 
-    // Límites reales Schneider PM2100 / red industrial Ecuador 220V
-    const INSTRUMENTS = {
-      "VT-L1": {
-        desc: "VOLTAJE LÍNEA 1 — FASE 1",
-        unit: "V AC",
-        field: "voltaje_l1",
-        lolo: 180,
-        lo: 200,
-        hi: 240,
-        hihi: 250,
-        max: 260,
-      },
-      "VT-L2": {
-        desc: "VOLTAJE LÍNEA 2 — FASE 2",
-        unit: "V AC",
-        field: "voltaje_l2",
-        lolo: 180,
-        lo: 200,
-        hi: 240,
-        hihi: 250,
-        max: 260,
-      },
-      "VT-L3": {
-        desc: "VOLTAJE LÍNEA 3 — FASE 3",
-        unit: "V AC",
-        field: "voltaje_l3",
-        lolo: 180,
-        lo: 200,
-        hi: 240,
-        hihi: 250,
-        max: 260,
-      },
-      "IT-L1": {
-        desc: "CORRIENTE LÍNEA 1",
-        unit: "A AC",
-        field: "corriente_l1",
-        lolo: 0,
-        lo: 1,
-        hi: 80,
-        hihi: 90,
-        max: 100,
-      },
-      "IT-L2": {
-        desc: "CORRIENTE LÍNEA 2",
-        unit: "A AC",
-        field: "corriente_l2",
-        lolo: 0,
-        lo: 1,
-        hi: 80,
-        hihi: 90,
-        max: 100,
-      },
-      "IT-L3": {
-        desc: "CORRIENTE LÍNEA 3",
-        unit: "A AC",
-        field: "corriente_l3",
-        lolo: 0,
-        lo: 1,
-        hi: 80,
-        hihi: 90,
-        max: 100,
-      },
-      "PT-ACT": {
-        desc: "POTENCIA ACTIVA TOTAL",
-        unit: "kW",
-        field: "potencia_activa",
-        lolo: 0,
-        lo: 0,
-        hi: 40,
-        hihi: 45,
-        max: 50,
-      },
-      "PT-REA": {
-        desc: "POTENCIA REACTIVA TOTAL",
-        unit: "kVAR",
-        field: "potencia_reactiva",
-        lolo: 0,
-        lo: 0,
-        hi: 20,
-        hihi: 25,
-        max: 30,
-      },
-      "FT-001": {
-        desc: "FRECUENCIA DE RED",
-        unit: "Hz",
-        field: "frecuencia",
-        lolo: 58,
-        lo: 59,
-        hi: 61,
-        hihi: 62,
-        max: 65,
-      },
-    };
+    function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function num(x) { if (x === null || x === undefined || x === '') return null; const n = Number(x); return Number.isFinite(n) ? n : null; }
 
-    // ── RELOJ ──
     function updateClock() {
-      const t = new Date().toLocaleTimeString("es-EC", { hour12: false });
-      document.getElementById("clock").textContent = t;
-      document.getElementById("sb-clock").textContent = t;
+      const t = new Date().toLocaleTimeString('es-EC', { hour12: false });
+      document.getElementById('clock').textContent = t;
+      document.getElementById('sb-clock').textContent = t;
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+    setInterval(updateClock, 1000); updateClock();
 
-    // ── CHARTS ──
-    Chart.defaults.color = "#B8B8B8";
-    Chart.defaults.borderColor = "#404040";
-
-    function mkChart(id, datasets) {
-      return new Chart(document.getElementById(id), {
-        type: "line",
-        data: {
-          labels: [],
-          datasets: datasets.map(({ color }) => ({
-            data: [],
-            borderColor: color,
-            backgroundColor: "transparent",
-            borderWidth: 1.5,
-            pointRadius: 0,
-            tension: 0.3,
-          })),
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: { duration: 300 },
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { display: false },
-            y: {
-              grid: { color: "#333" },
-              ticks: {
-                font: { family: "IBM Plex Mono", size: 12 },
-                color: "#B8B8B8",
-              },
-            },
-          },
-        },
-      });
+    function setServidor(ok) {
+      document.getElementById('serverDot').className = 'node-dot ' + (ok ? 'ok' : 'fault');
+      document.getElementById('serverStatus').textContent = ok ? 'SERVIDOR: EN LÍNEA' : 'SERVIDOR: SIN CONEXIÓN';
+      const sb = document.getElementById('sb-srv');
+      sb.textContent = ok ? 'SERVIDOR: EN LÍNEA' : 'SERVIDOR: SIN CONEXIÓN';
+      sb.className = ok ? 'sb-ok' : 'sb-err';
     }
 
-    function mkMini(id) {
-      return new Chart(document.getElementById(id), {
-        type: "line",
-        data: {
-          labels: [],
-          datasets: [
-            {
-              data: [],
-              borderColor: "#888",
-              backgroundColor: "transparent",
-              borderWidth: 1,
-              pointRadius: 0,
-              tension: 0.3,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: { duration: 200 },
-          plugins: { legend: { display: false } },
-          scales: { x: { display: false }, y: { display: false } },
-        },
-      });
+    // Rango base según el tipo de variable (si no tiene alarmas configuradas)
+    function rangoBase(nombre, unidad) {
+      const n = nombre.toLowerCase(), u = (unidad || '').toLowerCase();
+      if (u === 'v' || n.includes('voltaje')) return { min: 0, max: 150, unit: 'V' };
+      if (u === 'a' || n.includes('corriente') || n.includes('current')) return { min: 0, max: 50, unit: 'A' };
+      if (u === 'hz' || n.includes('frecuencia')) return { min: 55, max: 65, unit: 'Hz' };
+      if (n.includes('factor') || n.includes('fp')) return { min: 0, max: 1, unit: 'cos φ' };
+      if (['kw', 'kvar', 'kva'].includes(u) || n.includes('potencia')) return { min: 0, max: 100, unit: unidad || 'kW' };
+      if (u === 'kwh' || n.includes('energ')) return { min: 0, max: 1000, unit: 'kWh' };
+      return { min: 0, max: 100, unit: unidad || '' };
+    }
+    function prefijo(nombre, unidad) {
+      const n = nombre.toLowerCase(), u = (unidad || '').toLowerCase();
+      if (u === 'hz' || n.includes('frecuencia')) return 'FT';
+      if (n.includes('factor') || n.includes('fp')) return 'FP';
+      if (u === 'kwh' || n.includes('energ')) return 'ET';
+      if (['kw', 'kvar', 'kva'].includes(u) || n.includes('potencia')) return 'PT';
+      if (u === 'a' || n.includes('corriente') || n.includes('current')) return 'IT';
+      if (u === 'v' || n.includes('voltaje')) return 'VT';
+      return 'XT';
     }
 
-    const trendV = mkChart("chartV", [
-      { color: "#A0A0A0" },
-      { color: "#808080" },
-      { color: "#C0C0C0" },
-    ]);
-    const trendI = mkChart("chartI", [
-      { color: "#A0A0A0" },
-      { color: "#808080" },
-      { color: "#C0C0C0" },
-    ]);
-    const trendP = mkChart("chartP", [
-      { color: "#A0A0A0" },
-      { color: "#808080" },
-      { color: "#C0C0C0" },
-    ]);
-
-    const minis = {
-      vl1: mkMini("cVL1"),
-      vl2: mkMini("cVL2"),
-      vl3: mkMini("cVL3"),
-      il1: mkMini("cIL1"),
-      il2: mkMini("cIL2"),
-      il3: mkMini("cIL3"),
-      pta: mkMini("cPTA"),
-      ptr: mkMini("cPTR"),
-      ft: mkMini("cFT"),
-    };
-
-    function pushMini(chart, val) {
-      chart.data.labels.push("");
-      chart.data.datasets[0].data.push(val);
-      if (chart.data.datasets[0].data.length > 15) {
-        chart.data.labels.shift();
-        chart.data.datasets[0].data.shift();
-      }
-      chart.update("none");
-    }
-
-    function pushTrend(chart, vals) {
-      const t = new Date().toLocaleTimeString("es-EC", { hour12: false });
-      chart.data.labels.push(t);
-      vals.forEach((v, i) => {
-        chart.data.datasets[i].data.push(v);
-        if (chart.data.datasets[i].data.length > MAX)
-          chart.data.datasets[i].data.shift();
-      });
-      if (chart.data.labels.length > MAX) chart.data.labels.shift();
-      chart.update();
-    }
-
-    function fmt(v, d = 1) {
-      return v === null || v === undefined
-        ? "--.-"
-        : parseFloat(v).toFixed(d);
-    }
-    function pct(v, min, max) {
-      return Math.min(100, Math.max(0, ((v - min) / (max - min)) * 100));
-    }
-
-    function setFP(valId, stateId, indId, val, inst) {
-      const el = document.getElementById(valId);
-      el.textContent = fmt(val);
-      const p = parseFloat(val);
-      let cls = "",
-        stateText = "NORMAL",
-        stateColor = "var(--ok-bg)";
-      if (p >= inst.hihi || p <= inst.lolo) {
-        cls = "p1";
-        stateText = "ALARMA P1";
-        stateColor = "var(--p1-bg)";
-      } else if (p >= inst.hi || p <= inst.lo) {
-        cls = "p2";
-        stateText = "ALARMA P2";
-        stateColor = "var(--p2-bg)";
-      }
-      el.className = "fp-val " + cls;
-      if (stateId) {
-        document.getElementById(stateId).textContent = stateText;
-        document.getElementById(stateId).style.color = stateColor;
-      }
-      if (indId)
-        document.getElementById(indId).style.left = pct(p, 0, inst.max) + "%";
-    }
-
-    function setServerOnline(online) {
-      document.getElementById("serverDot").className =
-        "node-dot " + (online ? "ok" : "fault");
-      document.getElementById("serverStatus").textContent = online
-        ? "SRV: OK"
-        : "SRV: FAULT";
-      document.getElementById("sb-srv").textContent = online
-        ? "SRV: OK"
-        : "SRV: FAULT";
-      document.getElementById("sb-srv").className = online
-        ? "sb-ok"
-        : "sb-err";
-    }
-
-    function setNodoOnline(online) {
-      document.getElementById("nodoDot").className =
-        "node-dot " + (online ? "ok" : "fault");
-      document.getElementById("nodoStatus").textContent = online
-        ? "NODO: ONLINE"
-        : "NODO: OFFLINE";
-      document.getElementById("sb-nodo").textContent = online
-        ? "NODO: OK"
-        : "NODO: OFFLINE";
-      document.getElementById("sb-nodo").className = online
-        ? "sb-ok"
-        : "sb-err";
-    }
-
-    async function fetchData() {
+    async function cargarConfig() {
       try {
-        const res = await fetch(
-          `/api/industrial/ultimo?dispositivo_id=${ID}`,
-        );
-        const d = await res.json();
-        setServerOnline(true);
-        if (!d) return;
-
-        const vl1 = parseFloat(d.voltaje_l1) || 0,
-          vl2 = parseFloat(d.voltaje_l2) || 0,
-          vl3 = parseFloat(d.voltaje_l3) || 0;
-        const il1 = parseFloat(d.corriente_l1) || 0,
-          il2 = parseFloat(d.corriente_l2) || 0,
-          il3 = parseFloat(d.corriente_l3) || 0;
-        const pta = parseFloat(d.potencia_activa) || 0,
-          ptr = parseFloat(d.potencia_reactiva) || 0;
-        const apr = parseFloat(d.potencia_aparente) || 0,
-          fp = parseFloat(d.factor_potencia) || 0;
-        const ft = parseFloat(d.frecuencia) || 0,
-          kwh = parseFloat(d.energia_kwh) || 0;
-
-        // Faceplates
-        setFP("vl1Val", "vl1State", "vl1Ind", vl1, INSTRUMENTS["VT-L1"]);
-        setFP("vl2Val", "vl2State", null, vl2, INSTRUMENTS["VT-L2"]);
-        setFP("vl3Val", "vl3State", null, vl3, INSTRUMENTS["VT-L3"]);
-        setFP("il1Val", "il1State", "il1Ind", il1, INSTRUMENTS["IT-L1"]);
-        setFP("il2Val", "il2State", null, il2, INSTRUMENTS["IT-L2"]);
-        setFP("il3Val", "il3State", null, il3, INSTRUMENTS["IT-L3"]);
-        setFP("ptActVal", "ptActState", null, pta, INSTRUMENTS["PT-ACT"]);
-        setFP("ptReaVal", "ptReaState", null, ptr, INSTRUMENTS["PT-REA"]);
-        setFP("ftVal", "ftState", null, ft, INSTRUMENTS["FT-001"]);
-
-        // Summary
-        document.getElementById("sumApr").textContent = fmt(apr);
-        document.getElementById("sumFP").textContent = fp.toFixed(3);
-        document.getElementById("sumKwh").textContent = fmt(kwh, 3);
-        document.getElementById("sumFt").textContent = fmt(ft);
-        document.getElementById("barApr").style.width =
-          Math.min(100, (apr / 50) * 100) + "%";
-        const fpPct = Math.min(100, fp * 100);
-        const barFP = document.getElementById("barFP");
-        barFP.style.width = fpPct + "%";
-        barFP.className =
-          "sb-bar-fill " +
-          (fp >= 0.95 ? "good" : fp >= 0.85 ? "warn" : "bad");
-        document.getElementById("barKwh").style.width =
-          Math.min(100, (kwh / 1000) * 100) + "%";
-        const ftPct = Math.min(
-          100,
-          Math.max(0, ((ft - 58) / (62 - 58)) * 100),
-        );
-        const barFt = document.getElementById("barFt");
-        barFt.style.width = ftPct + "%";
-        barFt.className =
-          "sb-bar-fill " +
-          (ft >= 59 && ft <= 61
-            ? "good"
-            : ft >= 58 && ft <= 62
-              ? "warn"
-              : "bad");
-
-        // Timestamp
-        const t = new Date(d.registrado_en).toLocaleTimeString("es-EC", {
-          hour12: false,
-        });
-        document.getElementById("lastInd").textContent = `ÚLT: ${t}`;
-
-        // Minis
-        pushMini(minis.vl1, vl1);
-        pushMini(minis.vl2, vl2);
-        pushMini(minis.vl3, vl3);
-        pushMini(minis.il1, il1);
-        pushMini(minis.il2, il2);
-        pushMini(minis.il3, il3);
-        pushMini(minis.pta, pta);
-        pushMini(minis.ptr, ptr);
-        pushMini(minis.ft, ft);
-
-        // Trends
-        pushTrend(trendV, [vl1, vl2, vl3]);
-        pushTrend(trendI, [il1, il2, il3]);
-        pushTrend(trendP, [pta, ptr, apr]);
-
-        lastIndData = d;
-        setNodoOnline(true);
-        lastData = Date.now();
-      } catch {
-        setServerOnline(false);
-      }
+        const vars = await (await fetch('/api/medidores/variables/activas', { cache: 'no-store' })).json();
+        if (!Array.isArray(vars)) return;
+        slaves = {}; vars.forEach(v => slaves[v.id] = v.slave_id);
+        const cfgs = await Promise.all(vars.map(v => fetch(`/api/medidores/variables/${v.id}/alarma`).then(r => r.json()).catch(() => null)));
+        alarmCfg = {}; vars.forEach((v, i) => alarmCfg[v.id] = cfgs[i]);
+      } catch {}
     }
 
-    async function fetchAlarmas() {
-      try {
-        const res = await fetch(`/api/alarmas/activas?dispositivo_id=${ID}`);
-        const alarmas = await res.json();
-        const list = document.getElementById("almList");
-        const count = document.getElementById("almCount");
-        const banner = document.getElementById("alarmBanner");
-
-        const sinAck = alarmas.filter((a) => !ackedAlarms.has(a.id));
-        count.textContent = sinAck.length ? `(${sinAck.length})` : "";
-        const p1 = sinAck.filter((a) =>
-          ["EMERGENCIA", "SOBRECARGA"].includes(a.tipo),
-        );
-        banner.classList.toggle("active", p1.length > 0);
-        document.getElementById("bannerTxt").textContent = p1.length
-          ? `${p1.length} P1 SIN ACK`
-          : "";
-
-        if (!alarmas.length) {
-          list.innerHTML =
-            '<div class="no-alarms">■ SIN ALARMAS ACTIVAS</div>';
-          return;
-        }
-
-        function pTag(tipo) {
-          if (["EMERGENCIA", "SOBRECARGA"].includes(tipo))
-            return { p: "P1", cls: "p1" };
-          if (
-            [
-              "FLUJO",
-              "NIVEL_CRITICO",
-              "TEMP_CRITICA",
-              "BATERIA_BAJA",
-              "VOLTAJE_BAJO",
-              "VOLTAJE_ALTO",
-            ].includes(tipo)
-          )
-            return { p: "P2", cls: "p2" };
-          return { p: "P3", cls: "p3" };
-        }
-
-        list.innerHTML = alarmas
-          .map((a) => {
-            const { p, cls } = pTag(a.tipo);
-            const isAck = ackedAlarms.has(a.id);
-            const t = new Date(a.registrado_en).toLocaleTimeString("es-EC", {
-              hour12: false,
-            });
-            return `
-        <div class="alarm-row ${isAck ? "ack" : cls}">
-          <div class="alm-pri ${cls}">${p}</div>
-          <div>
-            <div class="alm-type">${a.tipo.replace(/_/g, " ")}</div>
-            <div class="alm-desc">${a.descripcion || "—"}</div>
-            <div class="alm-time">${t}</div>
+    function tarjeta(l, tag, estadoAlarma, calidad) {
+      const base = rangoBase(l.nombre, l.unidad);
+      const cfg = alarmCfg[l.id] || {};
+      const lo = num(cfg.lo), hi = num(cfg.hi), lolo = num(cfg.lolo), hihi = num(cfg.hihi);
+      let min = lolo ?? lo ?? base.min, max = hihi ?? hi ?? base.max;
+      if (!(max > min)) { min = base.min; max = base.max; }
+      const unidad = l.unidad || base.unit;
+      const conDatos = calidad === 'ok';
+      const v = conDatos ? (num(l.valor) ?? 0) : 0;
+      const pct = Math.min(100, Math.max(0, ((v - min) / (max - min)) * 100));
+      const cls = conDatos && estadoAlarma ? estadoAlarma : '';
+      const texto = !conDatos ? (calidad === 'sin_respuesta' ? 'SIN RESPUESTA' : 'SIN DATOS')
+        : estadoAlarma === 'p1' ? 'ALARMA P1' : estadoAlarma === 'p2' ? 'ALARMA P2' : 'NORMAL';
+      const color = !conDatos ? '#b8b8b8' : estadoAlarma === 'p1' ? 'var(--p1-bg)' : estadoAlarma === 'p2' ? 'var(--p2-bg)' : 'var(--ok-bg)';
+      return `
+        <div class="fp-celda" onclick="location.href='/medidores/historico.html?var=${l.id}'" title="Ver histórico">
+          <div class="faceplate">
+            <div class="fp-tag"><span>${esc(tag)} · ${esc(l.nombre).toUpperCase()}</span><span>${esc(unidad)}</span></div>
+            <div class="fp-val ${cls}">${conDatos ? v.toFixed(2) : '--.-'}</div>
+            <div class="fp-unit">${esc(l.nombre)}</div>
+            <div class="fp-state" style="color:${color}">${texto}</div>
           </div>
-          ${!isAck ? `<button class="alm-ack" onclick="ackAlarm(${a.id})">ACK</button>` : `<span style="font-size:12px;color:#888;font-family:var(--font-mono)">ACK</span>`}
+          <div class="pbar-wrap">
+            <div class="pbar-lbl"><span>${min}</span><span>RANGO</span><span>${max}</span></div>
+            <div class="pbar-outer">
+              <div class="pbar-zones"><div class="z-lo" style="width:10%"></div><div class="z-norm" style="width:80%"></div><div class="z-hi" style="width:10%"></div></div>
+              <div class="pbar-ind" style="left:${conDatos ? pct : 0}%"></div>
+            </div>
+          </div>
         </div>`;
-          })
-          .join("");
+    }
+
+    async function refrescar() {
+      let lecturas = [], alarmas = [], gw = null;
+      try {
+        const [rL, rA, rG] = await Promise.all([
+          fetch('/api/medidores/lecturas/ultimo', { cache: 'no-store' }).then(r => r.json()),
+          fetch('/api/medidores/alarmas/log/activas', { cache: 'no-store' }).then(r => r.json()).catch(() => []),
+          fetch('/api/gateway/estado', { cache: 'no-store' }).then(r => r.json()).catch(() => null),
+        ]);
+        lecturas = Array.isArray(rL) ? rL : []; alarmas = Array.isArray(rA) ? rA : []; gw = rG;
+        setServidor(true);
       } catch {
-        /* silencioso */
+        setServidor(false);
+        return;
       }
-    }
 
-    function ackAlarm(id) {
-      ackedAlarms.add(id);
-      fetchAlarmas();
-    }
+      const conectada = !!gw?.conectada;
+      const sbN = document.getElementById('sb-nodo');
+      sbN.textContent = conectada ? 'TINKERBOARD: CONECTADA' : 'TINKERBOARD: DESCONECTADA';
+      sbN.className = conectada ? 'sb-ok' : 'sb-err';
 
-    // ── MODAL ──
-    let modalChartInst = null;
-    let activeModalTag = null;
-    let modalHistory = [];
-    let modalInterval = null;
+      const ahora = Date.now() + (gw?.ahora ? new Date(gw.ahora).getTime() - Date.now() : 0);
+      const fallidas = new Set((gw?.fallidas || []).map(Number));
+      const alarmaVar = {};
+      alarmas.forEach(a => alarmaVar[a.variable_id] = a.prioridad === 'P1' ? 'p1' : 'p2');
 
-    function openModal(tag) {
-      if (!INSTRUMENTS[tag]) return;
-      activeModalTag = tag;
-      modalHistory = [];
-      const inst = INSTRUMENTS[tag];
+      // Agrupar por medidor (orden estable por id)
+      const grupos = {};
+      [...lecturas].sort((a, b) => a.id - b.id).forEach(l => (grupos[l.medidor_nombre || 'Sin nombre'] = grupos[l.medidor_nombre || 'Sin nombre'] || []).push(l));
 
-      document.getElementById("modalTag").textContent = tag;
-      document.getElementById("modalDesc").textContent = inst.desc;
-      document.getElementById("metaTag").textContent = tag;
-
-      document.getElementById("modalLimBody").innerHTML = `
-    <tr><td style="color:var(--p1);font-weight:700">HI-HI</td><td>${inst.hihi} ${inst.unit}</td><td>P1 CRÍTICA</td><td id="ml-hh">—</td></tr>
-    <tr><td style="color:var(--p2);font-weight:700">HI</td>   <td>${inst.hi}   ${inst.unit}</td><td>P2 ALTA</td>  <td id="ml-h">—</td></tr>
-    <tr><td style="color:var(--ok);font-weight:700">NORM</td> <td>${inst.lo}–${inst.hi} ${inst.unit}</td><td>—</td><td id="ml-n">—</td></tr>
-    <tr><td style="color:var(--p2);font-weight:700">LO</td>   <td>${inst.lo}   ${inst.unit}</td><td>P2 ALTA</td>  <td id="ml-l">—</td></tr>
-    <tr><td style="color:var(--p1);font-weight:700">LO-LO</td><td>${inst.lolo} ${inst.unit}</td><td>P1 CRÍTICA</td><td id="ml-ll">—</td></tr>`;
-
-      if (modalChartInst) {
-        modalChartInst.destroy();
-        modalChartInst = null;
-      }
-      modalChartInst = new Chart(
-        document.getElementById("modalChart").getContext("2d"),
-        {
-          type: "line",
-          data: {
-            labels: [],
-            datasets: [
-              {
-                data: [],
-                borderColor: "#D0D0D0",
-                backgroundColor: "transparent",
-                borderWidth: 1.5,
-                pointRadius: 0,
-                tension: 0.3,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: { duration: 300 },
-            plugins: { legend: { display: false } },
-            scales: {
-              x: { display: false },
-              y: {
-                grid: { color: "#333" },
-                ticks: {
-                  font: { family: "IBM Plex Mono", size: 12 },
-                  color: "#B8B8B8",
-                },
-              },
-            },
-          },
-        },
-      );
-
-      document.getElementById("modalOverlay").classList.add("open");
-      updateModal();
-      modalInterval = setInterval(updateModal, 3000);
-    }
-
-    function updateModal() {
-      if (!activeModalTag || !lastIndData) return;
-      const inst = INSTRUMENTS[activeModalTag];
-      const raw = parseFloat(lastIndData[inst.field]) || 0;
-      const t = new Date(lastIndData.registrado_en).toLocaleTimeString(
-        "es-EC",
-        { hour12: false },
-      );
-
-      const pvEl = document.getElementById("modalPvVal");
-      pvEl.textContent = raw.toFixed(2);
-      document.getElementById("modalPvUnit").textContent = inst.unit;
-      document.getElementById("metaTime").textContent = t;
-
-      let estado = "NORMAL",
-        stateColor = "var(--ok-bg)";
-      if (raw >= inst.hihi || raw <= inst.lolo) {
-        estado = "ALARMA P1";
-        stateColor = "var(--p1-bg)";
-        pvEl.className = "modal-pv-val p1";
-      } else if (raw >= inst.hi || raw <= inst.lo) {
-        estado = "ALARMA P2";
-        stateColor = "var(--p2-bg)";
-        pvEl.className = "modal-pv-val p2";
+      const cont = document.getElementById('medidores');
+      if (!lecturas.length) {
+        cont.innerHTML = '<div class="panel"><div class="ind-vacio">Sin variables configuradas. Agrégalas en CONFIGURACIÓN DE MEDIDORES.</div></div>';
       } else {
-        pvEl.className = "modal-pv-val";
+        cont.innerHTML = Object.entries(grupos).map(([medidor, vars]) => {
+          const slave = slaves[vars[0].id];
+          const e = slave !== undefined ? gw?.bus?.medidores?.[String(slave)] : null;
+          const ok = vars.filter(v => !fallidas.has(v.id)).length;
+          let estado = 'Esperando lectura…', cls = '';
+          if (!conectada) { estado = 'Tinkerboard desconectada'; cls = 'error'; }
+          else if (e?.detectando) { estado = `No responde a ${e.baud} bps · buscando velocidad`; cls = 'aviso'; }
+          else if (e && !e.verificado) { estado = `Verificando a ${e.baud} bps…`; }
+          else if (e) { estado = `Responde a ${e.baud} bps · ${ok}/${vars.length} variables`; cls = ok === vars.length ? '' : ok ? 'aviso' : 'error'; }
+          const tarjetas = vars.map((l, i) => {
+            const ts = l.registrado_en ? new Date(l.registrado_en).getTime() : NaN;
+            const reciente = Number.isFinite(ts) && (ahora - ts) / 1000 <= UMBRAL_SIN_DATOS_S;
+            const calidad = fallidas.has(l.id) ? 'sin_respuesta' : (!conectada || !reciente || num(l.valor) === null) ? 'sin_datos' : 'ok';
+            const tag = `${prefijo(l.nombre, l.unidad)}-${slave ? slave * 100 + i + 1 : i + 1}`;
+            return tarjeta(l, tag, alarmaVar[l.id] || null, calidad);
+          }).join('');
+          return `
+            <div class="panel">
+              <div class="panel-header">
+                <div><span class="panel-id">${esc(medidor).toUpperCase()}</span><span class="panel-desc"> · ID ${slave ?? '—'}</span></div>
+              </div>
+              <div class="panel-body">
+                <div class="med-estado ${cls}">${esc(estado)}</div>
+                <div class="fp-grid">${tarjetas}</div>
+              </div>
+            </div>`;
+        }).join('');
       }
-      document.getElementById("modalPvState").textContent = estado;
-      document.getElementById("modalPvState").style.color = stateColor;
 
-      modalHistory.push(raw);
-      if (modalHistory.length > 20) modalHistory.shift();
-
-      document.getElementById("modalMin").textContent = Math.min(
-        ...modalHistory,
-      ).toFixed(2);
-      document.getElementById("modalMax").textContent = Math.max(
-        ...modalHistory,
-      ).toFixed(2);
-      document.getElementById("modalAvg").textContent = (
-        modalHistory.reduce((a, b) => a + b, 0) / modalHistory.length
-      ).toFixed(2);
-      document.getElementById("modalSamples").textContent =
-        modalHistory.length;
-      document.getElementById("modalExtra1").textContent =
-        pct(raw, 0, inst.max).toFixed(1) + "%";
-      document.getElementById("modalExtra1Lbl").textContent = "% RANGO";
-      document.getElementById("modalExtra2").textContent = inst.max;
-      document.getElementById("modalExtra2Lbl").textContent = "RANGO MÁX";
-
-      const setLim = (id, active) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.textContent = active ? "⚠ ACT" : "✓ OK";
-        el.style.color = active ? "var(--p1)" : "var(--ok)";
-      };
-      setLim("ml-hh", raw >= inst.hihi);
-      setLim("ml-h", raw >= inst.hi && raw < inst.hihi);
-      setLim("ml-n", raw >= inst.lo && raw <= inst.hi);
-      setLim("ml-l", raw <= inst.lo && raw > inst.lolo);
-      setLim("ml-ll", raw <= inst.lolo);
-
-      const lbl = new Date().toLocaleTimeString("es-EC", { hour12: false });
-      modalChartInst.data.labels.push(lbl);
-      modalChartInst.data.datasets[0].data.push(raw);
-      if (modalChartInst.data.labels.length > 20) {
-        modalChartInst.data.labels.shift();
-        modalChartInst.data.datasets[0].data.shift();
-      }
-      modalChartInst.update();
+      // Alarmas activas
+      const p1 = alarmas.filter(a => a.prioridad === 'P1').length;
+      document.getElementById('alarmBanner').classList.toggle('active', p1 > 0);
+      document.getElementById('bannerTxt').textContent = p1 ? `${p1} ALARMA(S) P1` : '';
+      document.getElementById('almCount').textContent = alarmas.length ? `(${alarmas.length})` : '';
+      const TIPO = { HIHI: 'MUY ALTO', HI: 'ALTO', LO: 'BAJO', LOLO: 'MUY BAJO' };
+      document.getElementById('almList').innerHTML = !alarmas.length
+        ? '<div class="no-alarms">■ SIN ALARMAS ACTIVAS</div>'
+        : alarmas.map(a => {
+            const cls = a.prioridad === 'P1' ? 'p1' : 'p2';
+            const v = num(a.valor);
+            const h = a.inicio_en ? new Date(a.inicio_en).toLocaleTimeString('es-EC', { hour12: false }) : '';
+            return `<div class="alm-item ${cls}">
+              <div class="t">${esc(a.prioridad)} · ${esc(TIPO[a.tipo] || a.tipo)}</div>
+              <div class="d">${esc(a.variable_nombre || a.nombre || '—')} · ${v === null ? '—' : v.toFixed(2)} ${esc(a.unidad || '')}</div>
+              <div class="h">${esc(a.medidor_nombre || '')} · desde ${h}</div>
+            </div>`;
+          }).join('');
     }
 
-    function closeModal(e) {
-      if (e.target === document.getElementById("modalOverlay"))
-        closeModalBtn();
-    }
-    function closeModalBtn() {
-      document.getElementById("modalOverlay").classList.remove("open");
-      if (modalInterval) {
-        clearInterval(modalInterval);
-        modalInterval = null;
-      }
-      activeModalTag = null;
-      modalHistory = [];
-    }
-
-    setInterval(() => {
-      if (Date.now() - lastData > 12000) setNodoOnline(false);
-    }, 3000);
-
-    async function refresh() {
-      await Promise.all([fetchData(), fetchAlarmas()]);
-    }
-    refresh();
-    setInterval(refresh, 3000);
+    cargarConfig().then(refrescar);
+    setInterval(refrescar, 3000);
+    setInterval(cargarConfig, 30000);
   </script>
 </body>
-
 </html>

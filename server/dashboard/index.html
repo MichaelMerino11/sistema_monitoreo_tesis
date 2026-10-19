@@ -1138,6 +1138,12 @@
           const d = await res.json();
           setServer(true);
           if (!d) return;
+          // Datos viejos (más de 60 s): el caldero no está enviando
+          if (Date.now() - new Date(d.registrado_en).getTime() > 60000) {
+            setNodeStatus("calderoStatus", "sum-caldero", "ind-caldero", false);
+            document.getElementById("lastCaldero").textContent = "SIN DATOS RECIENTES";
+            return;
+          }
 
           const temp = parseFloat(d.temperatura) || 0;
           const nivel = parseFloat(d.nivel) || 0;
@@ -1185,6 +1191,12 @@
           );
           const d = await res.json();
           if (!d) return;
+          if (Date.now() - new Date(d.registrado_en).getTime() > 60000) {
+            setNodeStatus("solarStatus", "sum-solar", "ind-solar", false);
+            document.getElementById("solarSim").hidden = true;
+            document.getElementById("lastSolar").textContent = "SIN DATOS RECIENTES";
+            return;
+          }
           document.getElementById("solarSim").hidden = !d.simulado;
 
           document.getElementById("valVP").textContent = fmt(d.voltaje_panel);
@@ -1220,8 +1232,8 @@
 
           setNodeStatus("solarStatus", "sum-solar", "ind-solar", true);
           lastSolar = Date.now();
-        } catch {
-          /* silencioso */
+        } catch (e) {
+          console.error('Vista general: error al actualizar', e);
         }
       }
 
@@ -1285,8 +1297,8 @@
         </div>`;
             })
             .join("");
-        } catch {
-          /* silencioso */
+        } catch (e) {
+          console.error('Vista general: error al actualizar', e);
         }
       }
 

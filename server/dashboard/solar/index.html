@@ -996,7 +996,7 @@
           </div>
           <div class="faceplate clickable" onclick="openModal('VT-I')">
             <div class="fp-tag">
-              <span>VT-I · VOLTAJE INVERSOR</span><span>V AC</span>
+              <span>VT-I · VOLTAJE INVERSOR</span><span>V DC</span>
             </div>
             <div class="fp-val" id="viVal">--.-</div>
             <div class="fp-unit">VOLTIOS — INVERSOR</div>
@@ -1092,7 +1092,7 @@
           </div>
           <div class="faceplate clickable" onclick="openModal('IT-I')">
             <div class="fp-tag">
-              <span>IT-I · CORRIENTE INVERSOR</span><span>A AC</span>
+              <span>IT-I · CORRIENTE INVERSOR</span><span>A DC</span>
             </div>
             <div class="fp-val" id="iiVal">--.-</div>
             <div class="fp-unit">AMPERIOS — INVERSOR</div>
@@ -1470,14 +1470,14 @@
         },
         "VT-I": {
           desc: "VOLTAJE INVERSOR — Cobra 1500W",
-          unit: "V AC",
+          unit: "V DC",
           field: "voltaje_inversor",
-          lolo: 100,
-          lo: 108,
-          hi: 125,
-          hihi: 130,
-          max: 135,
-          spec: "Salida nominal: 120V AC",
+          lolo: 10.5,
+          lo: 11.5,
+          hi: 14.4,
+          hihi: 15.0,
+          max: 16,
+          spec: "Entrada DC del inversor (bus de batería 12 V) · consumo de la carga",
         },
         "IT-P": {
           desc: "CORRIENTE PANEL SOLAR — Prostar PMS200W",
@@ -1503,14 +1503,14 @@
         },
         "IT-I": {
           desc: "CORRIENTE INVERSOR — Cobra 1500W",
-          unit: "A AC",
+          unit: "A DC",
           field: "corriente_inversor",
           lolo: 0,
           lo: 0.5,
-          hi: 12.5,
-          hihi: 13.5,
-          max: 15,
-          spec: "Potencia continua: 1500W / 120V = 12.5A",
+          hi: 25,
+          hihi: 28,
+          max: 30,
+          spec: "Corriente DC de entrada al inversor · consumo de la carga",
         },
         "PT-ENT": {
           desc: "POTENCIA ENTRADA — Panel Prostar PMS200W",
@@ -1955,10 +1955,10 @@
           // Faceplates
           setFP("vpVal", "vpState", "vpInd", vp, 0, 25, null, 23);
           setFP("vbVal", "vbState", null, vb, 0, 16, 10.5, 15.0);
-          setFP("viVal", "viState", null, vi, 0, 135, 100, 130);
+          setFP("viVal", "viState", null, vi, 0, 16, 10.5, 15.0);
           setFP("ipVal", "ipState", "ipInd", ip, 0, 13, null, 11.62);
           setFP("ibVal", "ibState", null, ib, 0, 22, null, 20);
-          setFP("iiVal", "iiState", null, ii, 0, 15, null, 13.5);
+          setFP("iiVal", "iiState", null, ii, 0, 30, null, 28);
           setFP("peVal", "peState", null, pe, 0, 220, null, 206);
           setFP("psVal", "psState", null, ps, 0, 1700, null, 1600);
 
@@ -2002,7 +2002,8 @@
           lastSolarData = d;
           setNodoOnline(true);
           lastData = Date.now();
-        } catch {
+        } catch (e) {
+          console.error('Solar: error al actualizar', e);
           setServerOnline(false);
         }
       }

@@ -10,7 +10,14 @@
   // Encabezados de panel un poco más oscuros para que el texto claro resalte
   const estilo = document.createElement('style');
   estilo.textContent = '.panel-header{background:#4A4A4A !important;border-bottom-color:#333 !important;}' +
-    '.panel-status.online{color:#66CC66 !important;border-color:#66CC66 !important;}';
+    '.panel-status.online{color:#66CC66 !important;border-color:#66CC66 !important;}' +
+    // Celular: barra superior y barra de estado sin amontonarse
+    '@media (max-width:700px){' +
+    '.titlebar{height:auto !important;min-height:36px;flex-wrap:wrap;gap:6px;padding:6px 10px !important;}' +
+    '.titlebar-desc{display:none !important;}' +
+    '.titlebar-right,.titlebar-links{flex-wrap:wrap;gap:8px !important;}' +
+    '.statusbar>span:nth-child(n+3):not(:last-child){display:none !important;}' +
+    '}';
   document.head.appendChild(estilo);
 
   function rgb(c) {
