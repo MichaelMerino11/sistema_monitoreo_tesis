@@ -68,7 +68,7 @@ body{background:var(--isa-bg);color:var(--isa-text);font-family:var(--font-sans)
 .monitor-card{background:#1E1E1E;border:1px solid #505050;padding:10px;}
 .monitor-card.alarma-p1{border-color:var(--p1);animation:blink-card 1s step-end infinite;}
 .monitor-card.alarma-p2{border-color:var(--p2);}
-.monitor-card.sin-datos .mc-val{color:#606060;}
+.monitor-card.sin-datos .mc-val{color:#444444;}
 @keyframes blink-card{0%,100%{border-color:var(--p1)}50%{border-color:#880000}}
 .mc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
 .mc-name{font-family:var(--font-mono);font-size:12px;color:#707070;text-transform:uppercase;}
@@ -76,7 +76,7 @@ body{background:var(--isa-bg);color:var(--isa-text);font-family:var(--font-sans)
 .mc-val{font-family:var(--font-mono);font-size:30px;font-weight:600;color:#D8D8D8;line-height:1;text-align:center;}
 .mc-val.p1{color:var(--p1-bg);}
 .mc-val.p2{color:var(--p2-bg);}
-.mc-unit{font-family:var(--font-mono);font-size:12px;color:#606060;text-align:center;margin-top:2px;}
+.mc-unit{font-family:var(--font-mono);font-size:12px;color:#444444;text-align:center;margin-top:2px;}
 .mc-chart{height:60px;margin-top:8px;}
 .mc-time{font-family:var(--font-mono);font-size:12px;color:#505050;margin-top:4px;text-align:right;}
 .monitor-vacio{grid-column:1/-1;text-align:center;padding:40px;font-family:var(--font-mono);font-size:13px;color:var(--isa-text-dim);}
@@ -146,7 +146,7 @@ body{background:var(--isa-bg);color:var(--isa-text);font-family:var(--font-sans)
 .carga-detalle:empty{display:none;}
 .carga-detalle .med-row{background:#E0E0E0;border:1px solid #A0A0A0;border-left-width:4px;padding:6px 10px;font-size:13px;}
 .carga-detalle .med-row-nombre{color:#1A1A1A;}
-.carga-detalle .med-row-id{color:#606060;}
+.carga-detalle .med-row-id{color:#444444;}
 .carga-detalle .med-row-estado{color:#3A3A3A;}
 .carga-detalle .med-row.ok{border-left-color:#2A5C2A;}
 .carga-detalle .med-row.aviso .med-row-estado{color:#8A4500;}
@@ -174,17 +174,87 @@ body{background:var(--isa-bg);color:var(--isa-text);font-family:var(--font-sans)
 .rs485-row{display:flex;justify-content:space-between;align-items:center;}
 .rs485-val{color:#1A1A1A;font-weight:600;}
 @media(max-width:900px){.layout{grid-template-columns:1fr;}}
+
+/* ══ Tema azul: mismo estilo que el panel principal y la app ══ */
+:root{--isa-bg:#B4B4B4;--isa-bg-widget:#BEBEBE;--isa-border:#999999;--isa-text:#1A1A1A;--isa-text-2:#3A3A3A;--isa-text-dim:#444444;--azul:#0D1B4B;--azul2:#1a1a2e;}
+body{font-size:15px;}
+.titlebar{background:var(--azul);border-bottom:none;height:auto;min-height:48px;padding:8px 20px;flex-wrap:wrap;gap:12px;}
+.titlebar-id{font-size:17px;font-weight:700;color:#fff;}
+.titlebar-sub{font-size:14px;font-weight:400;color:#C8D0E8;margin-left:10px;letter-spacing:0;}
+.titlebar-link{color:#C8D0E8;border:none;padding:4px 10px;border-radius:3px;font-size:13px;}
+.titlebar-link:hover{background:#1E2E6A;color:#fff;}
+.titlebar-link.active{background:#fff;color:var(--azul);font-weight:700;}
+.sys-clock{color:#fff;font-size:16px;font-weight:600;}
+.layout{padding:12px 12px 36px;gap:10px;}
+.panel{background:#BEBEBE;border:1px solid #999;border-top:1px solid #999;border-radius:4px;overflow:hidden;}
+.panel-header{background:var(--azul2);border-bottom:none;padding:8px 12px;font-size:13px;}
+.panel-id{color:#fff;}.panel-desc{color:#C8D0E8;}
+.form-label{color:#444;font-size:12px;}
+.form-input,.form-select{background:#fff;border:1px solid #999;color:#1A1A1A;border-radius:3px;font-size:14px;}
+.form-input:focus,.form-select:focus{border-color:var(--azul);outline:2px solid rgba(13,27,75,0.25);}
+.btn{background:#C8C8C8;border:1px solid #999;color:#1A1A1A;border-radius:3px;font-size:13px;}
+.btn:hover{background:#B0B0B0;}
+.btn.primary{background:var(--azul2);border-color:var(--azul2);color:#fff;}
+.btn.primary:hover{background:#2A3A6A;}
+.btn.danger{background:#CC0000;border-color:#A00000;color:#fff;}
+.btn.danger:hover{background:#A00000;}
+.btn.warn{background:#CC6600;border-color:#A05000;color:#fff;}
+.btn.warn:hover{background:#A05000;}
+.medidor-item{background:#C8C8C8;border:1px solid #999;border-radius:4px;}
+.medidor-item:hover{border-color:#555;}
+.medidor-item.active{border-color:var(--azul2);box-shadow:inset 4px 0 0 var(--azul2);}
+.medidor-name{color:#1A1A1A;font-size:14px;}
+.medidor-sub{color:#444;}
+.medidor-badge.on{color:#145214;border-color:#145214;}
+.medidor-badge.off{color:#555;border-color:#777;}
+.medidor-com{color:#444;}.medidor-com.ok{color:#145214;}.medidor-com.aviso{color:#8A4500;}.medidor-com.error{color:#CC0000;}
+.var-table th{background:var(--azul2);color:#fff;border-right:1px solid #2A3A6A;font-size:12px;padding:7px 8px;}
+.var-table td{color:#1A1A1A;border-bottom:1px solid #A8A8A8;}
+.tag-activo{color:#145214;}.tag-inactivo{color:#555;}.tag-alarma{color:#8A4500;}
+.tabs{background:#BEBEBE;border-bottom:3px solid var(--azul2);gap:4px;padding:8px 8px 0;}
+.tab{color:#1A1A1A;background:#A4A4A4;border-right:none;border-radius:4px 4px 0 0;font-size:14px;padding:8px 16px;}
+.tab:hover{background:#999;}
+.tab.active{background:var(--azul2);color:#fff;}
+.monitor-card{background:#C8C8C8;border:1px solid #999;border-radius:4px;}
+.mc-name,.mc-med,.mc-unit,.mc-time{color:#444;}
+.mc-val{color:#1A1A1A;}.mc-val.p1{color:#CC0000;}.mc-val.p2{color:#CC6600;}
+.monitor-card.sin-datos .mc-val{color:#777;}
+.modal{border:1px solid #999;border-radius:4px;overflow:hidden;}
+.modal-titlebar{background:var(--azul2);color:#fff;}
+.modal-close{background:#2A3A6A;border-color:#4A5A8A;color:#fff;}
+.modal-close:hover{background:#3A4A7A;}
+.limit-box{background:#DADADA;border:1px solid #999;border-radius:4px;}
+.limit-p1{color:#CC0000;}.limit-p2{color:#8A4500;}
+.toast{background:var(--azul2);color:#fff;border-color:var(--azul2);}
+.statusbar{background:var(--azul);color:#C8D0E8;border-top:none;}
+.bus-estado{background:#DADADA;border-color:#999;color:#1A1A1A;border-radius:4px;}
+.bus-estado.proceso{color:#1A1A1A;}.bus-estado.ok{color:#145214;}.bus-estado.aviso{color:#8A4500;border-color:#CC6600;}
+.bus-spinner,.vel-spin{border-color:#999;border-top-color:var(--azul2);}
+.med-row{background:rgba(0,0,0,0.04);}
+.med-row-nombre{color:#1A1A1A;}.med-row-id,.med-row-estado{color:#444;}
+.med-row.ok{border-left-color:#145214;}.med-row.aviso{border-left-color:#CC6600;}.med-row.aviso .med-row-estado{color:#8A4500;}.med-row.error{border-left-color:#CC0000;}.med-row.error .med-row-estado{color:#CC0000;}
+.carga-card{border:1px solid #999;border-radius:4px;overflow:hidden;}
+.carga-titlebar{background:var(--azul2);}
+.carga-card.ok .carga-titlebar{background:#145214;}
+.carga-spinner{border-color:#999;border-top-color:var(--azul2);}
+.carga-barra-fill{background:var(--azul2);}
+.vel-item{background:#C8C8C8;border:1px solid #999;border-left:4px solid #777;border-radius:4px;}
+.vel-item.ok{border-left-color:#145214;}.vel-item.aviso{border-left-color:#CC6600;}.vel-item.error{border-left-color:#CC0000;}
+.vel-nombre{color:#1A1A1A;}.vel-nombre span{color:#444;}
+.vel-estado{color:#444;}.vel-item.ok .vel-estado{color:#145214;}.vel-item.aviso .vel-estado{color:#8A4500;}.vel-item.error .vel-estado{color:#CC0000;}.vel-item.proceso .vel-estado{color:#1A1A1A;}
+@media(max-width:700px){.titlebar{padding:8px 12px;}.titlebar-sub{display:none;}}
 </style>
 <script src="/legible.js" defer></script>
 </head>
 <body>
 
 <div class="titlebar">
-  <span class="titlebar-id">MAINTRONIC / CFG-MEDIDORES</span>
+  <span class="titlebar-id">MAINTRONIC <span class="titlebar-sub">Configuración de medidores</span></span>
   <div class="titlebar-links">
-    <a href="/" class="titlebar-link">PANEL PRINCIPAL</a>
+    <a href="/" class="titlebar-link">GENERAL</a>
+    <a href="/solar/" class="titlebar-link">SOLAR</a>
+    <a href="/industrial/" class="titlebar-link">INDUSTRIAL</a>
     <a href="/medidores/" class="titlebar-link active">CONFIGURACIÓN</a>
-    <a href="/medidores/historico.html" class="titlebar-link">HISTÓRICO</a>
   </div>
   <span class="sys-clock" id="clock">00:00:00</span>
 </div>
@@ -202,7 +272,7 @@ body{background:var(--isa-bg);color:var(--isa-text);font-family:var(--font-sans)
         <button class="btn" onclick="showAddMedidor()">+ NUEVO</button>
       </div>
       <div class="panel-body">
-        <div id="formMedidor" style="display:none;background:#1E1E1E;border:1px solid #505050;padding:10px;margin-bottom:10px">
+        <div id="formMedidor" style="display:none;background:#DADADA;border:1px solid #999999;border-radius:4px;padding:10px;margin-bottom:10px">
           <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="inp-nombre" placeholder="Ej: Schneider PM2100"></div>
           <div class="form-group"><label class="form-label">Slave ID</label><input class="form-input" id="inp-slave" type="number" value="1"></div>
           <div class="form-group"><label class="form-label">Descripción</label><input class="form-input" id="inp-desc" placeholder="Tablero principal"></div>
@@ -220,17 +290,17 @@ body{background:var(--isa-bg);color:var(--isa-text);font-family:var(--font-sans)
         <div style="line-height:1.4">
           <div class="bus-estado" id="busEstado" role="status"><span class="bus-spinner"></span><span id="busEstadoTexto">Consultando estado del bus…</span></div>
           <div class="vel-lista" id="velocidadesMedidores"></div>
-          <div style="font-size:12px;color:#606060;margin:6px 0 4px">Cada medidor se lee a su propia velocidad, que debe coincidir con la configurada en el menú del medidor. Si no coincide, el sistema busca la correcta solo.</div>
+          <div style="font-size:12px;color:#444444;margin:6px 0 4px">Cada medidor se lee a su propia velocidad, que debe coincidir con la configurada en el menú del medidor. Si no coincide, el sistema busca la correcta solo.</div>
         </div>
         <div class="rs485-row"><span>PARIDAD:</span><span class="rs485-val">EVEN (E)</span></div>
         <div class="rs485-row"><span>STOP BITS:</span><span class="rs485-val">1</span></div>
         <div class="rs485-row"><span>DATA BITS:</span><span class="rs485-val">8</span></div>
-        <div style="margin-top:8px;padding:6px;background:#1E1E1E;border:1px solid #505050;font-size:12px;line-height:1.8">
-          <div style="color:#D8D8D8;margin-bottom:4px">TIPO DE REGISTRO:</div>
-          <div><span style="color:var(--ok-bg)">Holding (03)</span> — Schneider y mayoría de medidores</div>
-          <div><span style="color:var(--p2-bg)">Input (04)</span> — Selec MFM376 y medidores con registros 3xxxx</div>
-          <div style="margin-top:4px;color:#606060">Para Selec: registro = dirección - 30000</div>
-          <div style="color:#606060">Ej: dirección 30000 → registro 0</div>
+        <div style="margin-top:8px;padding:8px;background:#DADADA;border:1px solid #999999;border-radius:4px;font-size:13px;line-height:1.8">
+          <div style="color:#1A1A1A;font-weight:600;margin-bottom:4px">TIPO DE REGISTRO:</div>
+          <div><span style="color:#145214;font-weight:600">Holding (03)</span> — Schneider y mayoría de medidores</div>
+          <div><span style="color:#8A4500;font-weight:600">Input (04)</span> — Selec MFM376 y medidores con registros 3xxxx</div>
+          <div style="margin-top:4px;color:#444444">Para Selec: registro = dirección - 30000</div>
+          <div style="color:#444444">Ej: dirección 30000 → registro 0</div>
         </div>
       </div>
     </div>
@@ -247,7 +317,7 @@ body{background:var(--isa-bg);color:var(--isa-text);font-family:var(--font-sans)
         <span style="font-family:var(--font-mono);font-size:13px;color:var(--isa-text-dim)" id="medidorSeleccionado">Selecciona un medidor</span>
         <button class="btn primary" id="btnAddVar" onclick="showAddVariable()" style="display:none">+ VARIABLE</button>
       </div>
-      <div id="formVariable" style="display:none;background:#1E1E1E;border-bottom:1px solid #505050;padding:10px">
+      <div id="formVariable" style="display:none;background:#DADADA;border-bottom:1px solid #999999;padding:10px">
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr auto;gap:6px;align-items:end">
           <div><label class="form-label">Nombre</label><input class="form-input" id="var-nombre" placeholder="Voltaje V1N"></div>
           <div><label class="form-label">Registro</label><input class="form-input" id="var-registro" type="number" placeholder="0"></div>
@@ -287,7 +357,7 @@ body{background:var(--isa-bg);color:var(--isa-text);font-family:var(--font-sans)
 <div class="modal-overlay" id="modalAlarma" onclick="closeAlarmaModal(event)">
   <div class="modal">
     <div class="modal-titlebar">
-      <div><span style="color:#F0F0F0;font-weight:600">CONFIGURAR ALARMA</span><span style="color:#A0A0A0;font-size:13px;margin-left:10px" id="modalAlarmaVar">—</span></div>
+      <div><span style="color:#F0F0F0;font-weight:600">CONFIGURAR ALARMA</span><span style="color:#C8D0E8;font-size:13px;margin-left:10px" id="modalAlarmaVar">—</span></div>
       <button class="modal-close" onclick="closeAlarmaModalBtn()">✕</button>
     </div>
     <div class="modal-body">
@@ -435,7 +505,7 @@ function construirVelocidades() {
   if (firma === firmaVel) return;
   firmaVel = firma;
   const cont = document.getElementById('velocidadesMedidores');
-  if (!cacheMedidores.length) { cont.innerHTML = '<div style="font-size:12px;color:#606060">Agrega un medidor para configurar su velocidad.</div>'; return; }
+  if (!cacheMedidores.length) { cont.innerHTML = '<div style="font-size:12px;color:#444444">Agrega un medidor para configurar su velocidad.</div>'; return; }
   cont.innerHTML = cacheMedidores.map(m => `
     <div class="vel-item" id="vel-${esc(m.slave_id)}">
       <div class="vel-nombre">${esc(m.nombre)} <span>· ID ${esc(m.slave_id)}</span></div>
@@ -749,7 +819,7 @@ async function cargarVariables() {
   tbody.innerHTML=list.map((v,i)=>{
     const alm=alarmas[i];
     const tieneAlarma=alm&&(alm.hi||alm.hihi||alm.lo||alm.lolo);
-    const trColor=v.tipo_registro==='input'?'color:var(--p2-bg)':'color:#44AA44';
+    const trColor=v.tipo_registro==='input'?'color:#8A4500':'color:#145214';
     return `
     <tr>
       <td>${v.nombre}</td>
@@ -886,7 +956,7 @@ async function cargarMonitor() {
         <div class="mc-time" id="mct-${v.id}">${t}</div>`;
       grid.appendChild(card);
       const ctx=document.getElementById(`mcc-${v.id}`).getContext('2d');
-      monitorCharts[v.id]=new Chart(ctx,{type:'line',data:{labels:[],datasets:[{data:[],borderColor:'#888',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
+      monitorCharts[v.id]=new Chart(ctx,{type:'line',data:{labels:[],datasets:[{data:[],borderColor:'#1a1a2e',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
     } else {
       card.className=cardClass;
       document.getElementById(`mcv-${v.id}`).textContent=val;

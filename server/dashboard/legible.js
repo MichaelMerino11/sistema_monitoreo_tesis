@@ -7,9 +7,9 @@
 (function () {
   const OBJETIVO = 4.5;
 
-  // Encabezados de panel un poco más oscuros para que el texto claro resalte
+  // Ajustes comunes de legibilidad
   const estilo = document.createElement('style');
-  estilo.textContent = '.panel-header{background:#4A4A4A !important;border-bottom-color:#333 !important;}' +
+  estilo.textContent =
     '.panel-status.online{color:#66CC66 !important;border-color:#66CC66 !important;}' +
     // Celular: barra superior y barra de estado sin amontonarse
     '@media (max-width:700px){' +
