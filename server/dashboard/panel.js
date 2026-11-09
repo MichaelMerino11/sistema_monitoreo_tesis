@@ -84,15 +84,15 @@ const SOLAR_GRUPOS = [
         campo: "corriente_panel",
         u: "A DC",
         min: 0,
-        max: 13,
+        max: 50,
       },
       {
         tag: "IT-B",
         nom: "I Batería",
         campo: "corriente_bateria",
         u: "A DC",
-        min: -22,
-        max: 22,
+        min: 0,
+        max: 50,
       },
       {
         tag: "IT-I",
@@ -114,7 +114,7 @@ const SOLAR_GRUPOS = [
         campo: "potencia_entrada",
         u: "W",
         min: 0,
-        max: 220,
+        max: 800,
       },
       {
         tag: "PT-SAL",
@@ -364,13 +364,13 @@ function pintarCabecera() {
 // ═════════ Resumen (tarjetas de arriba) según la vista ═════════
 const TILES = {
   general: [
-    { id: "gSolar", ir: "solar", titulo: "SISTEMA FOTOVOLTAICO" },
+    { id: "gSolar", ir: "solar", titulo: "SISTEMA FOTOVOLTAICO", sim: true },
     { id: "gInd", ir: "industrial", titulo: "PLANTA INDUSTRIAL" },
     { id: "gAlm", ir: "alarmas", titulo: "ALARMAS ACTIVAS" },
     { id: "gCon", ir: "industrial", titulo: "CONEXIÓN", chico: true },
   ],
   solar: [
-    { id: "sPot", ir: "solar", titulo: "POTENCIA DEL PANEL" },
+    { id: "sPot", ir: "solar", titulo: "POTENCIA DEL PANEL", sim: true },
     { id: "sBat", ir: "solar", titulo: "BATERÍA" },
     { id: "sEne", ir: "solar", titulo: "ENERGÍA DE HOY" },
     { id: "sCon", ir: "solar", titulo: "ESTADO DEL SISTEMA", chico: true },
@@ -388,7 +388,7 @@ function armarResumen() {
     (t) => `
     <button class="tile" id="${t.id}" data-ir="${t.ir}">
     <div class="t">
-      <span>${t.titulo}</span>
+      <span>${t.titulo}</span>${t.sim ? `<span data-sim style="${SIM_ESTILO};display:none">DATOS SIMULADOS</span>` : ""}
     </div>
       <div class="v" ${t.chico ? 'style="font-size:24px"' : ""}>--</div>
       <div class="d">—</div>
@@ -416,6 +416,7 @@ function pintarResumen() {
   const s = st.solar,
     fresco = st.solarFresco;
 
+  etiquetaSim(!!(s?.simulado && fresco));
   const sv = (k) => (fresco ? num(s?.[k]) : null);
 
   const pe = sv("potencia_entrada"),
@@ -562,6 +563,37 @@ function pintarResumen() {
   }
 }
 
+// I Batería: magnitud + sentido (el signo solo indica carga o descarga)
+function ajusteBat(it, v) {
+  if (it.campo !== "corriente_bateria" || v === null) return { valor: v };
+  return {
+    valor: Math.abs(v),
+    nom: v >= 0 ? "I Batería · Cargando" : "I Batería · Descargando",
+  };
+}
+
+// Etiqueta DATOS SIMULADOS (mientras los datos solares vengan del simulador)
+const SIM_ESTILO =
+  "font-family:var(--mono,monospace);font-size:12px;font-weight:700;color:#5A4500;" +
+  "background:#FFE680;border:1px solid #C9A400;padding:1px 6px;border-radius:3px;" +
+  "white-space:nowrap;margin-left:8px";
+function etiquetaSim(visible) {
+  let e = $("simPanel");
+  if (!e && $("solEstado")) {
+    e = document.createElement("span");
+    e.id = "simPanel";
+    e.textContent = "DATOS SIMULADOS";
+    $("solEstado").after(e);
+  }
+  if (e) {
+    e.setAttribute("style", SIM_ESTILO);
+    e.style.display = visible ? "" : "none";
+  }
+  document
+    .querySelectorAll("[data-sim]")
+    .forEach((x) => (x.style.display = visible ? "" : "none"));
+}
+
 function pintarSolar() {
   const s = st.solar;
   const fresco = st.solarFresco;
@@ -573,6 +605,7 @@ function pintarSolar() {
       : "● Sin datos recientes";
 
   $("solEstado").className = "estado " + (fresco ? "" : "aviso");
+  etiquetaSim(!!(s?.simulado && fresco));
 
   $("solChips").innerHTML = chipsHTML(
     [{ id: "todos", nombre: "Todas" }, ...SOLAR_GRUPOS],
@@ -603,7 +636,7 @@ function pintarSolar() {
             .map((it) =>
               tarjeta({
                 ...it,
-                valor: fresco ? num(s?.[it.campo]) : null,
+                ...ajusteBat(it, fresco ? num(s?.[it.campo]) : null),
                 sel: "s:" + it.campo,
               }),
             )
