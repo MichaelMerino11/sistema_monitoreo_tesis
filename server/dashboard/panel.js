@@ -1,7 +1,3 @@
-// MAINTRONIC · Panel web. Cada página define window.VISTA antes de cargar este archivo:
-//   'general'    → /             (todo junto, para la universidad)
-//   'solar'      → /solar/       (solo sistema fotovoltaico)
-//   'industrial' → /industrial/  (solo medidores industriales)
 const VISTA = ["solar", "industrial"].includes(window.VISTA)
   ? window.VISTA
   : "general";
@@ -11,7 +7,6 @@ const TABS = {
   industrial: ["industrial", "alarmas", "historico"],
 }[VISTA];
 
-// ═════════ Utilidades ═════════
 const $ = (id) => document.getElementById(id);
 function esc(s) {
   return String(s ?? "").replace(
@@ -41,7 +36,6 @@ function hora() {
 setInterval(() => ($("reloj").textContent = hora()), 1000);
 $("reloj").textContent = hora();
 
-// ═════════ Estado ═════════
 const SOLAR_ID = 2;
 const SOLAR_GRUPOS = [
   {
@@ -157,7 +151,6 @@ const st = {
   chart: null,
 };
 
-// ═════════ Navegación por pestañas (con #enlace) ═════════
 function irA(tab, sel) {
   if (!TABS.includes(tab)) tab = TABS[0];
   st.tab = tab;
@@ -180,7 +173,6 @@ document
   .querySelectorAll(".tab")
   .forEach((b) => b.addEventListener("click", () => irA(b.dataset.tab)));
 
-// ═════════ Datos ═════════
 async function cargarConfig() {
   try {
     const vars = await getJSON("/api/medidores/variables/activas");
@@ -222,7 +214,6 @@ async function refrescar() {
   pintar();
 }
 
-// ═════════ Industrial: calidad, rangos y etiquetas (misma lógica que la app) ═════════
 function rangoBase(nombre, unidad) {
   const n = nombre.toLowerCase(),
     u = (unidad || "").toLowerCase();
@@ -294,7 +285,6 @@ function estadoMedidor(vars) {
   };
 }
 
-// ═════════ Tarjeta común ═════════
 function tarjeta({ tag, nom, valor, u, min, max, alarma, aviso, sel }) {
   const con = valor !== null;
   const v = con ? valor : 0;
@@ -339,7 +329,6 @@ function chipsHTML(lista, activo, attr) {
     .join("");
 }
 
-// ═════════ Pintar ═════════
 function pintar() {
   pintarCabecera();
   pintarResumen();
@@ -361,16 +350,15 @@ function pintarCabecera() {
     : "Tinkerboard desconectada";
 }
 
-// ═════════ Resumen (tarjetas de arriba) según la vista ═════════
 const TILES = {
   general: [
-    { id: "gSolar", ir: "solar", titulo: "SISTEMA FOTOVOLTAICO", sim: true },
+    { id: "gSolar", ir: "solar", titulo: "SISTEMA FOTOVOLTAICO" },
     { id: "gInd", ir: "industrial", titulo: "PLANTA INDUSTRIAL" },
     { id: "gAlm", ir: "alarmas", titulo: "ALARMAS ACTIVAS" },
     { id: "gCon", ir: "industrial", titulo: "CONEXIÓN", chico: true },
   ],
   solar: [
-    { id: "sPot", ir: "solar", titulo: "POTENCIA DEL PANEL", sim: true },
+    { id: "sPot", ir: "solar", titulo: "POTENCIA DEL PANEL" },
     { id: "sBat", ir: "solar", titulo: "BATERÍA" },
     { id: "sEne", ir: "solar", titulo: "ENERGÍA DE HOY" },
     { id: "sCon", ir: "solar", titulo: "ESTADO DEL SISTEMA", chico: true },
@@ -388,8 +376,7 @@ function armarResumen() {
     (t) => `
     <button class="tile" id="${t.id}" data-ir="${t.ir}">
     <div class="t">
-      <span>${t.titulo}</span>${t.sim ? `<span data-sim style="${SIM_ESTILO};display:none">DATOS SIMULADOS</span>` : ""}
-    </div>
+<span>${t.titulo}</span>    </div>
       <div class="v" ${t.chico ? 'style="font-size:24px"' : ""}>--</div>
       <div class="d">—</div>
     </button>`,
@@ -415,8 +402,6 @@ const conU = (v, u) => `${v}<small>${u}</small>`;
 function pintarResumen() {
   const s = st.solar,
     fresco = st.solarFresco;
-
-  etiquetaSim(!!(s?.simulado && fresco));
   const sv = (k) => (fresco ? num(s?.[k]) : null);
 
   const pe = sv("potencia_entrada"),
@@ -572,28 +557,6 @@ function ajusteBat(it, v) {
   };
 }
 
-// Etiqueta DATOS SIMULADOS (mientras los datos solares vengan del simulador)
-const SIM_ESTILO =
-  "font-family:var(--mono,monospace);font-size:12px;font-weight:700;color:#5A4500;" +
-  "background:#FFE680;border:1px solid #C9A400;padding:1px 6px;border-radius:3px;" +
-  "white-space:nowrap;margin-left:8px";
-function etiquetaSim(visible) {
-  let e = $("simPanel");
-  if (!e && $("solEstado")) {
-    e = document.createElement("span");
-    e.id = "simPanel";
-    e.textContent = "DATOS SIMULADOS";
-    $("solEstado").after(e);
-  }
-  if (e) {
-    e.setAttribute("style", SIM_ESTILO);
-    e.style.display = visible ? "" : "none";
-  }
-  document
-    .querySelectorAll("[data-sim]")
-    .forEach((x) => (x.style.display = visible ? "" : "none"));
-}
-
 function pintarSolar() {
   const s = st.solar;
   const fresco = st.solarFresco;
@@ -605,7 +568,6 @@ function pintarSolar() {
       : "● Sin datos recientes";
 
   $("solEstado").className = "estado " + (fresco ? "" : "aviso");
-  etiquetaSim(!!(s?.simulado && fresco));
 
   $("solChips").innerHTML = chipsHTML(
     [{ id: "todos", nombre: "Todas" }, ...SOLAR_GRUPOS],
